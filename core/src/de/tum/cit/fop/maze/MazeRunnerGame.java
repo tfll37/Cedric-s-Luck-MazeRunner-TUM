@@ -3,12 +3,14 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
 /**
@@ -17,20 +19,25 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
  */
 public class MazeRunnerGame extends Game {
     // Screens
+    private WelcomeScreen welcomeScreen;
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
 
-    // Sprite Batch for rendering
+    // Core rendering components
     private SpriteBatch spriteBatch;
+    private OrthographicCamera camera;
+    private FitViewport viewport;
 
     // UI Skin
     private Skin skin;
 
-    // Character animation downwards
+    // Textures & Animations
+    private Texture backgroundTexture;
     private Animation<TextureRegion> characterDownAnimation;
+    private Animation<TextureRegion> characterDownHitAnimation;
 
     /**
-     * Constructor for MazeRunnerGame.
+     * CONSTRUCTOR
      *
      * @param fileChooser The file chooser for the game, typically used in desktop environment.
      */
@@ -44,16 +51,29 @@ public class MazeRunnerGame extends Game {
     @Override
     public void create() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
+        camera = new OrthographicCamera();
+        // Use a FitViewport for handling resizing (for example, 800x600)
+        viewport = new FitViewport(800, 600, camera);
+        camera.update();
+
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
 
-        // Play some background music
-        // Background sound
-        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
+        //                              MUSIC
+//        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
+//        backgroundMusic.setLooping(true);
+//        backgroundMusic.play();
 
-        goToMenu(); // Navigate to the menu screen
+        goToWelcomeScreen();
+        backgroundTexture = new Texture(Gdx.files.internal("assets/DEV_grid.png"));
+    }
+
+    public void goToWelcomeScreen() {
+        this.setScreen(new WelcomeScreen(this));
+        if (gameScreen != null) {
+            gameScreen.dispose(); // Dispose the game screen if it exists
+            gameScreen = null;
+        }
     }
 
     /**
@@ -71,7 +91,9 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame() {
-        this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
+        // Create a new GameScreen if needed
+        gameScreen = new GameScreen(this);
+        setScreen(gameScreen);
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
             menuScreen = null;
@@ -88,15 +110,14 @@ public class MazeRunnerGame extends Game {
         int frameHeight = 32;
         int animationFrames = 4;
 
-        // libGDX internal Array instead of ArrayList because of performance
-        Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
+        int hitFrameWidth = 32;
 
-        // Add all frames to the animation
-        for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
-        }
+        // Create arrays of frames
+        com.badlogic.gdx.utils.Array<TextureRegion> walkFrames = new com.badlogic.gdx.utils.Array<>();
+        com.badlogic.gdx.utils.Array<TextureRegion> hitFrames = new com.badlogic.gdx.utils.Array<>();
 
         characterDownAnimation = new Animation<>(0.1f, walkFrames);
+        characterDownHitAnimation = new Animation<>(0.1f, hitFrames);
     }
 
     /**
@@ -121,5 +142,48 @@ public class MazeRunnerGame extends Game {
 
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
+    }
+
+
+    /**
+     *
+     * Getters and Setters for the TEXTURES
+     */
+    public Texture getBackgroundTexture() {
+        return backgroundTexture;
+    }
+
+    public void setBackgroundTexture(Texture backgroundTexture) {
+        this.backgroundTexture = backgroundTexture;
+    }
+
+
+    /**
+     *
+     * GETTERS AND SETTERS for Character Animation
+     */
+    public void setCharacterDownAnimation(Animation<TextureRegion> characterDownAnimation) {
+        this.characterDownAnimation = characterDownAnimation;
+    }
+
+    public Animation<TextureRegion> getCharacterDownHitAnimation() {
+        return characterDownHitAnimation;
+    }
+
+    public void setCharacterDownHitAnimation(Animation<TextureRegion> characterDownHitAnimation) {
+        this.characterDownHitAnimation = characterDownHitAnimation;
+    }
+
+    public FitViewport getViewport() {
+        return viewport;
+    }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 }

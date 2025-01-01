@@ -18,17 +18,24 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  * It extends the LibGDX Screen class and sets up the UI components for the menu.
  */
 public class MenuScreen implements Screen {
-
+    //variables
     private final Stage stage;
+    private final MazeRunnerGame game;
+
 
     /**
-     * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
+     * CONSTRUCTOR.
+     *
+     * Sets up the camera, viewport, stage, and UI elements.
      *
      * @param game The main game class, used to access global resources and methods.
      */
     public MenuScreen(MazeRunnerGame game) {
+        this.game = game;
+
         var camera = new OrthographicCamera();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
+
 
         Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
         stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
@@ -38,25 +45,53 @@ public class MenuScreen implements Screen {
         stage.addActor(table); // Add the table to the stage
 
         // Add a label as a title
-        table.add(new Label("Hello World from the Menu!", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("NNN", game.getSkin(), "title")).padBottom(80).row();
 
-        // Create and add a button to go to the game screen
+        // Create and add buttons
         TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
+        TextButton testingButton = new TextButton("Testing", game.getSkin());
+
         table.add(goToGameButton).width(300).row();
+        table.add(testingButton).width(350).row();
+
+        //Set up the button listeners
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.goToGame(); // Change to the game screen when button is pressed
             }
         });
+
+        testingButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.goToMenu();
+            }
+        });
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage
-        stage.draw(); // Draw the stage
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    // Ensure backgroundTexture is not null
+    if (game.getBackgroundTexture() != null) {
+        game.getSpriteBatch().begin();
+        game.getSpriteBatch().draw(
+                game.getBackgroundTexture(),
+                0, 0,
+                stage.getViewport().getWorldWidth(),
+                stage.getViewport().getWorldHeight()
+        );
+        game.getSpriteBatch().end();
     }
+
+    stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+    stage.draw();
+}
+
+
+
 
     @Override
     public void resize(int width, int height) {

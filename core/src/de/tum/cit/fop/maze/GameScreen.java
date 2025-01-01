@@ -4,79 +4,98 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
- * The GameScreen class is responsible for rendering the gameplay screen.
- * It handles the game logic and rendering of the game elements.
+ * The GameScreen class is responsible for managing gameplay.
  */
 public class GameScreen implements Screen {
-
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
-    private final BitmapFont font;
+    private final Labyrinth labyrinth;
+    private final Player player;
 
-    private float sinusInput = 0f;
+//    private GameUI gameUI;
+
 
     /**
-     * Constructor for GameScreen. Sets up the camera and font.
+     * Constructor for GameScreen. Initializes game elements.
      *
-     * @param game The main game class, used to access global resources and methods.
+     * @param game The main game instance.
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+        this.camera = game.getCamera();
 
-        // Create and configure the camera for the game view
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false);
-        camera.zoom = 0.75f;
+        // Initialize labyrinth with a tiled map
+        labyrinth = new Labyrinth(game.getSpriteBatch());
+        labyrinth.getBackground().centerTiledMap(camera);
 
-        // Get the font from the game's skin
-        font = game.getSkin().getFont("font");
+        player = new Player(100, 100);
+
+        // Initialize GameUI for health, score, etc.
+//        gameUI = new GameUI(game.getSpriteBatch());
+
+        // Set input processor to the GameUI stage
+//        Gdx.input.setInputProcessor(gameUI.getStage());
     }
 
 
-    // Screen interface methods with necessary functionality
     @Override
     public void render(float delta) {
-        // Check for escape key press to go back to the menu
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.goToMenu();
+        // Clear the screen
+        ScreenUtils.clear(0, 0, 0, 1);
+
+        // Updates
+        camera.update();
+        handleInput();
+        player.update(delta);
+
+        // Render game elements
+        labyrinth.render(camera);
+
+        SpriteBatch batch = game.getSpriteBatch();
+        batch.begin();
+        player.render(batch);
+        batch.end();
+
+
+//        gameUI.render();
+    }
+
+    private void handleInput() {
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            player.moveLeft();
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.moveRight();
+        } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            player.moveUp();
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            player.moveDown();
+        } else {
+            player.stop();
         }
 
-        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            game.goToMenu();
 
-        camera.update(); // Update the camera
+        }
 
-        // Move text in a circular path to have an example of a moving object
-        sinusInput += delta;
-        float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
-        float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
-
-        // Set up and begin drawing with the sprite batch
-        game.getSpriteBatch().setProjectionMatrix(camera.combined);
-
-        game.getSpriteBatch().begin(); // Important to call this before drawing anything
-
-        // Render the text
-        font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY);
-
-        // Draw the character next to the text :) / We can reuse sinusInput here
-        game.getSpriteBatch().draw(
-                game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                textX - 96,
-                textY - 64,
-                64,
-                128
-        );
-
-        game.getSpriteBatch().end(); // Important to call this after drawing everything
+        // Example: Adjust game UI updates (placeholder logic for demonstration)
+//        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
+//        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
     }
+
 
     @Override
     public void resize(int width, int height) {
-        camera.setToOrtho(false);
+        game.getViewport().update(width, height);
+    }
+
+    @Override
+    public void show() {
+        // Called when this screen becomes the current screen.
     }
 
     @Override
@@ -88,17 +107,14 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void show() {
-
-    }
-
-    @Override
     public void hide() {
     }
 
     @Override
     public void dispose() {
+        labyrinth.dispose();
+//        gameUI.dispose();
     }
 
-    // Additional methods and logic can be added as needed for the game screen
+
 }
