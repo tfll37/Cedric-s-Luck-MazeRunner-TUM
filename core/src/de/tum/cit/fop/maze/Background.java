@@ -1,14 +1,11 @@
 package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Background {
     private TiledMap tiledMap;
@@ -28,7 +25,9 @@ public class Background {
     // Load a tiled map as the background
     public void loadTiledMap(String mapPath) {;
         tiledMap = new TmxMapLoader().load(mapPath);
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
+
+        adjustTileIds();
     }
 
     public TiledMap getTiledMap() {
@@ -98,6 +97,13 @@ public class Background {
 //            spriteBatch.end();
 //        }
 //    }
+
+    private void adjustTileIds() {
+        TMapTileIDAdjuster adjuster = new TMapTileIDAdjuster(tiledMap);
+        adjuster.adjustTileId();
+    }
+
+
 
     public void dispose() {
         if (tiledMap != null) {

@@ -36,3 +36,4 @@ public class DesktopLauncher {
 		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
 	}
 }
+

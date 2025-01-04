@@ -4,7 +4,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 
 public class Labyrinth extends TiledMap {
@@ -21,7 +26,7 @@ public class Labyrinth extends TiledMap {
         this.background = new Background(spriteBatch);
         this.objects = new Array<>();
 
-        background.loadTiledMap("assets/FOP_test.tmx");
+        background.loadTiledMap("assets/Gamemap.tmx");
         this.tiledMap = background.getTiledMap();
     }
 
@@ -45,6 +50,45 @@ public class Labyrinth extends TiledMap {
         // Render other labyrinth objects, if any
         // e.g., spriteBatch.begin(); spriteBatch.draw(...); spriteBatch.end();
 
+    }
+
+    // Retrieve a specific Tiled tile location
+    public TiledMapTileLayer.Cell getTile(float x, float y) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        int tileX = (int) (x / layer.getTileWidth());
+        int tileY = (int) (y / layer.getTileHeight());
+        return layer.getCell(tileX, tileY);
+    }
+
+    public boolean isBlocked(float x, float y) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+
+        int tileX = (int) (x / layer.getTileWidth());
+        int tileY = (int) (y / layer.getTileHeight());
+
+        return !TilePropMngr.isTileWalkable(layer, tileX, tileY);
+    }
+
+    public Vector2 getValidSpawnPoint() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        ArrayList<Vector2> openTiles = new ArrayList<>();
+
+
+        for (int x = 0; x < layer.getWidth(); x++) {
+            for (int y = 0; y < layer.getHeight(); y++) {
+                if (TilePropMngr.isTileWalkable(layer, x, y)) {
+                    float pixelX = x * layer.getTileWidth();
+                    float pixelY = y * layer.getTileHeight();
+                    openTiles.add(new Vector2(pixelX, pixelY));
+                }
+            }
+        }
+        if (!openTiles.isEmpty()) {
+            Random random = new Random();
+            return openTiles.get(random.nextInt(openTiles.size()));
+        }
+
+        return new Vector2(0, 0);
     }
 
     /**

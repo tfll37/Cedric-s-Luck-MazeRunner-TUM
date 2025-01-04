@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
@@ -28,11 +29,14 @@ public class GameScreen implements Screen {
         this.game = game;
         this.camera = game.getCamera();
 
+//        camera.zoom = 0.5f;
+
         // Initialize labyrinth with a tiled map
         labyrinth = new Labyrinth(game.getSpriteBatch());
         labyrinth.getBackground().centerTiledMap(camera);
 
-        player = new Player(100, 100);
+        Vector2 spawnPoint = labyrinth.getValidSpawnPoint();
+        player = new Player(spawnPoint.x, spawnPoint.y);
 
         // Initialize GameUI for health, score, etc.
 //        gameUI = new GameUI(game.getSpriteBatch());
@@ -50,14 +54,25 @@ public class GameScreen implements Screen {
         // Updates
         camera.update();
         handleInput();
-        player.update(delta);
+
+        // Player State Update
+        float tileWidth = labyrinth.getBackground().getTiledMap().getProperties().get("tilewidth", Integer.class);
+        float tileHeight = labyrinth.getBackground().getTiledMap().getProperties().get("tileheight", Integer.class);
+        float labyrinthWidth = labyrinth.getBackground().getTiledMap().getProperties().get("width", Integer.class);
+        float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
+        player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
+
+        if (labyrinth.isBlocked(player.getPosition().x, player.getPosition().y)) {
+            player.stop();
+        }
 
         // Render game elements
         labyrinth.render(camera);
-
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
+
         player.render(batch);
+
         batch.end();
 
 
@@ -65,21 +80,35 @@ public class GameScreen implements Screen {
     }
 
     private void handleInput() {
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            player.moveLeft();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            player.moveRight();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
+        var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
+        var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
+        var UP = Gdx.input.isKeyPressed(Input.Keys.W);
+        var ESCAPE = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+        var SHIFT = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+        var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
+        var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
+
+        if (UP) {
             player.moveUp();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        } else if (DOWN) {
             player.moveDown();
+        } else if (LEFT) {
+            player.moveLeft();
+        } else if (RIGHT) {
+            player.moveRight();
         } else {
             player.stop();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+        if (ESCAPE) {
             game.goToMenu();
+        }
 
+        if (SHIFT && COMMA ) {
+            camera.zoom -= 0.1f;
+        }else if (SHIFT && PERIOD) {
+            camera.zoom += 0.1f;
         }
 
         // Example: Adjust game UI updates (placeholder logic for demonstration)
@@ -93,28 +122,23 @@ public class GameScreen implements Screen {
         game.getViewport().update(width, height);
     }
 
+
     @Override
     public void show() {
         // Called when this screen becomes the current screen.
     }
-
     @Override
     public void pause() {
     }
-
     @Override
     public void resume() {
     }
-
     @Override
     public void hide() {
     }
-
     @Override
     public void dispose() {
         labyrinth.dispose();
 //        gameUI.dispose();
     }
-
-
 }
