@@ -3,9 +3,11 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
@@ -16,8 +18,8 @@ public class GameScreen implements Screen {
     private final OrthographicCamera camera;
     private final Labyrinth labyrinth;
     private final Player player;
-
-//    private GameUI gameUI;
+    private AnimationMNGR animationMNGR;
+    private GameUI gameUI;
 
 
     /**
@@ -33,13 +35,15 @@ public class GameScreen implements Screen {
 
         // Initialize labyrinth with a tiled map
         labyrinth = new Labyrinth(game.getSpriteBatch());
+        this.animationMNGR = animationMNGR;
         labyrinth.getBackground().centerTiledMap(camera);
 
         Vector2 spawnPoint = labyrinth.getValidSpawnPoint();
         player = new Player(spawnPoint.x, spawnPoint.y);
 
+
         // Initialize GameUI for health, score, etc.
-//        gameUI = new GameUI(game.getSpriteBatch());
+        gameUI = new GameUI(game.getSpriteBatch(),this.game.getSkin());
 
         // Set input processor to the GameUI stage
 //        Gdx.input.setInputProcessor(gameUI.getStage());
@@ -53,7 +57,6 @@ public class GameScreen implements Screen {
 
         // Updates
         camera.update();
-        handleInput();
 
         // Player State Update
         float tileWidth = labyrinth.getBackground().getTiledMap().getProperties().get("tilewidth", Integer.class);
@@ -62,9 +65,9 @@ public class GameScreen implements Screen {
         float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
 
-        if (labyrinth.isBlocked(player.getPosition().x, player.getPosition().y)) {
-            player.stop();
-        }
+
+        handleInput();
+
 
         // Render game elements
         labyrinth.render(camera);
@@ -76,7 +79,7 @@ public class GameScreen implements Screen {
         batch.end();
 
 
-//        gameUI.render();
+        gameUI.render();
     }
 
     private void handleInput() {
@@ -89,32 +92,58 @@ public class GameScreen implements Screen {
         var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
         var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
 
-        if (UP) {
-            player.moveUp();
-        } else if (DOWN) {
-            player.moveDown();
-        } else if (LEFT) {
-            player.moveLeft();
-        } else if (RIGHT) {
-            player.moveRight();
-        } else {
-            player.stop();
-        }
-
         if (ESCAPE) {
             game.goToMenu();
         }
 
         if (SHIFT && COMMA ) {
-            camera.zoom -= 0.1f;
+            camera.zoom -= 0.05f;
         }else if (SHIFT && PERIOD) {
-            camera.zoom += 0.1f;
+            camera.zoom += 0.05f;
         }
+
 
         // Example: Adjust game UI updates (placeholder logic for demonstration)
 //        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
 //        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
     }
+    //                          OLD INPUT HANDLING
+//    private void handleInput() {
+//        var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
+//        var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
+//        var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
+//        var UP = Gdx.input.isKeyPressed(Input.Keys.W);
+//        var ESCAPE = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+//        var SHIFT = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+//        var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
+//        var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
+//
+//        if (UP) {
+//            player.moveUp();
+//        } else if (DOWN) {
+//            player.moveDown();
+//        } else if (LEFT) {
+//            player.moveLeft();
+//        } else if (RIGHT) {
+//            player.moveRight();
+//        } else {
+//            player.stop();
+//        }
+//
+//        if (ESCAPE) {
+//            game.goToMenu();
+//        }
+//
+//        if (SHIFT && COMMA ) {
+//            camera.zoom -= 0.1f;
+//        }else if (SHIFT && PERIOD) {
+//            camera.zoom += 0.1f;
+//        }
+//
+//        // Example: Adjust game UI updates (placeholder logic for demonstration)
+    ////        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
+    ////        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
+//    }
 
 
     @Override

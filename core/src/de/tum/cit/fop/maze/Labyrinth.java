@@ -66,7 +66,7 @@ public class Labyrinth extends TiledMap {
         int tileX = (int) (x / layer.getTileWidth());
         int tileY = (int) (y / layer.getTileHeight());
 
-        return !TilePropMngr.isTileWalkable(layer, tileX, tileY);
+        return !TilePropMNGR.isTileWalkable(layer, tileX, tileY);
     }
 
     public Vector2 getValidSpawnPoint() {
@@ -76,7 +76,7 @@ public class Labyrinth extends TiledMap {
 
         for (int x = 0; x < layer.getWidth(); x++) {
             for (int y = 0; y < layer.getHeight(); y++) {
-                if (TilePropMngr.isTileWalkable(layer, x, y)) {
+                if (TilePropMNGR.isTileWalkable(layer, x, y)) {
                     float pixelX = x * layer.getTileWidth();
                     float pixelY = y * layer.getTileHeight();
                     openTiles.add(new Vector2(pixelX, pixelY));
