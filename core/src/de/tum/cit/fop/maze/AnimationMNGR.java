@@ -40,7 +40,7 @@ public class AnimationMNGR implements Disposable {
 
     public void loadPlayerAnimations() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
-        Texture baldWalkSheet = new Texture(Gdx.files.internal("bald_guy.png"));
+        Texture baldWalkSheet = new Texture(Gdx.files.internal("mobs.png"));
         int frameWidth = 16;
         int frameHeight = 32;
         int animationFrames = 4;
@@ -72,9 +72,9 @@ public class AnimationMNGR implements Disposable {
         characterRightAnimation = new Animation<>(0.1f, walkRightFrames);
         characterDownHitAnimation = new Animation<>(0.1f, hitFrames);
 
-        frameWidth = 64;
-        frameHeight = 64;
-        animationFrames = 6;
+        frameWidth = 16;
+        frameHeight = 16;
+        animationFrames = 3;
 
 
         Array<TextureRegion> baldWalkDownFrames = new Array<>(TextureRegion.class);
@@ -83,16 +83,16 @@ public class AnimationMNGR implements Disposable {
         Array<TextureRegion> baldWalkRightFrames = new Array<>(TextureRegion.class);
 
         for (int col = 0; col < animationFrames; col++) {
-            baldWalkDownFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 5*frameWidth , frameWidth, frameHeight));
+            baldWalkDownFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 0*frameWidth , frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            baldWalkUpFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 6*frameWidth, frameWidth, frameHeight));
+            baldWalkLeftFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 1*frameWidth, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            baldWalkRightFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 7*frameWidth, frameWidth, frameHeight));
+            baldWalkRightFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 2*frameWidth, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            baldWalkLeftFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 8*frameWidth, frameWidth, frameHeight));
+            baldWalkUpFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 3*frameWidth, frameWidth, frameHeight));
         }
         baldGuyDownAnimation = new Animation<>(0.1f, baldWalkDownFrames);
         baldGuyUpAnimation = new Animation<>(0.1f, baldWalkUpFrames);
@@ -103,7 +103,7 @@ public class AnimationMNGR implements Disposable {
     }
 
     public void loadDiceAnimation() {
-        Texture diceSheet = new Texture(Gdx.files.internal("dice.png"));
+        Texture diceSheet = new Texture(Gdx.files.internal("bush.png"));
         int frameWidth = 16;
         int frameHeight = 16;
         int animationFrames = 6;

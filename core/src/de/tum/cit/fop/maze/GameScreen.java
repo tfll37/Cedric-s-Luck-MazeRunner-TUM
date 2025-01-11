@@ -6,8 +6,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
@@ -21,6 +23,7 @@ public class GameScreen implements Screen {
     private final Enemy enemy;
     private AnimationMNGR animationMNGR;
     private GameUI gameUI;
+    private Array<Array<Integer>> maze;
 
 
     /**
@@ -52,6 +55,27 @@ public class GameScreen implements Screen {
 
         // Set input processor to the GameUI stage
 //        Gdx.input.setInputProcessor(gameUI.getStage());
+        initializeMazeMatrix();
+    }
+    private void initializeMazeMatrix() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) labyrinth.getBackground().getTiledMap().getLayers().get(0);
+        int width = layer.getWidth();
+        int height = layer.getHeight();
+        maze = new Array<>(width);
+
+        for (int x = 0; x < width; x++) {
+            Array<Integer> column = new Array<>(height);
+            for (int y = 0; y < height; y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+                if (cell != null && cell.getTile() != null) {
+                    boolean walkable = TilePropMNGR.isTileWalkable(layer, x, y);
+                    column.add(walkable ? 0 : 1); // 0 for walkable, 1 for obstacles
+                } else {
+                    column.add(1); // Treat empty tiles as obstacles
+                }
+            }
+            maze.add(column);
+        }
     }
 
 
@@ -69,7 +93,7 @@ public class GameScreen implements Screen {
         float labyrinthWidth = labyrinth.getBackground().getTiledMap().getProperties().get("width", Integer.class);
         float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
-        enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
+        enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
 
         handleInput();
 

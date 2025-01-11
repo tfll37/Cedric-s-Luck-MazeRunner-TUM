@@ -142,6 +142,10 @@ public class Player extends Actor {
     public Vector2 getPosition() {
         return position;
     }
+    public Vector2 getTilePosition(float tileWidth, float tileHeight) {
+        return new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
+    }
+
 
     public void setPosition(Vector2 position) {
         this.position.set(position);
