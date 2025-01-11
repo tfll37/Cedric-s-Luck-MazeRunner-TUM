@@ -16,6 +16,12 @@ public class AnimationMNGR implements Disposable {
     private static Animation<TextureRegion> characterLeftAnimation;
     private static Animation<TextureRegion> characterRightAnimation;
     private static Animation<TextureRegion> characterDownHitAnimation;
+
+    private static Animation<TextureRegion> baldGuyDownAnimation;
+    private static Animation<TextureRegion> baldGuyUpAnimation;
+    private static Animation<TextureRegion> baldGuyLeftAnimation;
+    private static Animation<TextureRegion> baldGuyRightAnimation;
+
     private static Animation<TextureRegion> diceAnimation;
     private static Animation<TextureRegion> sparkAnimation;
     private final ObjectMap<String, Texture> textures;
@@ -34,6 +40,7 @@ public class AnimationMNGR implements Disposable {
 
     public void loadPlayerAnimations() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
+        Texture baldWalkSheet = new Texture(Gdx.files.internal("bald_guy.png"));
         int frameWidth = 16;
         int frameHeight = 32;
         int animationFrames = 4;
@@ -64,6 +71,35 @@ public class AnimationMNGR implements Disposable {
         characterLeftAnimation = new Animation<>(0.1f, walkLeftFrames);
         characterRightAnimation = new Animation<>(0.1f, walkRightFrames);
         characterDownHitAnimation = new Animation<>(0.1f, hitFrames);
+
+        frameWidth = 64;
+        frameHeight = 64;
+        animationFrames = 6;
+
+
+        Array<TextureRegion> baldWalkDownFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> baldWalkUpFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> baldWalkLeftFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> baldWalkRightFrames = new Array<>(TextureRegion.class);
+
+        for (int col = 0; col < animationFrames; col++) {
+            baldWalkDownFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 5*frameWidth , frameWidth, frameHeight));
+        }
+        for (int col = 0; col < animationFrames; col++) {
+            baldWalkUpFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 6*frameWidth, frameWidth, frameHeight));
+        }
+        for (int col = 0; col < animationFrames; col++) {
+            baldWalkRightFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 7*frameWidth, frameWidth, frameHeight));
+        }
+        for (int col = 0; col < animationFrames; col++) {
+            baldWalkLeftFrames.add(new TextureRegion(baldWalkSheet, col * frameWidth, 8*frameWidth, frameWidth, frameHeight));
+        }
+        baldGuyDownAnimation = new Animation<>(0.1f, baldWalkDownFrames);
+        baldGuyUpAnimation = new Animation<>(0.1f, baldWalkUpFrames);
+        baldGuyLeftAnimation = new Animation<>(0.1f, baldWalkLeftFrames);
+        baldGuyRightAnimation = new Animation<>(0.1f, baldWalkRightFrames);
+
+
     }
 
     public void loadDiceAnimation() {
@@ -102,6 +138,19 @@ public class AnimationMNGR implements Disposable {
     public static Animation<TextureRegion> getDiceAnimation() {
         return diceAnimation;
     }
+    public static Animation<TextureRegion> getBaldGuyDownAnimation() {
+        return baldGuyDownAnimation;
+    }
+    public static Animation<TextureRegion> getBaldGuyUpAnimation() {
+        return baldGuyUpAnimation;
+    }
+    public static Animation<TextureRegion> getBaldGuyLeftAnimation() {
+        return baldGuyLeftAnimation;
+    }
+    public static Animation<TextureRegion> getBaldGuyRightAnimation() {
+        return baldGuyRightAnimation;
+    }
+
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
