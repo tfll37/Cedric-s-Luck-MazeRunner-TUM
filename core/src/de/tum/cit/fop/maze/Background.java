@@ -4,56 +4,72 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class Background {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
-
     private final SpriteBatch spriteBatch;
+    private MazeLoader mazeLoader;
 
-    /**
-     * CONSTRUCTOR
-     *
-     * @param spriteBatch The SpriteBatch for rendering.
-     */
     public Background(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
     }
 
-    // Load a tiled map as the background
-    public void loadTiledMap(String mapPath) {;
-        tiledMap = new TmxMapLoader().load(mapPath);
+    public void loadTiledMap(String tmxPath, String propertiesPath) {
+        // Load the base TMX map
+        tiledMap = new TmxMapLoader().load(tmxPath);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
 
-        adjustTileIds();
+        // Load maze configuration
+        mazeLoader = new MazeLoader(propertiesPath);
+
+        // Update maze layout with properties
+        updateMazeLayout();
     }
 
-    public TiledMap getTiledMap() {
-        return tiledMap;
+    private void updateMazeLayout() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+
+        // Get all overrides from the properties file
+        var overrides = mazeLoader.getAllOverrides();
+
+        // Apply overrides to the map
+        for (var entry : overrides.entrySet()) {
+            var pos = entry.getKey();
+            int tileType = entry.getValue();
+
+            // Convert tile type to actual tile ID
+            int tileId = mazeLoader.getTileId(tileType);
+
+            // Update the cell in the layer
+            TiledMapTileLayer.Cell cell = layer.getCell(pos.x, pos.y);
+            if (cell == null) {
+                cell = new TiledMapTileLayer.Cell();
+                layer.setCell(pos.x, pos.y, cell);
+            }
+            cell.setTile(tiledMap.getTileSets().getTile(tileId));
+        }
     }
 
-    // Center the tiled map in the camera's view
     public void centerTiledMap(OrthographicCamera camera) {
         if (tiledMap != null) {
-            MapProperties mapProperties = tiledMap.getProperties();
+            MapProperties props = tiledMap.getProperties();
+            int mapWidth = props.get("width", Integer.class);
+            int mapHeight = props.get("height", Integer.class);
+            int tileWidth = props.get("tilewidth", Integer.class);
+            int tileHeight = props.get("tileheight", Integer.class);
 
-            int tilePixelWidth = mapProperties.get("tilewidth", Integer.class);
-            int tilePixelHeight = mapProperties.get("tileheight", Integer.class);
-            int mapWidth = mapProperties.get("width", Integer.class);
-            int mapHeight = mapProperties.get("height", Integer.class);
+            float mapPixelWidth = mapWidth * tileWidth;
+            float mapPixelHeight = mapHeight * tileHeight;
 
-            // Calculate map dimensions in pixels
-            float mapPixelWidth = mapWidth * tilePixelWidth;
-            float mapPixelHeight = mapHeight * tilePixelHeight;
-
-            // Center the camera on the map
             camera.position.set(mapPixelWidth / 2f, mapPixelHeight / 2f, 0);
             camera.update();
         }
     }
-    // Render method for tiled map
+
     public void renderTiledMap(OrthographicCamera camera) {
         if (tiledMapRenderer != null) {
             tiledMapRenderer.setView(camera);
@@ -61,53 +77,16 @@ public class Background {
         }
     }
 
-//                                      TEXTURE
-//    /**
-//     * Sets the background texture.
-//     *
-//     * @param texture The new background texture.
-//     */
-//    public void setBackground(Texture texture) {
-//        // Dispose of the previous texture if necessary
-//        if (currentBackgroundTexture != null && currentBackgroundTexture != texture) {
-//            currentBackgroundTexture.dispose();
-//        }
-//        currentBackgroundTexture = texture;
-//    }
-
-//    /**
-//     * Render the background texture centered on the screen.
-//     *
-//     * @param screenWidth The width of the screen.
-//     * @param screenHeight The height of the screen.
-//     */
-//    public void renderTexture(int screenWidth, int screenHeight) {
-//        if (currentBackgroundTexture != null) {
-//            spriteBatch.begin();
-//
-//            // Calculate center position
-//            int textureWidth = currentBackgroundTexture.getWidth();
-//            int textureHeight = currentBackgroundTexture.getHeight();
-//
-//            float x = (screenWidth - textureWidth) / 2f;
-//            float y = (screenHeight - textureHeight) / 2f;
-//
-//            // Draw the background texture
-//            spriteBatch.draw(currentBackgroundTexture, x, y, textureWidth, textureHeight);
-//            spriteBatch.end();
-//        }
-//    }
-
-    private void adjustTileIds() {
-        TMapTileIDAdjuster adjuster = new TMapTileIDAdjuster(tiledMap);
-        adjuster.adjustTileId();
+    public TiledMap getTiledMap() {
+        return tiledMap;
     }
-
-
 
     public void dispose() {
         if (tiledMap != null) {
             tiledMap.dispose();
+        }
+        if (tiledMapRenderer != null) {
+            tiledMapRenderer.dispose();
         }
     }
 }

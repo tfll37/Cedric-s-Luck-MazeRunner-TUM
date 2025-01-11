@@ -113,8 +113,8 @@ public class MazeRunnerGame extends Game {
         int hitFrameWidth = 32;
 
         // Create arrays of frames
-        com.badlogic.gdx.utils.Array<TextureRegion> walkFrames = new com.badlogic.gdx.utils.Array<>();
-        com.badlogic.gdx.utils.Array<TextureRegion> hitFrames = new com.badlogic.gdx.utils.Array<>();
+        Array<TextureRegion> walkFrames = new Array<>();
+        Array<TextureRegion> hitFrames = new Array<>();
 
         characterDownAnimation = new Animation<>(0.1f, walkFrames);
         characterDownHitAnimation = new Animation<>(0.1f, hitFrames);
