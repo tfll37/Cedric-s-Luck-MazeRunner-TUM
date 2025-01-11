@@ -1,19 +1,12 @@
 package de.tum.cit.fop.maze;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 
-
-public class Player extends Actor {
-    // Visualisation variables
+public class Enemy {
     private Texture texture;
 
     // Mechanics variables
@@ -28,8 +21,7 @@ public class Player extends Actor {
     private int lookingDirection = 0;  // 0 = up, 1 = right, 2 = down, 3 = left
     private AnimationMNGR animationMNGR;
 
-
-    public Player(float x, float y) {
+    public Enemy(float x, float y) {
         texture = new Texture("bush.png");
         this.position = new Vector2(x, y);
         this.startPosition = new Vector2(x, y);
@@ -42,7 +34,6 @@ public class Player extends Actor {
         this.animationMNGR = new AnimationMNGR();
         animationMNGR.loadPlayerAnimations();
     }
-
     public void update(
             float delta,
             float labyrinthWidth,
@@ -70,7 +61,7 @@ public class Player extends Actor {
             bounds.setPosition(position.x, position.y);
             return;
         }
-        MovementREQ request = handleInput();
+        MovementREQ request = null;
         if (request != null) {
             Vector2 newPixelPos = MovementSYS.processMovement(
                     position,      // current pixel pos
@@ -89,34 +80,6 @@ public class Player extends Actor {
         }
         bounds.setPosition(position.x, position.y);
     }
-
-    private MovementREQ handleInput() {
-        var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
-        var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
-        var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
-        var UP = Gdx.input.isKeyPressed(Input.Keys.W);
-
-        if (UP) {
-            lookingDirection = 0;
-            return new MovementREQ(MovementREQ.MoveType.STEP, 0, 1);
-
-        } else if (DOWN) {
-            lookingDirection = 2;
-            return new MovementREQ(MovementREQ.MoveType.STEP, 0, -1);
-        } else if (LEFT) {
-            lookingDirection = 3;
-            return new MovementREQ(MovementREQ.MoveType.STEP, -1, 0);
-        } else if (RIGHT) {
-            lookingDirection = 1;
-            return new MovementREQ(MovementREQ.MoveType.STEP, 1, 0);
-        }
-        return null;
-
-        // Example: Adjust game UI updates (placeholder logic for demonstration)
-//        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
-//        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
-    }
-
     public void render(SpriteBatch batch) {
         // used to rescale the texture of the player if needed(old approach --> KEEP JUST IN CASE)
 //        float scaleWidth = texture.getWidth() * gameCONFIG.UNIT_SCALE;
@@ -124,33 +87,16 @@ public class Player extends Actor {
 
         TextureRegion currentFrame;
         if (lookingDirection == 0) {
-            currentFrame = animationMNGR.getCharacterUpAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getBaldGuyDownAnimation().getKeyFrame(time, true);
         } else if (lookingDirection == 1) {
-            currentFrame = animationMNGR.getCharacterRightAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getBaldGuyRightAnimation().getKeyFrame(time, true);
         } else if (lookingDirection == 2) {
-            currentFrame = animationMNGR.getCharacterDownAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getBaldGuyUpAnimation().getKeyFrame(time, true);
         } else {
-            currentFrame = animationMNGR.getCharacterLeftAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getBaldGuyLeftAnimation().getKeyFrame(time, true);
         }
         batch.draw(currentFrame, position.x, position.y);
     }
 
-    public Rectangle getBounds() {
-        return bounds;
-    }
 
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    public void setPosition(Vector2 position) {
-        this.position.set(position);
-        this.startPosition.set(position);
-        this.targetPosition.set(position);
-        this.bounds.setPosition(position.x, position.y);
-    }
-
-    public void dispose() {
-        texture.dispose();
-    }
 }

@@ -18,7 +18,8 @@ public class GameScreen implements Screen {
     private final OrthographicCamera camera;
     private final Labyrinth labyrinth;
     private final Player player;
-
+    private final Enemy enemy;
+    private AnimationMNGR animationMNGR;
     private GameUI gameUI;
 
 
@@ -42,8 +43,9 @@ public class GameScreen implements Screen {
         labyrinth.getBackground().centerTiledMap(camera);
 
         Vector2 spawnPoint = labyrinth.getValidSpawnPoint();
+        Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
         player = new Player(spawnPoint.x, spawnPoint.y);
-
+        enemy = new Enemy(enemySpawnPoint.x, enemySpawnPoint.y);
 
         // Initialize GameUI for health, score, etc.
         gameUI = new GameUI(game.getSpriteBatch(),this.game.getSkin());
@@ -67,7 +69,7 @@ public class GameScreen implements Screen {
         float labyrinthWidth = labyrinth.getBackground().getTiledMap().getProperties().get("width", Integer.class);
         float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
-
+        enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
 
         handleInput();
 
@@ -78,6 +80,7 @@ public class GameScreen implements Screen {
         batch.begin();
 
         player.render(batch);
+        enemy.render(batch);
 
         batch.end();
 
@@ -104,7 +107,6 @@ public class GameScreen implements Screen {
         }else if (SHIFT && PERIOD) {
             camera.zoom += 0.05f;
         }
-
 
         // Example: Adjust game UI updates (placeholder logic for demonstration)
 //        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
@@ -144,8 +146,8 @@ public class GameScreen implements Screen {
 //        }
 //
 //        // Example: Adjust game UI updates (placeholder logic for demonstration)
-////        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
-////        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
+    ////        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
+    ////        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
 //    }
 
 

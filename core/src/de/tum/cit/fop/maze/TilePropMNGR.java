@@ -3,7 +3,7 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 
-public class TilePropMngr {
+public class TilePropMNGR {
 
 
     public static boolean isTileWalkable(TiledMapTileLayer layer, int tileX, int tileY){

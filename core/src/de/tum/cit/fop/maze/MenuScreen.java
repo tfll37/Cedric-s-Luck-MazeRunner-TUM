@@ -72,23 +72,23 @@ public class MenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    // Ensure backgroundTexture is not null
-    if (game.getBackgroundTexture() != null) {
-        game.getSpriteBatch().begin();
-        game.getSpriteBatch().draw(
-                game.getBackgroundTexture(),
-                0, 0,
-                stage.getViewport().getWorldWidth(),
-                stage.getViewport().getWorldHeight()
-        );
-        game.getSpriteBatch().end();
+        // Ensure backgroundTexture is not null
+        if (game.getBackgroundTexture() != null) {
+            game.getSpriteBatch().begin();
+            game.getSpriteBatch().draw(
+                    game.getBackgroundTexture(),
+                    0, 0,
+                    stage.getViewport().getWorldWidth(),
+                    stage.getViewport().getWorldHeight()
+            );
+            game.getSpriteBatch().end();
+        }
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
-
-    stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-    stage.draw();
-}
 
 
 
