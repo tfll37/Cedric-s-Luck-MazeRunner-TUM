@@ -29,6 +29,8 @@ public class Enemy {
     private Vector2 lastKnownPlayerTile = new Vector2(-1, -1); // Initialize to an invalid position
     private float damage = 1f;
     private float health = 100f;
+    private SpriteBatch batch;
+    private boolean displayHitParticle = false;
 
     public Enemy(float x, float y) {
         this.position = new Vector2(x, y);
@@ -41,7 +43,6 @@ public class Enemy {
         this.timeSinceLastUpdate = 0f;
         this.lookingDirection = 0;
         this.animationMNGR.loadAnimations();
-
     }
     public void update(
             float delta,
@@ -52,18 +53,24 @@ public class Enemy {
             Labyrinth labyrinth,
             Player player,
             Array<Array<Integer>> maze
+
     ) {
 
         time+=delta;
         timeSinceLastUpdate += delta;
 
         timeSinceLastUpdate += delta;
-
+        this.batch = batch;
         // Track player's tile position
         Vector2 currentPlayerTile = player.getTilePosition(tileWidth, tileHeight);
         boolean overlap = player.getBounds().overlaps(getBounds());
         if (overlap) {
+
+            displayHitParticle = true;
             damage(player);
+        }
+        else {
+            displayHitParticle = false;
         }
 
         if (!currentPlayerTile.equals(lastKnownPlayerTile)) {
@@ -135,6 +142,10 @@ public class Enemy {
     }
     private void damage(Player player) {
         player.takeDamage(damage);
+
+    }
+    public boolean isDisplayHitParticle() {
+        return displayHitParticle;
     }
 }
 

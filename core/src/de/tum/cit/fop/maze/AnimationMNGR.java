@@ -11,6 +11,9 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 public class AnimationMNGR implements Disposable {
     private static final float FRAME_DURATION = 0.1f;
+
+    private static Animation<TextureRegion> hitAnimation1;
+
     private static Animation<TextureRegion> characterDownAnimation;
     private static Animation<TextureRegion> characterUpAnimation;
     private static Animation<TextureRegion> characterLeftAnimation;
@@ -36,6 +39,8 @@ public class AnimationMNGR implements Disposable {
     public void loadAnimations() {
         loadPlayerAnimations();
         loadDiceAnimation();
+        loadHitAnimations();
+
     }
 
     public void loadPlayerAnimations() {
@@ -114,6 +119,26 @@ public class AnimationMNGR implements Disposable {
         diceAnimation = new Animation<>(0.1f, diceFrames);
     }
 
+    public void loadHitAnimations(){
+        Texture hit1_1 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_1.png"));
+        Texture hit1_2 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_2.png"));
+        Texture hit1_3 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_3.png"));
+        Texture hit1_4 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_4.png"));
+        Texture hit1_5 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_5.png"));
+
+        int frameWidth = 16;
+        int frameHeight = 16;
+
+        Array<TextureRegion> hitFrames1 = new Array<>(TextureRegion.class);
+        hitFrames1.add(new TextureRegion(hit1_1, 0, 0, frameWidth, frameHeight));
+        hitFrames1.add(new TextureRegion(hit1_2, 0, 0, frameWidth, frameHeight));
+        hitFrames1.add(new TextureRegion(hit1_3, 0, 0, frameWidth, frameHeight));
+        hitFrames1.add(new TextureRegion(hit1_4, 0, 0, frameWidth, frameHeight));
+        hitFrames1.add(new TextureRegion(hit1_5, 0, 0, frameWidth, frameHeight));
+
+        hitAnimation1 = new Animation<>(0.1f, hitFrames1);
+    }
+
     public Animation<TextureRegion> createAnimation(TextureRegion[] frames, int frameCount) {
         TextureRegion[] animationFrames = new TextureRegion[frameCount];
         System.arraycopy(frames, 0, animationFrames, 0, frameCount);
@@ -149,6 +174,9 @@ public class AnimationMNGR implements Disposable {
     }
     public static Animation<TextureRegion> getBaldGuyRightAnimation() {
         return baldGuyRightAnimation;
+    }
+    public static Animation<TextureRegion> getHitAnimation1() {
+        return hitAnimation1;
     }
 
     public SpriteBatch getSpriteBatch() {

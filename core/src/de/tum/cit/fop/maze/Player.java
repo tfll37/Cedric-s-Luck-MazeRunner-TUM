@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 
 public class Player extends Actor {
@@ -29,6 +30,7 @@ public class Player extends Actor {
     private AnimationMNGR animationMNGR;
     private float health = 100f;
     private float damage = 10f;
+    private SpriteBatch batch;
 
     public Player(float x, float y) {
         this.texture = new Texture("bush.png");
@@ -151,6 +153,10 @@ public class Player extends Actor {
     }
     public void takeDamage(float damage) {
         health -= damage;
+        //System.out.println("Player pos" + position);
+        //System.out.println("Player bounds" + this.getBounds());
+
+        //batch.draw(animationMNGR.getHitAnimation1().getKeyFrame(time, true), position.x +703, position.y + 278);
     }
 
 

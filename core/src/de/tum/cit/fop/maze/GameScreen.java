@@ -25,6 +25,7 @@ public class GameScreen implements Screen {
     private AnimationMNGR animationMNGR;
     private GameUI gameUI;
     private Array<Array<Integer>> maze;
+    private HitParticle hitParticle1;
 
 
     /**
@@ -51,6 +52,7 @@ public class GameScreen implements Screen {
         player = new Player(spawnPoint.x, spawnPoint.y);
         enemy = new Enemy(enemySpawnPoint.x, enemySpawnPoint.y);
         dice = new Dice(diceSpawnPoint.x, diceSpawnPoint.y);
+        hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
         // Initialize GameUI for health, score, etc.
         gameUI = new GameUI(game.getSpriteBatch(),this.game.getSkin());
 
@@ -93,22 +95,27 @@ public class GameScreen implements Screen {
         float tileHeight = labyrinth.getBackground().getTiledMap().getProperties().get("tileheight", Integer.class);
         float labyrinthWidth = labyrinth.getBackground().getTiledMap().getProperties().get("width", Integer.class);
         float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
+        labyrinth.render(camera);
+
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
         enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
         dice.update(delta, player);
+        hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
+        System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
         gameUI.update(delta, player, enemy);
         handleInput();
 
 
         // Render game elements
-        labyrinth.render(camera);
+
+
+
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
-
         player.render(batch);
         enemy.render(batch);
         dice.render(batch);
-
+        hitParticle1.render(batch);
         batch.end();
 
 
