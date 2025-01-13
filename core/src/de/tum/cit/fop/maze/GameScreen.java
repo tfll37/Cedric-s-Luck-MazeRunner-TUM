@@ -96,6 +96,7 @@ public class GameScreen implements Screen {
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
         enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
         dice.update(delta, player);
+        gameUI.update(delta, player, enemy);
         handleInput();
 
 

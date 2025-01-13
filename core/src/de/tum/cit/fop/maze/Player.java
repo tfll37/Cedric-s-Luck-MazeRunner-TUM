@@ -27,10 +27,11 @@ public class Player extends Actor {
     private Rectangle bounds;
     private int lookingDirection = 0;  // 0 = up, 1 = right, 2 = down, 3 = left
     private AnimationMNGR animationMNGR;
-
+    private float health = 100f;
+    private float damage = 10f;
 
     public Player(float x, float y) {
-        texture = new Texture("bush.png");
+        this.texture = new Texture("bush.png");
         this.position = new Vector2(x, y);
         this.startPosition = new Vector2(x, y);
         this.targetPosition = new Vector2(x, y);
@@ -145,6 +146,13 @@ public class Player extends Actor {
     public Vector2 getTilePosition(float tileWidth, float tileHeight) {
         return new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
     }
+    public float getHealth() {
+        return health;
+    }
+    public void takeDamage(float damage) {
+        health -= damage;
+    }
+
 
 
     public void setPosition(Vector2 position) {

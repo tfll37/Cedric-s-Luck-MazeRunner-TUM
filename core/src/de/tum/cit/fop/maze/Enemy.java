@@ -27,6 +27,8 @@ public class Enemy {
     private float time = 0f;
     private AnimationMNGR animationMNGR = new AnimationMNGR();
     private Vector2 lastKnownPlayerTile = new Vector2(-1, -1); // Initialize to an invalid position
+    private float damage = 1f;
+    private float health = 100f;
 
     public Enemy(float x, float y) {
         this.position = new Vector2(x, y);
@@ -59,6 +61,10 @@ public class Enemy {
 
         // Track player's tile position
         Vector2 currentPlayerTile = player.getTilePosition(tileWidth, tileHeight);
+        boolean overlap = player.getBounds().overlaps(getBounds());
+        if (overlap) {
+            damage(player);
+        }
 
         if (!currentPlayerTile.equals(lastKnownPlayerTile)) {
             // Recalculate path if player has moved
@@ -67,6 +73,7 @@ public class Enemy {
             lastKnownPlayerTile.set(currentPlayerTile);
             timeSinceLastUpdate = 0f; // Reset pathfinding timer
         }
+
         if (isMoving) {
             timeAccumulation += delta;
             float alpha = timeAccumulation / totalMoveTime;
@@ -122,6 +129,12 @@ public class Enemy {
         } else {
             return animationMNGR.getBaldGuyDownAnimation().getKeyFrame(timeAccumulation, true); // Moving Down
         }
+    }
+    public Rectangle getBounds() {
+        return new Rectangle(position.x, position.y, 16, 16);
+    }
+    private void damage(Player player) {
+        player.takeDamage(damage);
     }
 }
 

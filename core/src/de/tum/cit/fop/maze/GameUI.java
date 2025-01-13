@@ -57,13 +57,14 @@ public class GameUI {
         mainTable.add(topBar).growX().top();
     }
 
-    public void update(float delta) {
+    public void update(float delta, Player player, Enemy enemy) {
         if (!isPaused) {
         }
         stage.act(delta);
+        this.updateHealth(player.getHealth());
     }
 
-    public void updateHealth(int health) {
+    public void updateHealth(float health) {
         healthLabel.setText("Health: " + health);
         healthBar.setValue(health);
 
