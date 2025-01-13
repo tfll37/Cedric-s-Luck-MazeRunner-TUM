@@ -21,6 +21,7 @@ public class GameScreen implements Screen {
     private final Labyrinth labyrinth;
     private final Player player;
     private final Enemy enemy;
+    private final Dice dice;
     private AnimationMNGR animationMNGR;
     private GameUI gameUI;
     private Array<Array<Integer>> maze;
@@ -34,7 +35,6 @@ public class GameScreen implements Screen {
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
         this.camera = game.getCamera();
-
 //        camera.zoom = 0.5f;
 
         // Initialize labyrinth with a tiled map
@@ -47,9 +47,10 @@ public class GameScreen implements Screen {
 
         Vector2 spawnPoint = labyrinth.getValidSpawnPoint();
         Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
+        Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
         player = new Player(spawnPoint.x, spawnPoint.y);
         enemy = new Enemy(enemySpawnPoint.x, enemySpawnPoint.y);
-
+        dice = new Dice(diceSpawnPoint.x, diceSpawnPoint.y);
         // Initialize GameUI for health, score, etc.
         gameUI = new GameUI(game.getSpriteBatch(),this.game.getSkin());
 
@@ -94,7 +95,7 @@ public class GameScreen implements Screen {
         float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
         enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
-
+        dice.update(delta, player);
         handleInput();
 
 
@@ -105,6 +106,7 @@ public class GameScreen implements Screen {
 
         player.render(batch);
         enemy.render(batch);
+        dice.render(batch);
 
         batch.end();
 

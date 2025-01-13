@@ -22,7 +22,7 @@ public class DesktopLauncher {
 		config.setTitle("Maze Runner"); // Set the window title
 		config.setWindowIcon("coma.jpg"); //icon
 
-		// Get the display mode of the current monitor
+		// Get the display mode of the current monitorw
 		Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
 		// Set the window size to 80% of the screen width and height
 		config.setWindowedMode(

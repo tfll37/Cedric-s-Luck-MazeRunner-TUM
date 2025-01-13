@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Collectable implements IGameOBJ {
     protected float x, y;
-    protected boolean collected;
+    protected boolean collected = false;
     protected Rectangle bounds;
 
 
@@ -29,6 +29,9 @@ public abstract class Collectable implements IGameOBJ {
 
     @Override
     public abstract void update(float delta);
+
+
+    public abstract void update(float delta, Player player);
 
     @Override
     public abstract void render(SpriteBatch batch);

@@ -103,7 +103,7 @@ public class AnimationMNGR implements Disposable {
     }
 
     public void loadDiceAnimation() {
-        Texture diceSheet = new Texture(Gdx.files.internal("bush.png"));
+        Texture diceSheet = new Texture(Gdx.files.internal("dice.png"));
         int frameWidth = 16;
         int frameHeight = 16;
         int animationFrames = 6;
