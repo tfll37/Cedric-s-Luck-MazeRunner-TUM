@@ -68,15 +68,7 @@ public class AnimationMNGR implements Disposable {
         Array<TextureRegion> hitLeftFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> hitRightFrames = new Array<>(TextureRegion.class);
 
-        for (int i = 1; i < 7;i++)
-        {
-            Texture diceSheet = new Texture(Gdx.files.internal("dice"+i+".png"));
-            Array<TextureRegion> diceFrames = new Array<>(TextureRegion.class);
-            for (int col = 0; col < animationFrames; col++) {
-                diceFrames.add(new TextureRegion(diceSheet, col * frameWidth, 0, frameWidth, frameHeight));
-            }
-            diceResults.add(new Animation<>(0.1f, diceFrames));
-        }
+
 
 
         for (int col = 0; col < animationFrames; col++) {
