@@ -144,7 +144,7 @@ public class AnimationMNGR implements Disposable {
         for (int col = 0; col < animationFrames; col++) {
             diceFrames.add(new TextureRegion(diceSheet, col * frameWidth, 14*frameHeight, frameWidth, frameHeight));
         }
-        diceAnimation = new Animation<>(0.1f, diceFrames);
+        diceAnimation = new Animation<>(0.2f, diceFrames);
     }
 
     public void loadHitAnimations(){

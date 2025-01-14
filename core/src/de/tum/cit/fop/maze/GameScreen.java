@@ -25,27 +25,32 @@ public class GameScreen implements Screen {
     private AnimationMNGR animationMNGR;
     private GameUI gameUI;
     private Array<Array<Integer>> maze;
+    private CameraMNGR cameraMNGR;
+    private LevelMNGR.LevelInfo level;
     private HitParticle hitParticle1;
     private DiceMinigame diceMinigame;
 
 
-    /**
-     * Constructor for GameScreen. Initializes game elements.
-     *
-     * @param game The main game instance.
-     */
-    public GameScreen(MazeRunnerGame game) {
+
+    public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.camera = game.getCamera();
-//        camera.zoom = 0.5f;
+        this.level = level;
 
-        // Initialize labyrinth with a tiled map
+        String tmxPath = LevelMNGR.getTmxPathForSize(level.mapSize());
+
         labyrinth = new Labyrinth(
                 game.getSpriteBatch(),
-                "assets/Gamemap.tmx",
-                "maps/level-1.properties"
+                tmxPath,
+                level.propertiesFile()
         );
-        labyrinth.getBackground().centerTiledMap(camera);
+
+        // Create camera manager before setting up other components
+        this.cameraMNGR = new CameraMNGR(
+                camera,
+                game.getViewport(),
+                labyrinth.getBackground().getTiledMap()
+        );
 
         Vector2 spawnPoint = labyrinth.getValidSpawnPoint();
         Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
@@ -56,12 +61,13 @@ public class GameScreen implements Screen {
         hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
         diceMinigame = new DiceMinigame(animationMNGR);
         // Initialize GameUI for health, score, etc.
-        gameUI = new GameUI(game.getSpriteBatch(),this.game.getSkin());
+        gameUI = new GameUI(game.getSpriteBatch(), this.game.getSkin());
 
         // Set input processor to the GameUI stage
 //        Gdx.input.setInputProcessor(gameUI.getStage());
         initializeMazeMatrix();
     }
+
     private void initializeMazeMatrix() {
         TiledMapTileLayer layer = (TiledMapTileLayer) labyrinth.getBackground().getTiledMap().getLayers().get(0);
         int width = layer.getWidth();
@@ -90,7 +96,7 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1);
 
         // Updates
-        camera.update();
+        cameraMNGR.update(player.getPosition());
 
         // Player State Update
         float tileWidth = labyrinth.getBackground().getTiledMap().getProperties().get("tilewidth", Integer.class);
@@ -124,11 +130,10 @@ public class GameScreen implements Screen {
 
 
         // Render game elements
-
-
-
+        labyrinth.render(camera);
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
+
         player.render(batch);
         if(enemy.getLifeStatus() == true){
             enemy.render(batch);
@@ -162,9 +167,9 @@ public class GameScreen implements Screen {
             game.goToMenu();
         }
 
-        if (SHIFT && COMMA ) {
+        if (SHIFT && COMMA) {
             camera.zoom -= 0.05f;
-        }else if (SHIFT && PERIOD) {
+        } else if (SHIFT && PERIOD) {
             camera.zoom += 0.05f;
         }
 
@@ -172,11 +177,48 @@ public class GameScreen implements Screen {
 //        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
 //        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
     }
+    //                          OLD INPUT HANDLING
+//    private void handleInput() {
+//        var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
+//        var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
+//        var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
+//        var UP = Gdx.input.isKeyPressed(Input.Keys.W);
+//        var ESCAPE = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+//        var SHIFT = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+//        var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
+//        var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
+//
+//        if (UP) {
+//            player.moveUp();
+//        } else if (DOWN) {
+//            player.moveDown();
+//        } else if (LEFT) {
+//            player.moveLeft();
+//        } else if (RIGHT) {
+//            player.moveRight();
+//        } else {
+//            player.stop();
+//        }
+//
+//        if (ESCAPE) {
+//            game.goToMenu();
+//        }
+//
+//        if (SHIFT && COMMA ) {
+//            camera.zoom -= 0.1f;
+//        }else if (SHIFT && PERIOD) {
+//            camera.zoom += 0.1f;
+//        }
+//
+//        // Example: Adjust game UI updates (placeholder logic for demonstration)
+    ////        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
+    ////        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
+//    }
 
 
     @Override
     public void resize(int width, int height) {
-        game.getViewport().update(width, height);
+        cameraMNGR.resize(width, height);
     }
 
 

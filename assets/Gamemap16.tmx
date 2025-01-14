@@ -3,8 +3,9 @@
  <editorsettings>
   <export target="Gamemap.tmj" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="Dawnlike.tsx"/>
- <layer id="1" name="Tile Layer 1" width="15" height="15">
+ <tileset firstgid="1" source="Wall.tsx"/>
+ <tileset firstgid="1021" source="Floor.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="15" height="15" offsetx="0.666667" offsety="1.33333">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

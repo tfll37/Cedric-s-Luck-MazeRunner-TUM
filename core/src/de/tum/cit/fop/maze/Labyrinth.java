@@ -13,11 +13,13 @@ import java.util.Random;
 public class Labyrinth extends TiledMap {
     private final Array<TextureRegion> objects;
     private final Background background;
+    private final MazeLoader mazeLoader;
 
     public Labyrinth(SpriteBatch spriteBatch, String tmxFile, String propertiesFile) {
         this.objects = new Array<>();
         this.background = new Background(spriteBatch);
         this.background.loadTiledMap(tmxFile, propertiesFile);
+        this.mazeLoader = new MazeLoader(propertiesFile, background.getTiledMap());
     }
 
     public void addObject(TextureRegion object) {

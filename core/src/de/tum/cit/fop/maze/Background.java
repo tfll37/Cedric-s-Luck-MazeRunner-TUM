@@ -24,7 +24,7 @@ public class Background {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
 
         // Load maze configuration
-        mazeLoader = new MazeLoader(propertiesPath);
+        mazeLoader = new MazeLoader(propertiesPath, tiledMap);
 
         // Update maze layout with properties
         updateMazeLayout();
@@ -52,6 +52,9 @@ public class Background {
             }
             cell.setTile(tiledMap.getTileSets().getTile(tileId));
         }
+    // Then orient walls after all tiles are placed
+    mazeLoader.setTiledMap(tiledMap);
+    mazeLoader.orientWallTiles(layer);
     }
 
     public void centerTiledMap(OrthographicCamera camera) {

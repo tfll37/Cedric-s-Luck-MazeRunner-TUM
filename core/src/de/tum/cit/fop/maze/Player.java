@@ -31,6 +31,7 @@ public class Player extends Actor {
     private AnimationMNGR animationMNGR;
     private float health = 100f;
     private float damage = 10f;
+    int dash_count = 5;
     private SpriteBatch batch;
 
     public Player(float x, float y) {
@@ -104,6 +105,7 @@ public class Player extends Actor {
         var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
         var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
         var UP = Gdx.input.isKeyPressed(Input.Keys.W);
+        var DASH = Gdx.input.isKeyPressed(Input.Keys.X);
         var HIT = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
         if (UP) {
@@ -119,6 +121,23 @@ public class Player extends Actor {
         } else if (RIGHT) {
             lookingDirection = 1;
             return new MovementREQ(MovementREQ.MoveType.STEP, 1, 0);
+        }
+
+        if (DASH && lookingDirection ==  0 && dash_count >= 0) {
+            dash_count -= 1;
+            return new MovementREQ(MovementREQ.MoveType.DASH, 0, 3);
+        }else if (DASH && lookingDirection == 2 && dash_count > 0) {
+            lookingDirection = 2;
+            dash_count -= 1;
+            return new MovementREQ(MovementREQ.MoveType.DASH, 0, -3);
+        } else if (DASH && lookingDirection == 3 && dash_count > 0) {
+            lookingDirection = 3;
+            dash_count -= 1;
+            return new MovementREQ(MovementREQ.MoveType.DASH, -3, 0);
+        } else if (DASH && lookingDirection == 1 && dash_count > 0) {
+            lookingDirection = 1;
+            dash_count -= 1;
+            return new MovementREQ(MovementREQ.MoveType.DASH, 3, 0);
         }
         if (HIT) {
             this.hitting = true;
@@ -186,7 +205,6 @@ public class Player extends Actor {
     public void damage(Enemy enemy) {
         enemy.takeDamage(damage);
     }
-
 
 
     public void setPosition(Vector2 position) {

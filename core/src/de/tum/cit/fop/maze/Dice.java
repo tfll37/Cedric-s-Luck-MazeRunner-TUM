@@ -17,24 +17,32 @@ public class Dice extends Collectable {
 
     @Override
     public void update(float delta, Player player) {
-        time+=delta;
-        if(!collected) {currentFrame = animationMNGR.getDiceAnimation().getKeyFrame(time, true);}
+        time += delta;
+        if (!collected) {
+            currentFrame = animationMNGR.getDiceAnimation().getKeyFrame(time, true);
+        }
         //System.out.println("Player x: " + player.getTilePosition(16,16).x + " Player y: " + player.getTilePosition(16,16).y);
         //System.out.println("Dice x: " + x + " Dice y: " + y);
-        if(!collected &&  player.getTilePosition(16,16).x == this.getTilePosition(16,16).x  && player.getTilePosition(16,16).y == this.getTilePosition(16,16).y){
+        if (!collected && player.getTilePosition(16, 16).x == this.getTilePosition(16, 16).x && player.getTilePosition(16, 16).y == this.getTilePosition(16, 16).y) {
             collected = true;
             minigameActive = true; // Activate the minigame when the dice is collected
 
         }
     }
+
     @Override
     public void update(float delta) {
-        time+=delta;
+        time += delta;
     }
+
     @Override
     public void render(SpriteBatch batch) {
         if (collected) return;
-        batch.draw(currentFrame, x, y, 16, 16);
+
+        float centeredX = x + 4;
+        float centeredY = y + 4;
+
+        batch.draw(currentFrame, centeredX, centeredY, 8, 8);
     }
     public boolean isMinigameActive() {
         return minigameActive;

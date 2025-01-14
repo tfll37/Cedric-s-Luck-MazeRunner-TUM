@@ -35,6 +35,7 @@ public class MazeRunnerGame extends Game {
     private Texture backgroundTexture;
     private Animation<TextureRegion> characterDownAnimation;
     private Animation<TextureRegion> characterDownHitAnimation;
+    private LevelMNGR.LevelInfo currentLevel;
 
     /**
      * CONSTRUCTOR
@@ -52,6 +53,7 @@ public class MazeRunnerGame extends Game {
     public void create() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         camera = new OrthographicCamera();
+        camera.zoom = 0.4f;
         // Use a FitViewport for handling resizing (for example, 800x600)
         viewport = new FitViewport(800, 600, camera);
         camera.update();
@@ -90,9 +92,9 @@ public class MazeRunnerGame extends Game {
     /**
      * Switches to the game screen.
      */
-    public void goToGame() {
+    public void goToGame(LevelMNGR.LevelInfo level) {
         // Create a new GameScreen if needed
-        gameScreen = new GameScreen(this);
+        gameScreen = new GameScreen(this, level);
         setScreen(gameScreen);
         if (menuScreen != null) {
             menuScreen.dispose(); // Dispose the menu screen if it exists
