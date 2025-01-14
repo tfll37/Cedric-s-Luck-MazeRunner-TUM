@@ -31,6 +31,7 @@ public class Enemy {
     private float health = 100f;
     private SpriteBatch batch;
     private boolean displayHitParticle = false;
+    private boolean alive = true;
 
     public Enemy(float x, float y) {
         this.position = new Vector2(x, y);
@@ -55,68 +56,69 @@ public class Enemy {
             Array<Array<Integer>> maze
 
     ) {
+        if (this.alive){
+            time+=delta;
+            timeSinceLastUpdate += delta;
 
-        time+=delta;
-        timeSinceLastUpdate += delta;
+            timeSinceLastUpdate += delta;
+            this.batch = batch;
+            // Track player's tile position
+            Vector2 currentPlayerTile = player.getTilePosition(tileWidth, tileHeight);
+            boolean overlap = player.getBounds().overlaps(getBounds());
+            if (overlap) {
 
-        timeSinceLastUpdate += delta;
-        this.batch = batch;
-        // Track player's tile position
-        Vector2 currentPlayerTile = player.getTilePosition(tileWidth, tileHeight);
-        boolean overlap = player.getBounds().overlaps(getBounds());
-        if (overlap) {
-
-            displayHitParticle = true;
-            damage(player);
-        }
-        else {
-            displayHitParticle = false;
-        }
-
-        if (!currentPlayerTile.equals(lastKnownPlayerTile)) {
-            // Recalculate path if player has moved
-            Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
-            path = Pathfinding.findPath(maze, enemyTile, currentPlayerTile);
-            lastKnownPlayerTile.set(currentPlayerTile);
-            timeSinceLastUpdate = 0f; // Reset pathfinding timer
-        }
-
-        if (isMoving) {
-            timeAccumulation += delta;
-            float alpha = timeAccumulation / totalMoveTime;
-
-            if (alpha > 1f) alpha = 1f;
-
-            // Interpolate position
-            position.x = startPosition.x + (targetPosition.x - startPosition.x) * alpha;
-            position.y = startPosition.y + (targetPosition.y - startPosition.y) * alpha;
-
-            // If movement to the target is complete
-            if (alpha >= 1.0f) {
-                isMoving = false;
+                displayHitParticle = true;
+                damage(player);
+            }
+            else {
+                displayHitParticle = false;
             }
 
-            return; // Wait for the movement to complete before calculating the next step
-        }
+            if (!currentPlayerTile.equals(lastKnownPlayerTile)) {
+                // Recalculate path if player has moved
+                Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
+                path = Pathfinding.findPath(maze, enemyTile, currentPlayerTile);
+                lastKnownPlayerTile.set(currentPlayerTile);
+                timeSinceLastUpdate = 0f; // Reset pathfinding timer
+            }
 
-        // If not moving, calculate the next target
-        if (!path.isEmpty() && !isMoving) {
-            Vector2 nextTile = path.remove(0); // Get the next tile in the path
-            startPosition.set(position);      // Set the start position
-            targetPosition.set(nextTile.x * tileWidth, nextTile.y * tileHeight); // Convert tile to world position
-            isMoving = true;                 // Start moving
-            timeAccumulation = 0f;           // Reset interpolation
-            return;
-        }
+            if (isMoving) {
+                timeAccumulation += delta;
+                float alpha = timeAccumulation / totalMoveTime;
 
-        // Recalculate path if no path is available and not moving
-        if (path.isEmpty() && timeSinceLastUpdate >= 1.0f) {
-            Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
-            Vector2 playerTile = new Vector2((int) (player.getPosition().x / tileWidth), (int) (player.getPosition().y / tileHeight));
+                if (alpha > 1f) alpha = 1f;
 
-            path = Pathfinding.findPath(maze, enemyTile, playerTile);
+                // Interpolate position
+                position.x = startPosition.x + (targetPosition.x - startPosition.x) * alpha;
+                position.y = startPosition.y + (targetPosition.y - startPosition.y) * alpha;
 
-            timeSinceLastUpdate = 0f;
+                // If movement to the target is complete
+                if (alpha >= 1.0f) {
+                    isMoving = false;
+                }
+
+                return; // Wait for the movement to complete before calculating the next step
+            }
+
+            // If not moving, calculate the next target
+            if (!path.isEmpty() && !isMoving) {
+                Vector2 nextTile = path.remove(0); // Get the next tile in the path
+                startPosition.set(position);      // Set the start position
+                targetPosition.set(nextTile.x * tileWidth, nextTile.y * tileHeight); // Convert tile to world position
+                isMoving = true;                 // Start moving
+                timeAccumulation = 0f;           // Reset interpolation
+                return;
+            }
+
+            // Recalculate path if no path is available and not moving
+            if (path.isEmpty() && timeSinceLastUpdate >= 1.0f) {
+                Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
+                Vector2 playerTile = new Vector2((int) (player.getPosition().x / tileWidth), (int) (player.getPosition().y / tileHeight));
+
+                path = Pathfinding.findPath(maze, enemyTile, playerTile);
+
+                timeSinceLastUpdate = 0f;
+            }
         }
     }
 
@@ -144,7 +146,20 @@ public class Enemy {
         player.takeDamage(damage);
 
     }
+    public void takeDamage(float damage) {
+        this.health -= damage;
+    }
+    public boolean getLifeStatus() {
+        if (this.health <= 0) {
+            this.alive = false;
+        }
+        return this.alive;
+    }
     public boolean isDisplayHitParticle() {
+
+        if(!this.alive){
+            displayHitParticle = false;
+        }
         return displayHitParticle;
     }
 }

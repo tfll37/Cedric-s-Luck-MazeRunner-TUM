@@ -26,6 +26,7 @@ public class GameScreen implements Screen {
     private GameUI gameUI;
     private Array<Array<Integer>> maze;
     private HitParticle hitParticle1;
+    private DiceMinigame diceMinigame;
 
 
     /**
@@ -53,6 +54,7 @@ public class GameScreen implements Screen {
         enemy = new Enemy(enemySpawnPoint.x, enemySpawnPoint.y);
         dice = new Dice(diceSpawnPoint.x, diceSpawnPoint.y);
         hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
+        diceMinigame = new DiceMinigame(animationMNGR);
         // Initialize GameUI for health, score, etc.
         gameUI = new GameUI(game.getSpriteBatch(),this.game.getSkin());
 
@@ -96,14 +98,29 @@ public class GameScreen implements Screen {
         float labyrinthWidth = labyrinth.getBackground().getTiledMap().getProperties().get("width", Integer.class);
         float labyrinthHeight = labyrinth.getBackground().getTiledMap().getProperties().get("height", Integer.class);
         labyrinth.render(camera);
+        float cameraX = camera.position.x;
+        float cameraY = camera.position.y;
 
-        player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth);
+        player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemy);
         enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
         dice.update(delta, player);
         hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
         System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
         gameUI.update(delta, player, enemy);
         handleInput();
+        if (dice.isMinigameActive() && !diceMinigame.isActive()) {
+            diceMinigame.start();
+            diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
+
+        }
+        if (!diceMinigame.isActive() && dice.isMinigameActive()) {
+            dice.deactivateMinigame();
+        }
+
+        diceMinigame.update(delta);
+        if (!diceMinigame.isActive() && dice.isMinigameActive()) {
+            dice.deactivateMinigame(); // Disable the flag in the Dice class
+        }
 
 
         // Render game elements
@@ -113,10 +130,19 @@ public class GameScreen implements Screen {
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
         player.render(batch);
-        enemy.render(batch);
+        if(enemy.getLifeStatus() == true){
+            enemy.render(batch);
+        }
         dice.render(batch);
         hitParticle1.render(batch);
+        if (diceMinigame.isActive())
+        {
+            System.out.println("Dice Minigame is active");
+        }
+
         batch.end();
+        diceMinigame.render(batch, cameraX, cameraY);
+
 
 
         gameUI.render();
@@ -146,43 +172,6 @@ public class GameScreen implements Screen {
 //        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
 //        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
     }
-    //                          OLD INPUT HANDLING
-//    private void handleInput() {
-//        var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
-//        var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
-//        var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
-//        var UP = Gdx.input.isKeyPressed(Input.Keys.W);
-//        var ESCAPE = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
-//        var SHIFT = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
-//        var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
-//        var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
-//
-//        if (UP) {
-//            player.moveUp();
-//        } else if (DOWN) {
-//            player.moveDown();
-//        } else if (LEFT) {
-//            player.moveLeft();
-//        } else if (RIGHT) {
-//            player.moveRight();
-//        } else {
-//            player.stop();
-//        }
-//
-//        if (ESCAPE) {
-//            game.goToMenu();
-//        }
-//
-//        if (SHIFT && COMMA ) {
-//            camera.zoom -= 0.1f;
-//        }else if (SHIFT && PERIOD) {
-//            camera.zoom += 0.1f;
-//        }
-//
-//        // Example: Adjust game UI updates (placeholder logic for demonstration)
-    ////        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
-    ////        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
-//    }
 
 
     @Override

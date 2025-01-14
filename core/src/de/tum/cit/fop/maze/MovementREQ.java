@@ -4,7 +4,8 @@ public class MovementREQ {
     public enum MoveType{
         STEP,
         DASH,
-        KNOCKBACK
+        KNOCKBACK,
+
     }
 
     public MoveType moveType;

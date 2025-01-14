@@ -26,7 +26,8 @@ public class Player extends Actor {
     private float time;
     private float totalMoveTime;
     private Rectangle bounds;
-    private int lookingDirection = 0;  // 0 = up, 1 = right, 2 = down, 3 = left
+    private int lookingDirection = 0;// 0 = up, 1 = right, 2 = down, 3 = left
+    private boolean hitting = false;
     private AnimationMNGR animationMNGR;
     private float health = 100f;
     private float damage = 10f;
@@ -52,7 +53,8 @@ public class Player extends Actor {
             float labyrinthHeight,
             float tileWidth,
             float tileHeight,
-            Labyrinth labyrinth
+            Labyrinth labyrinth,
+            Enemy enemy
     ) {
         time += delta;
         if (isMoving) {
@@ -91,6 +93,10 @@ public class Player extends Actor {
             }
         }
         bounds.setPosition(position.x, position.y);
+        boolean overlaps = bounds.overlaps(enemy.getBounds());
+        if (overlaps && this.hitting) {
+            damage(enemy);
+        }
     }
 
     private MovementREQ handleInput() {
@@ -98,6 +104,7 @@ public class Player extends Actor {
         var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
         var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
         var UP = Gdx.input.isKeyPressed(Input.Keys.W);
+        var HIT = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
         if (UP) {
             lookingDirection = 0;
@@ -113,6 +120,13 @@ public class Player extends Actor {
             lookingDirection = 1;
             return new MovementREQ(MovementREQ.MoveType.STEP, 1, 0);
         }
+        if (HIT) {
+            this.hitting = true;
+        }
+        else {
+            this.hitting = false;
+        }
+
         return null;
 
         // Example: Adjust game UI updates (placeholder logic for demonstration)
@@ -126,6 +140,17 @@ public class Player extends Actor {
 //        float scaleHeight = texture.getHeight() * gameCONFIG.UNIT_SCALE;
 
         TextureRegion currentFrame;
+        if (hitting) {
+            if(lookingDirection == 0) {
+                currentFrame = animationMNGR.getCharacterUpHitAnimation().getKeyFrame(time, true);
+            } else if (lookingDirection == 1) {
+                currentFrame = animationMNGR.getCharacterRightHitAnimation().getKeyFrame(time, true);
+            } else if (lookingDirection == 2) {
+                currentFrame = animationMNGR.getCharacterDownHitAnimation().getKeyFrame(time, true);
+            } else {
+                currentFrame = animationMNGR.getCharacterLeftHitAnimation().getKeyFrame(time, true);
+            }
+        } else
         if (lookingDirection == 0) {
             currentFrame = animationMNGR.getCharacterUpAnimation().getKeyFrame(time, true);
         } else if (lookingDirection == 1) {
@@ -158,6 +183,9 @@ public class Player extends Actor {
 
         //batch.draw(animationMNGR.getHitAnimation1().getKeyFrame(time, true), position.x +703, position.y + 278);
     }
+    public void damage(Enemy enemy) {
+        enemy.takeDamage(damage);
+    }
 
 
 
@@ -170,5 +198,8 @@ public class Player extends Actor {
 
     public void dispose() {
         texture.dispose();
+    }
+    public boolean hits(){
+        return this.hitting;
     }
 }

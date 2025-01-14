@@ -18,7 +18,12 @@ public class AnimationMNGR implements Disposable {
     private static Animation<TextureRegion> characterUpAnimation;
     private static Animation<TextureRegion> characterLeftAnimation;
     private static Animation<TextureRegion> characterRightAnimation;
+
+
     private static Animation<TextureRegion> characterDownHitAnimation;
+    private static Animation<TextureRegion> characterUpHitAnimation;
+    private static Animation<TextureRegion> characterLeftHitAnimation;
+    private static Animation<TextureRegion> characterRightHitAnimation;
 
     private static Animation<TextureRegion> baldGuyDownAnimation;
     private static Animation<TextureRegion> baldGuyUpAnimation;
@@ -26,6 +31,7 @@ public class AnimationMNGR implements Disposable {
     private static Animation<TextureRegion> baldGuyRightAnimation;
 
     private static Animation<TextureRegion> diceAnimation;
+    private static Array<Animation<TextureRegion>> diceResults;
     private static Animation<TextureRegion> sparkAnimation;
     private final ObjectMap<String, Texture> textures;
     private final SpriteBatch spriteBatch = new SpriteBatch();
@@ -52,10 +58,27 @@ public class AnimationMNGR implements Disposable {
         int hitFrameWidth = 32;
         // libGDX internal Array instead of ArrayList because of performance
         Array<TextureRegion> walkDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> hitFrames = new Array<>(TextureRegion.class);
+
         Array<TextureRegion> walkUpFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> walkLeftFrames = new Array<>(TextureRegion.class);
         Array<TextureRegion> walkRightFrames = new Array<>(TextureRegion.class);
+
+        Array<TextureRegion> hitDownFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> hitUpFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> hitLeftFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> hitRightFrames = new Array<>(TextureRegion.class);
+
+        for (int i = 1; i < 7;i++)
+        {
+            Texture diceSheet = new Texture(Gdx.files.internal("dice"+i+".png"));
+            Array<TextureRegion> diceFrames = new Array<>(TextureRegion.class);
+            for (int col = 0; col < animationFrames; col++) {
+                diceFrames.add(new TextureRegion(diceSheet, col * frameWidth, 0, frameWidth, frameHeight));
+            }
+            diceResults.add(new Animation<>(0.1f, diceFrames));
+        }
+
+
         for (int col = 0; col < animationFrames; col++) {
             walkDownFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
         }
@@ -69,13 +92,26 @@ public class AnimationMNGR implements Disposable {
             walkLeftFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight*3, frameWidth, frameHeight));
         }
         for(int col = 0; col < animationFrames; col++) {
-            hitFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 4*frameHeight, hitFrameWidth, frameHeight));
+            hitDownFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 4*frameHeight, hitFrameWidth, frameHeight));
+        }
+        for(int col = 0; col < animationFrames; col++) {
+            hitUpFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 5*frameHeight, hitFrameWidth, frameHeight));
+        }
+        for(int col = 0; col < animationFrames; col++) {
+            hitRightFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 6*frameHeight, hitFrameWidth, frameHeight));
+        }
+        for(int col = 0; col < animationFrames; col++) {
+            hitLeftFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 7*frameHeight, hitFrameWidth, frameHeight));
         }
         characterDownAnimation = new Animation<>(0.1f, walkDownFrames);
         characterUpAnimation = new Animation<>(0.1f, walkUpFrames);
         characterLeftAnimation = new Animation<>(0.1f, walkLeftFrames);
         characterRightAnimation = new Animation<>(0.1f, walkRightFrames);
-        characterDownHitAnimation = new Animation<>(0.1f, hitFrames);
+
+        characterDownHitAnimation = new Animation<>(0.1f, hitDownFrames);
+        characterUpHitAnimation = new Animation<>(0.1f, hitUpFrames);
+        characterLeftHitAnimation = new Animation<>(0.1f, hitLeftFrames);
+        characterRightHitAnimation = new Animation<>(0.1f, hitRightFrames);
 
         frameWidth = 16;
         frameHeight = 16;
@@ -157,9 +193,14 @@ public class AnimationMNGR implements Disposable {
     public static Animation<TextureRegion> getCharacterRightAnimation() {
         return characterRightAnimation;
     }
+
     public static Animation<TextureRegion> getCharacterDownHitAnimation() {
         return characterDownHitAnimation;
     }
+    public static Animation<TextureRegion> getCharacterUpHitAnimation() {return characterUpHitAnimation;}
+    public static Animation<TextureRegion> getCharacterLeftHitAnimation() {return characterLeftHitAnimation;}
+    public static Animation<TextureRegion> getCharacterRightHitAnimation() {return characterRightHitAnimation;}
+
     public static Animation<TextureRegion> getDiceAnimation() {
         return diceAnimation;
     }
