@@ -28,3 +28,36 @@ Finally discovered the issue of the improper movement of the player. The player 
 
 **Removed:**
 - `FOP_test.tmx`
+
+## Update 3 (ver 1.2.0)
+
+### Overview
+Major update of player movement and combat systems. Implemented enemy pathfinding, player combat mechanics, animation systems, and level management. Added multiple map sizes with proper property files. Introduced damage system, hit particles, and basic UI elements. New features include dash mechanics, health tracking, and development improvements across multiple systems.
+
+### Changes
+
+#### Files
+
+**New:**
+- `AnimationMNGR.java` - Handles all game animations including character movement and combat
+- `CameraMNGR.java` - Camera control system with zoom and follow mechanics
+- `Enemy.java` - Enemy AI with pathfinding and combat behaviors
+- `GameUI.java` - Health bars and game interface elements
+- `HitParticle.java` - Combat effect visualization system
+- `LevelMNGR.java` - Level loading and management system
+- `MovementREQ.java` - Movement request handling system
+- `MovementSYS.java` - Core movement processing system
+- `Pathfinding.java` - A* pathfinding implementation for enemy AI
+- Level property files (level-1.properties through level-5.properties) - Map configurations
+- `SoundMNGR.java` - Audio management system (preliminary)
+
+**Modified:**
+- `Player.java` - Added combat mechanics, health system, and animation states
+- `GameScreen.java` - Updated to support new combat and movement systems
+- `Background.java` - Enhanced to support multiple map sizes
+- `MazeRunnerGame.java` - Added support for level management and UI systems
+- `MenuScreen.java` - Updated to support level selection
+- Other supporting classes adjusted for new systems
+
+**Misc:**
+- Due to major code conflicts with video animation loading at MenuScreen initialization, this push won't feature Djordje's update on this aspect of the game. This push is to summarize the progress of the team and provide helpful insight behind the development process of Team `Byteme`
