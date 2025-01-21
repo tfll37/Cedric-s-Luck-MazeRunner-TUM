@@ -41,7 +41,7 @@ public class MenuScreen implements Screen {
 
         // Load animation frames from the menuvid folder
         Array<Texture> frames = new Array<>();
-        for (int i = 1; i <= 200; i++) { // Assuming 200 frames
+        for (int i = 1; i <= 200; i+=5) { // Assuming 200 frames
             String framePath = String.format("menuvid/ezgif-frame-%03d.jpg", i);
             frames.add(new Texture(Gdx.files.internal(framePath)));
         }

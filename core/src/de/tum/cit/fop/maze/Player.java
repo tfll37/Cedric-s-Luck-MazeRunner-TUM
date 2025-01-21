@@ -33,6 +33,11 @@ public class Player extends Actor {
     private float damage = 10f;
     int dash_count = 5;
     private SpriteBatch batch;
+    private boolean shootsFireball = false;
+    private float fireballCooldown = 0; // Time remaining before next fireball can be shot
+    private static final float FIREBALL_COOLDOWN_TIME = 3.0f;// Cooldown duration in
+    private FireBall fireBall;
+
 
     public Player(float x, float y) {
         this.texture = new Texture("bush.png");
@@ -46,6 +51,7 @@ public class Player extends Actor {
         this.bounds = new Rectangle(x, y, texture.getWidth(), texture.getHeight());
         this.animationMNGR = new AnimationMNGR();
         animationMNGR.loadPlayerAnimations();
+        this.fireBall = new FireBall(position.x, position.y);
     }
 
     public void update(
@@ -56,6 +62,7 @@ public class Player extends Actor {
             float tileHeight,
             Labyrinth labyrinth,
             Enemy enemy
+
     ) {
         time += delta;
         if (isMoving) {
@@ -98,6 +105,11 @@ public class Player extends Actor {
         if (overlaps && this.hitting) {
             damage(enemy);
         }
+        fireballCooldown -= delta;
+        if (fireballCooldown < 0) {
+            fireballCooldown = 0;
+        }
+
     }
 
     private MovementREQ handleInput() {
@@ -107,6 +119,7 @@ public class Player extends Actor {
         var UP = Gdx.input.isKeyPressed(Input.Keys.W);
         var DASH = Gdx.input.isKeyPressed(Input.Keys.X);
         var HIT = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+        var ENTER = Gdx.input.isKeyPressed(Input.Keys.ENTER);
 
         if (UP) {
             lookingDirection = 0;
@@ -145,6 +158,18 @@ public class Player extends Actor {
         else {
             this.hitting = false;
         }
+
+
+        if (ENTER && fireballCooldown == 0) {
+            System.out.println("Fireball activated");
+            fireBall.appear = true;
+            fireBall.direction = lookingDirection; // Set direction
+            fireBall.x = position.x; // Initialize position
+            fireBall.y = position.y;
+            fireballCooldown = FIREBALL_COOLDOWN_TIME; // Reset cooldown
+        }
+
+
 
         return null;
 
@@ -205,6 +230,12 @@ public class Player extends Actor {
     public void damage(Enemy enemy) {
         enemy.takeDamage(damage);
     }
+    public boolean shootsFireBall() {
+        return shootsFireball;
+    }
+    public int getOrientation() {
+        return lookingDirection;
+    }
 
 
     public void setPosition(Vector2 position) {
@@ -219,5 +250,8 @@ public class Player extends Actor {
     }
     public boolean hits(){
         return this.hitting;
+    }
+    public FireBall getFireBall(){
+        return fireBall;
     }
 }

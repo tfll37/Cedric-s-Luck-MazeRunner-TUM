@@ -31,7 +31,6 @@ public class GameScreen implements Screen {
     private DiceMinigame diceMinigame;
 
 
-
     public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.camera = game.getCamera();
@@ -144,6 +143,10 @@ public class GameScreen implements Screen {
         {
             System.out.println("Dice Minigame is active");
         }
+        // In your GameScreen render or update method
+        player.getFireBall().update(delta, player, labyrinth, enemy);
+        player.getFireBall().render(batch);
+
 
         batch.end();
         diceMinigame.render(batch, cameraX, cameraY);

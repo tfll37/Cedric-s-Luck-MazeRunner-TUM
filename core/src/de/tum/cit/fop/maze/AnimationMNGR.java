@@ -14,6 +14,11 @@ public class AnimationMNGR implements Disposable {
 
     private static Animation<TextureRegion> hitAnimation1;
 
+    private static Animation<TextureRegion> fireBallAnimationLeft;
+    private static Animation<TextureRegion> fireBallAnimationRight;
+    private static Animation<TextureRegion> fireBallAnimationUp;
+    private static Animation<TextureRegion> fireBallAnimationDown;
+
     private static Animation<TextureRegion> characterDownAnimation;
     private static Animation<TextureRegion> characterUpAnimation;
     private static Animation<TextureRegion> characterLeftAnimation;
@@ -31,9 +36,12 @@ public class AnimationMNGR implements Disposable {
     private static Animation<TextureRegion> baldGuyRightAnimation;
 
     private static Animation<TextureRegion> diceAnimation;
-    private static Array<Animation<TextureRegion>> diceResults;
+    private static TextureRegion[] diceFaces;
+
     private static Animation<TextureRegion> sparkAnimation;
     private final ObjectMap<String, Texture> textures;
+
+
     private final SpriteBatch spriteBatch = new SpriteBatch();
 
     public AnimationMNGR() {
@@ -145,6 +153,18 @@ public class AnimationMNGR implements Disposable {
             diceFrames.add(new TextureRegion(diceSheet, col * frameWidth, 14*frameHeight, frameWidth, frameHeight));
         }
         diceAnimation = new Animation<>(0.2f, diceFrames);
+
+        // 6 final faces at row 1
+        diceFaces = new TextureRegion[6];
+        for (int col = 0; col < 6; col++) {
+            diceFaces[col] = new TextureRegion(
+                    diceSheet,
+                    col * frameWidth,    // X
+                    1 * frameHeight,     // Y
+                    frameWidth,
+                    frameHeight
+            );
+        }
     }
 
     public void loadHitAnimations(){
@@ -153,6 +173,27 @@ public class AnimationMNGR implements Disposable {
         Texture hit1_3 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_3.png"));
         Texture hit1_4 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_4.png"));
         Texture hit1_5 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_5.png"));
+
+        Texture fireBall1_1 = new Texture(Gdx.files.internal("assets\\bolt\\bolt1.png")); ///left
+        Texture fireBall1_2 = new Texture(Gdx.files.internal("assets\\bolt\\bolt2.png"));
+        Texture fireBall1_3 = new Texture(Gdx.files.internal("assets\\bolt\\bolt3.png"));
+        Texture fireBall1_4 = new Texture(Gdx.files.internal("assets\\bolt\\bolt4.png"));
+
+        Texture fireBall2_1 = new Texture(Gdx.files.internal("assets\\bolt\\bolt1_right.png")); ///right
+        Texture fireBall2_2 = new Texture(Gdx.files.internal("assets\\bolt\\bolt2_right.png"));
+        Texture fireBall2_3 = new Texture(Gdx.files.internal("assets\\bolt\\bolt3_right.png"));
+        Texture fireBall2_4 = new Texture(Gdx.files.internal("assets\\bolt\\bolt4_right.png"));
+
+        Texture fireBall3_1 = new Texture(Gdx.files.internal("assets\\bolt\\bolt1_up.png")); ///up
+        Texture fireBall3_2 = new Texture(Gdx.files.internal("assets\\bolt\\bolt2_up.png"));
+        Texture fireBall3_3 = new Texture(Gdx.files.internal("assets\\bolt\\bolt3_up.png"));
+        Texture fireBall3_4 = new Texture(Gdx.files.internal("assets\\bolt\\bolt4_up.png"));
+
+        Texture fireBall4_1 = new Texture(Gdx.files.internal("assets\\bolt\\bolt1_down.png")); ///down
+        Texture fireBall4_2 = new Texture(Gdx.files.internal("assets\\bolt\\bolt2_down.png"));
+        Texture fireBall4_3 = new Texture(Gdx.files.internal("assets\\bolt\\bolt3_down.png"));
+        Texture fireBall4_4 = new Texture(Gdx.files.internal("assets\\bolt\\bolt4_down.png"));
+
 
         int frameWidth = 16;
         int frameHeight = 16;
@@ -164,7 +205,39 @@ public class AnimationMNGR implements Disposable {
         hitFrames1.add(new TextureRegion(hit1_4, 0, 0, frameWidth, frameHeight));
         hitFrames1.add(new TextureRegion(hit1_5, 0, 0, frameWidth, frameHeight));
 
+        frameHeight = 16;
+        frameWidth = 32;
+
+        Array<TextureRegion> fireBallFramesLeft = new Array<>(TextureRegion.class);
+        fireBallFramesLeft.add(new TextureRegion(fireBall1_1, 0, 0, frameWidth, frameHeight));
+        fireBallFramesLeft.add(new TextureRegion(fireBall1_2, 0, 0, frameWidth, frameHeight));
+        fireBallFramesLeft.add(new TextureRegion(fireBall1_3, 0, 0, frameWidth, frameHeight));
+        fireBallFramesLeft.add(new TextureRegion(fireBall1_4, 0, 0, frameWidth, frameHeight));
+
+        Array<TextureRegion> fireBallFramesRight = new Array<>(TextureRegion.class);
+        fireBallFramesRight.add(new TextureRegion(fireBall2_1, 0, 0, frameWidth, frameHeight));
+        fireBallFramesRight.add(new TextureRegion(fireBall2_2, 0, 0, frameWidth, frameHeight));
+        fireBallFramesRight.add(new TextureRegion(fireBall2_3, 0, 0, frameWidth, frameHeight));
+        fireBallFramesRight.add(new TextureRegion(fireBall2_4, 0, 0, frameWidth, frameHeight));
+
+        Array<TextureRegion> fireBallFramesUp = new Array<>(TextureRegion.class);
+        fireBallFramesUp.add(new TextureRegion(fireBall3_1, 0, 0, frameWidth, frameHeight));
+        fireBallFramesUp.add(new TextureRegion(fireBall3_2, 0, 0, frameWidth, frameHeight));
+        fireBallFramesUp.add(new TextureRegion(fireBall3_3, 0, 0, frameWidth, frameHeight));
+        fireBallFramesUp.add(new TextureRegion(fireBall3_4, 0, 0, frameWidth, frameHeight));
+
+        Array<TextureRegion> fireBallFramesDown = new Array<>(TextureRegion.class);
+        fireBallFramesDown.add(new TextureRegion(fireBall4_1, 0, 0, frameWidth, frameHeight));
+        fireBallFramesDown.add(new TextureRegion(fireBall4_2, 0, 0, frameWidth, frameHeight));
+        fireBallFramesDown.add(new TextureRegion(fireBall4_3, 0, 0, frameWidth, frameHeight));
+        fireBallFramesDown.add(new TextureRegion(fireBall4_4, 0, 0, frameWidth, frameHeight));
+
+
         hitAnimation1 = new Animation<>(0.1f, hitFrames1);
+        fireBallAnimationLeft = new Animation<>(0.1f, fireBallFramesLeft);
+        fireBallAnimationRight = new Animation<>(0.1f, fireBallFramesRight);
+        fireBallAnimationUp = new Animation<>(0.1f, fireBallFramesUp);
+        fireBallAnimationDown = new Animation<>(0.1f, fireBallFramesDown);
     }
 
     public Animation<TextureRegion> createAnimation(TextureRegion[] frames, int frameCount) {
@@ -211,6 +284,10 @@ public class AnimationMNGR implements Disposable {
     public static Animation<TextureRegion> getHitAnimation1() {
         return hitAnimation1;
     }
+    public static Animation<TextureRegion> getFireBallAnimationLeft() {return fireBallAnimationLeft;}
+    public static Animation<TextureRegion> getFireBallAnimationRight() {return fireBallAnimationRight;}
+    public static Animation<TextureRegion> getFireBallAnimationUp() {return fireBallAnimationUp;}
+    public static Animation<TextureRegion> getFireBallAnimationDown() {return fireBallAnimationDown;}
 
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
@@ -235,5 +312,8 @@ public class AnimationMNGR implements Disposable {
         }
         textures.clear();
 
+    }
+    public static TextureRegion[] getDiceFaces() {
+        return diceFaces;
     }
 }
