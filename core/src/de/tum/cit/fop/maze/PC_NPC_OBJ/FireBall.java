@@ -1,4 +1,4 @@
-package de.tum.cit.fop.maze;
+package de.tum.cit.fop.maze.PC_NPC_OBJ;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -6,10 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.Enemy;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.Player;
-
-import java.awt.*;
 
 public class FireBall {
     private AnimationMNGR animationMNGR;
