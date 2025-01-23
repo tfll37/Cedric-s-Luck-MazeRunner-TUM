@@ -13,12 +13,12 @@ public class Background {
     private OrthogonalTiledMapRenderer tiledMapRenderer;
     private final SpriteBatch spriteBatch;
     private MazeLoader mazeLoader;
-    private  TrapMNGR trapMNGR;
-    private SpecialAreaHNDLR specialAreaHNDLR;
+    private TrapMNGR trapMNGR;
 
     public Background(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
     }
+
 
     public void loadTiledMap(String tmxPath, String propertiesPath) {
         // Load the base TMX map
@@ -28,26 +28,75 @@ public class Background {
         // Load maze configuration
         mazeLoader = new MazeLoader(propertiesPath, tiledMap, trapMNGR);
 
-        specialAreaHNDLR = new SpecialAreaHNDLR(tiledMap, mazeLoader);
-
-        // Update maze layout with properties
+        // Update maze layout in proper order
         updateMazeLayout();
     }
 
     private void updateMazeLayout() {
+        // 1. First set up base layer with walls and floor
         TiledMapTileLayer baseLayer = getBaseLayer();
         mazeLoader.setTiledMap(tiledMap);
+        updateBasicTiles(baseLayer);
+
+        // 2. Create special areas on base layer (will overwrite existing tiles)
+        SpecialAreaHNDLR.getInstance(tiledMap, mazeLoader).createSpecialAreas();
+
+        // 3. Orient all walls after everything is placed on base layer
         mazeLoader.orientWallTiles(baseLayer);
-        updateLayer(baseLayer);
 
-        TiledMapTileLayer secondLayer = getSecondLayer();
-        if (secondLayer != null) {
-            updateLayer(secondLayer);
-            specialAreaHNDLR.createSpecialAreas(secondLayer);
-            mazeLoader.orientWallTiles(secondLayer);
+        // 4. Finally, handle traps on second layer
+        TiledMapTileLayer trapLayer = getSecondLayer();
+        if (trapLayer != null) {
+            updateTrapLayer(trapLayer);
         }
+    }
 
-        specialAreaHNDLR.createSpecialAreas(baseLayer);
+    private void updateBasicTiles(TiledMapTileLayer layer) {
+        // Get all overrides except traps
+        var overrides = mazeLoader.getAllOverrides();
+
+        for (var entry : overrides.entrySet()) {
+            var pos = entry.getKey();
+            int tileType = entry.getValue();
+
+            // Skip trap tiles - they'll be handled in updateTrapLayer
+            if (tileType == TrapMNGR.TRAP_MARKER) {
+                continue;
+            }
+
+            // Update the cell in the layer
+            placeTile(layer, pos.x, pos.y, tileType);
+        }
+    }
+
+//    private boolean isSpecialAreaTile(int tileType) {
+//        // Add your special area tile types here
+//        return tileType == SPAWN_MARKER || tileType == EXIT_MARKER;
+//    }
+
+    private void updateTrapLayer(TiledMapTileLayer layer) {
+        // Get all overrides and only process trap tiles
+        var overrides = mazeLoader.getAllOverrides();
+
+        for (var entry : overrides.entrySet()) {
+            var pos = entry.getKey();
+            int tileType = entry.getValue();
+
+            // Only place trap tiles
+            if (tileType == TrapMNGR.TRAP_MARKER) {
+                placeTile(layer, pos.x, pos.y, tileType);
+            }
+        }
+    }
+
+    private void placeTile(TiledMapTileLayer layer, int x, int y, int tileType) {
+        int tileId = mazeLoader.getTileId(tileType);
+        TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+        if (cell == null) {
+            cell = new TiledMapTileLayer.Cell();
+            layer.setCell(x, y, cell);
+        }
+        cell.setTile(tiledMap.getTileSets().getTile(tileId));
     }
 
     private void updateLayer(TiledMapTileLayer layer) {
@@ -70,6 +119,8 @@ public class Background {
             }
             cell.setTile(tiledMap.getTileSets().getTile(tileId));
         }
+
+//        mazeLoader.orientWallTiles(layer);
     }
 
     public TiledMapTileLayer getBaseLayer() {
@@ -77,8 +128,7 @@ public class Background {
     }
 
     public TiledMapTileLayer getSecondLayer() {
-        return tiledMap.getLayers().size() > 1 ?
-                (TiledMapTileLayer) tiledMap.getLayers().get(1) : null;
+        return (TiledMapTileLayer) tiledMap.getLayers().get(1);
     }
 
 

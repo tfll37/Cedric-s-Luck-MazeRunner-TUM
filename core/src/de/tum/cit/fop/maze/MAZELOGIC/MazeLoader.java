@@ -87,7 +87,7 @@ public class MazeLoader {
             case 1:
                 return WallTiles.HORIZONTAL;
             case 2:
-                return TrapMNGR.TrapType.DEATH.getTileId();            // Enemy type 1
+                return TrapMNGR.getRandomTrap().getTileId();            // Enemy type 1
             case 3:
                 return 27;            // Enemy type 2
             case 4:

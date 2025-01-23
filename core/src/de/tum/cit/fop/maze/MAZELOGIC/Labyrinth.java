@@ -15,17 +15,17 @@ public class Labyrinth extends TiledMap {
     private final Array<TextureRegion> objects;
     private final Background background;
     private final MazeLoader mazeLoader;
-    private final SpecialAreaHNDLR specialAreaHNDLR;
     private final TrapMNGR trapMNGR;
 
     public Labyrinth(SpriteBatch spriteBatch, String tmxFile, String propertiesFile, TrapMNGR trapMNGR) {
+        // Reset the SpecialAreaHNDLR when creating a new labyrinth
+        SpecialAreaHNDLR.reset();
         this.objects = new Array<>();
         this.background = new Background(spriteBatch);
         this.background.loadTiledMap(tmxFile, propertiesFile);
         this.mazeLoader = new MazeLoader(propertiesFile, background.getTiledMap(), trapMNGR);
-        this.trapMNGR = new TrapMNGR();
-        this.specialAreaHNDLR = new SpecialAreaHNDLR(background.getTiledMap(), mazeLoader);
-        this.specialAreaHNDLR.createSpecialAreas(background.getBaseLayer());
+        this.trapMNGR = trapMNGR;
+
     }
 
     public void addObject(TextureRegion object) {
@@ -73,11 +73,11 @@ public class Labyrinth extends TiledMap {
     }
 
     public Vector2 getSpawnPoint() {
-        return specialAreaHNDLR.getSpawnPoint();
+        return SpecialAreaHNDLR.getInstance(background.getTiledMap(), mazeLoader).getSpawnPoint();
     }
 
     public Vector2 getExitPoint() {
-        return specialAreaHNDLR.getExitPoint();
+        return SpecialAreaHNDLR.getInstance(background.getTiledMap(), mazeLoader).getExitPoint();
     }
 
     public MazeLoader getMazeLoader() {

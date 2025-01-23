@@ -82,6 +82,11 @@ public class TrapMNGR {
         return getTrapAtLocation(tileX, tileY);
     }
 
+    public static TrapType getRandomTrap() {
+        TrapType[] traps = TrapType.values();
+        int randomIndex = (int)(Math.random() * traps.length);
+        return traps[randomIndex];
+    }
     public void clearTrap(int x, int y) {
         trapLocations.remove(new Vector2(x, y));
     }
