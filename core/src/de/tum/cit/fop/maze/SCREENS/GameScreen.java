@@ -2,14 +2,13 @@ package de.tum.cit.fop.maze.SCREENS;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
@@ -20,7 +19,7 @@ import de.tum.cit.fop.maze.PC_NPC_OBJ.*;
 /**
  * The GameScreen class is responsible for managing gameplay.
  */
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, InputProcessor {
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final Labyrinth labyrinth;
@@ -41,17 +40,19 @@ public class GameScreen implements Screen {
         this.camera = game.getCamera();
         this.level = level;
 
+        Gdx.input.setInputProcessor(this);
+
+
         String tmxPath = LevelMNGR.getTmxPathForSize(level.mapSize());
-        TrapMNGR trapMNGR = new TrapMNGR();
+        TileEffectMNGR tileEffectMNGR = new TileEffectMNGR();
 
         this.labyrinth = new Labyrinth(
                 game.getSpriteBatch(),
                 tmxPath,
                 level.propertiesFile(),
-                trapMNGR
+                tileEffectMNGR
         );
 
-        // Create camera manager before setting up other components
         this.cameraMNGR = new CameraMNGR(
                 camera,
                 game.getViewport(),
@@ -131,7 +132,7 @@ public class GameScreen implements Screen {
 
         if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
             // Load next level
-            int nextLevelIndex = level.difficulty() + 1;
+            int nextLevelIndex = level.Level() + 1;
             LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
             if (nextLevel != null) {
                 game.goToGame(nextLevel);
@@ -146,7 +147,11 @@ public class GameScreen implements Screen {
         hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
         System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
         gameUI.update(delta, player, enemy);
+
         handleInput();
+        cameraMNGR.update(player.getPosition());
+//        animationMNGR.updateTileAnimations();
+
         if (dice.isMinigameActive() && !diceMinigame.isActive()) {
             diceMinigame.start();
             diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
@@ -189,28 +194,70 @@ public class GameScreen implements Screen {
     }
 
     private void handleInput() {
-        var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
-        var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
-        var DOWN = Gdx.input.isKeyPressed(Input.Keys.S);
-        var UP = Gdx.input.isKeyPressed(Input.Keys.W);
-        var ESCAPE = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
-        var SHIFT = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
-        var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
-        var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
-
-        if (ESCAPE) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
         }
 
-        if (SHIFT && COMMA) {
-            camera.zoom -= 0.05f;
-        } else if (SHIFT && PERIOD) {
-            camera.zoom += 0.05f;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+            cameraMNGR.startShake();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+            cameraMNGR.startLightShake();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+            cameraMNGR.startHeavyShake();
         }
+    }
 
-        // Example: Adjust game UI updates (placeholder logic for demonstration)
-//        if (Gdx.input.isKeyPressed(Input.Keys.H)) gameUI.updateHealth(90); // Example health update
-//        if (Gdx.input.isKeyPressed(Input.Keys.S)) gameUI.updateScore(100); // Example score update
+    // InputProcessor methods
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        cameraMNGR.handleScroll(amountY);
+        return true;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public void hide() {
+        // Remove this screen as the input processor when hiding
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override
@@ -230,10 +277,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void resume() {
-    }
-
-    @Override
-    public void hide() {
     }
 
     @Override

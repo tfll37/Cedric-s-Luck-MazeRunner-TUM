@@ -17,10 +17,10 @@ public class MazeLoader {
     private final Properties properties;
     private TiledMap tiledMap;
     private final int mapHeight;
-    private final TrapMNGR trapMNGR;
+    private final TileEffectMNGR tileEffectMNGR;
 
-    public MazeLoader(String propertiesPath, TiledMap tiledMap, TrapMNGR trapMNGR) {
-        this.trapMNGR = new TrapMNGR();
+    public MazeLoader(String propertiesPath, TiledMap tiledMap, TileEffectMNGR tileEffectMNGR) {
+        this.tileEffectMNGR = new TileEffectMNGR();
         this.tileOverrides = new HashMap<>();
         this.properties = loadProperties(propertiesPath);
         this.tiledMap = tiledMap;
@@ -52,10 +52,10 @@ public class MazeLoader {
                     tileOverrides.put(new GridPoint2(x, transformedY), tileType);
 
 
-                    if (tileType == TrapMNGR.TRAP_MARKER) {
-                        trapMNGR.registerTrapLocation(x, transformedY);
+                    if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                        tileEffectMNGR.registerTrapLocation(x, transformedY);
                         // Get the actual trap tile ID for rendering
-                        int trapTileId = trapMNGR.getTrapTileId(x, transformedY);
+                        int trapTileId = tileEffectMNGR.getTileEffectId(x, transformedY);
                         tileOverrides.put(new GridPoint2(x, transformedY), trapTileId);
                     } else {
                         tileOverrides.put(new GridPoint2(x, transformedY), tileType);
@@ -87,11 +87,11 @@ public class MazeLoader {
             case 1:
                 return WallTiles.HORIZONTAL;
             case 2:
-                return TrapMNGR.getRandomTrap().getTileId();            // Enemy type 1
+                return TileEffectMNGR.getRandomTrap().getTileId();
             case 3:
                 return 27;            // Enemy type 2
             case 4:
-                return 28;            // Collectible type 1
+                return TileEffectMNGR.getRandomPowerUp().getTileId();
             default:
                 return 1295;         // Default to safe ground
         }
@@ -102,7 +102,6 @@ public class MazeLoader {
         return height - 1 - y;
     }
 
-    // Wall orientation tile IDs based on Wall.tsx
     private static final class WallTiles {
         static final int TOP_LEFT = 241;
         static final int TOP_RIGHT = 243;
@@ -121,7 +120,6 @@ public class MazeLoader {
 
     }
 
-    // Define direction constants using bitmasks
     private static final int NORTH = 1;  // 0001
     private static final int EAST = 2;  // 0010
     private static final int SOUTH = 4;  // 0100
@@ -232,8 +230,8 @@ public class MazeLoader {
         }
     }
 
-    public TrapMNGR getTrapMNGR() {
-        return trapMNGR;
+    public TileEffectMNGR getTrapMNGR() {
+        return tileEffectMNGR;
     }
 
     /**

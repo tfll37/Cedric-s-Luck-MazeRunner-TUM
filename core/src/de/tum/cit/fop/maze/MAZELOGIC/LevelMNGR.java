@@ -8,9 +8,9 @@ public class LevelMNGR {
     public record LevelInfo(
             String name,
             String description,
-            int mapSize,  // 16, 32, 64, etc.
+            int mapSize,
             String propertiesFile,
-            int difficulty
+            int Level
     ) {
     }
 
@@ -19,27 +19,51 @@ public class LevelMNGR {
     static {
         // Register available levels
         availableLevels.add(new LevelInfo(
-                "Tutorial",
+                "Entrance",
                 "A small beginner maze",
-                16,  // 16x16
-                "maps/level-1.properties",
+                16,
+                "maps/level-1-1.properties",
                 1
         ));
 
         availableLevels.add(new LevelInfo(
-                "Challenge",
-                "Larger maze with more complexity",
-                32,  // 32x32
-                "maps/level-2.properties",
+                "The Treshhold",
+                "",
+                16,
+                "maps/level-1-2.properties",
                 2
+        ));
+
+        availableLevels.add(new LevelInfo(
+                "Challenger",
+                "Larger maze with more complexity",
+                32,
+                "maps/level-2-1.properties",
+                3
+        ));
+
+        availableLevels.add(new LevelInfo(
+                "Diddy's Den",
+                "It's too slimey here. I wonder why?",
+                32,
+                "maps/level-2-2.properties",
+                4
+        ));
+
+        availableLevels.add(new LevelInfo(
+                "HELL",
+                "It is hot in here",
+                64,
+                "maps/level-3-1.properties",
+                5
         ));
 
         availableLevels.add(new LevelInfo(
                 "Expert",
                 "Massive maze for experts",
-                64,  // 64x64
-                "maps/level-4.properties",
-                3
+                64,
+                "maps/level-3-2.properties",
+                6
         ));
     }
 

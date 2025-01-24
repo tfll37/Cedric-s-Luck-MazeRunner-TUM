@@ -13,7 +13,7 @@ public class Background {
     private OrthogonalTiledMapRenderer tiledMapRenderer;
     private final SpriteBatch spriteBatch;
     private MazeLoader mazeLoader;
-    private TrapMNGR trapMNGR;
+    private TileEffectMNGR tileEffectMNGR;
 
     public Background(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
@@ -26,7 +26,7 @@ public class Background {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
 
         // Load maze configuration
-        mazeLoader = new MazeLoader(propertiesPath, tiledMap, trapMNGR);
+        mazeLoader = new MazeLoader(propertiesPath, tiledMap, tileEffectMNGR);
 
         // Update maze layout in proper order
         updateMazeLayout();
@@ -60,7 +60,7 @@ public class Background {
             int tileType = entry.getValue();
 
             // Skip trap tiles - they'll be handled in updateTrapLayer
-            if (tileType == TrapMNGR.TRAP_MARKER) {
+            if (tileType == TileEffectMNGR.TRAP_MARKER) {
                 continue;
             }
 
@@ -83,7 +83,7 @@ public class Background {
             int tileType = entry.getValue();
 
             // Only place trap tiles
-            if (tileType == TrapMNGR.TRAP_MARKER) {
+            if (tileType == TileEffectMNGR.TRAP_MARKER) {
                 placeTile(layer, pos.x, pos.y, tileType);
             }
         }

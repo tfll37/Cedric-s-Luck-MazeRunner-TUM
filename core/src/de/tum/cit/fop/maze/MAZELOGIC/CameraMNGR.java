@@ -6,104 +6,142 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.MAX_ZOOM;
-import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.MIN_ZOOM;
+import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.*;
 
 public class CameraMNGR {
-    private static final int BASE_MAP_SIZE = 16; // The reference size for 16x16 maps
-    private static final float DEFAULT_ZOOM = 0.4f; // The default zoom level for 16x16 maps
 
     private final OrthographicCamera camera;
     private final FitViewport viewport;
-    private final TiledMap tiledMap;
     private final float worldWidth;
     private final float worldHeight;
     private final float tileSize;
-    private boolean followPlayer;
+    private float targetZoom;
+
+    // Screen shake parameters
+    private float shakeTime;
+    private float shakeDuration;
+    private float shakeIntensity;
+    private final Vector3 originalPosition;
+    private boolean isShaking;
 
     public CameraMNGR(OrthographicCamera camera, FitViewport viewport, TiledMap tiledMap) {
         this.camera = camera;
         this.viewport = viewport;
-        this.tiledMap = tiledMap;
+        this.originalPosition = new Vector3();
 
         MapProperties props = tiledMap.getProperties();
         int mapWidth = props.get("width", Integer.class);
         int mapHeight = props.get("height", Integer.class);
-        this.tileSize = props.get("tilewidth", Integer.class); // Assuming square tiles
+        this.tileSize = props.get("tilewidth", Integer.class);
 
         this.worldWidth = mapWidth * tileSize;
         this.worldHeight = mapHeight * tileSize;
 
-        // Determine if we should follow player based on map size
-        this.followPlayer = Math.max(mapWidth, mapHeight) > BASE_MAP_SIZE;
 
-        // Initialize camera settings
-        setupCamera(mapWidth, mapHeight);
+        // Set default zoom from config
+        this.targetZoom = DEFAULT_ZOOM;
+        camera.zoom = DEFAULT_ZOOM;
+
+        setupCamera();
     }
 
-    private void setupCamera(int mapWidth, int mapHeight) {
-        // Calculate the visible area we want to maintain (based on 16x16 map view)
-        float visibleTilesX = BASE_MAP_SIZE;
-        float visibleTilesY = BASE_MAP_SIZE;
-
-        // Set zoom to maintain consistent visible area
-        float targetZoom = 0.4f;  // DEFAULT_ZOOM * (BASE_MAP_SIZE / (float)Math.max(mapWidth, mapHeight));
-//        if (targetZoom < 0.4f) {
-//            targetZoom = 0.4f;
-//        }
-        camera.zoom = targetZoom;
-
-        if (!followPlayer) {
-            // For small maps, center the camera
+    private void setupCamera() {
             camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
-        }
 
         camera.update();
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void update(Vector2 playerPosition) {
-        if (!followPlayer) {
-            return;
+        // Handle zoom interpolation
+        if (camera.zoom != targetZoom) {
+            camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, CAMERA_LERP_SPEED);
         }
 
-        // Calculate the camera boundaries to prevent showing areas outside the map
+            // Calculate effective viewport dimensions
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
 
-        // Calculate the bounds
+            // Calculate boundaries
         float minX = effectiveViewportWidth / 2f;
         float maxX = worldWidth - (effectiveViewportWidth / 2f);
         float minY = effectiveViewportHeight / 2f;
         float maxY = worldHeight - (effectiveViewportHeight / 2f);
 
-        // Update camera position to follow player
-        camera.position.x = MathUtils.clamp(playerPosition.x, minX, maxX);
-        camera.position.y = MathUtils.clamp(playerPosition.y, minY, maxY);
+            // Update target position
+        float targetX = MathUtils.clamp(playerPosition.x, minX, maxX);
+        float targetY = MathUtils.clamp(playerPosition.y, minY, maxY);
 
+            // Smooth camera movement
+        camera.position.x = MathUtils.lerp(camera.position.x, targetX, CAMERA_LERP_SPEED);
+        camera.position.y = MathUtils.lerp(camera.position.y, targetY, CAMERA_LERP_SPEED);
+            // Store original position for shake effect
+            originalPosition.set(camera.position);
+
+        // Handle screen shake
+        updateScreenShake(Gdx.graphics.getDeltaTime());
         camera.update();
     }
+
+    public void handleScroll(float amount) {
+        // Note: Scroll amount is positive when scrolling up/away, negative when scrolling down/toward
+        // We invert it so scrolling up zooms out and scrolling down zooms in
+        float zoomDelta = -amount * gameCONFIG.ZOOM_SPEED;
+        targetZoom = MathUtils.clamp(targetZoom + zoomDelta, gameCONFIG.MIN_ZOOM, gameCONFIG.MAX_ZOOM);
+    }
+
+    public void startShake() {
+        startShake(SHAKE_DEFAULT_DURATION, SHAKE_DEFAULT_INTENSITY);
+    }
+
+    public void startLightShake() {
+        startShake(LIGHT_SHAKE_DURATION, LIGHT_SHAKE_INTENSITY);
+    }
+
+    public void startHeavyShake() {
+        startShake(HEAVY_SHAKE_DURATION, HEAVY_SHAKE_INTENSITY);
+    }
+    public void startShake(float duration, float intensity) {
+        this.shakeTime = 0;
+        this.shakeDuration = duration;
+        this.shakeIntensity = intensity;
+        this.isShaking = true;
+        this.originalPosition.set(camera.position);
+    }
+
+    private void updateScreenShake(float deltaTime) {
+        if (!isShaking) return;
+
+        shakeTime += deltaTime;
+
+        if (shakeTime < shakeDuration) {
+            // Calculate shake offset with smooth falloff
+            float currentIntensity = shakeIntensity * (1 - (shakeTime / shakeDuration));
+            float offsetX = MathUtils.random(-1f, 1f) * currentIntensity;
+            float offsetY = MathUtils.random(-1f, 1f) * currentIntensity;
+
+            // Apply shake offset from original position
+            camera.position.x = originalPosition.x + offsetX;
+            camera.position.y = originalPosition.y + offsetY;
+        } else {
+            // Reset shake
+            isShaking = false;
+            camera.position.x = originalPosition.x;
+            camera.position.y = originalPosition.y;
+        }
+    }
+
 
     public void resize(int width, int height) {
         viewport.update(width, height);
 
-        if (!followPlayer) {
-            // Recenter camera for small maps
-            camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
-            camera.update();
-        }
     }
 
-    public void adjustForMapSize(int mapSize) {
-        float targetZoom = DEFAULT_ZOOM * (BASE_MAP_SIZE / (float)mapSize);
-        camera.zoom = MathUtils.clamp(targetZoom, MIN_ZOOM, MAX_ZOOM);
-        camera.update();
-    }
-
-    public boolean isFollowingPlayer() {
-        return followPlayer;
+    public boolean isShaking() {
+        return isShaking;
     }
 
     public float getWorldWidth() {

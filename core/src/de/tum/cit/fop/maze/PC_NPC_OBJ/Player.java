@@ -12,7 +12,7 @@ import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
 import de.tum.cit.fop.maze.MAZELOGIC.MovementREQ;
 import de.tum.cit.fop.maze.MAZELOGIC.MovementSYS;
-import de.tum.cit.fop.maze.MAZELOGIC.TrapMNGR;
+import de.tum.cit.fop.maze.MAZELOGIC.TileEffectMNGR;
 
 
 public class Player extends Actor {
@@ -62,7 +62,7 @@ public class Player extends Actor {
         this.animationMNGR = new AnimationMNGR();
         this.health = 100f;
         this.damage = 10f;
-        this.dashCount = 5;
+        this.dashCount = 100;
 
         animationMNGR.loadPlayerAnimations();
         this.fireBall = new FireBall(position.x, position.y);
@@ -73,25 +73,28 @@ public class Player extends Actor {
 
         time += delta;
 
-        TrapMNGR trapManager = labyrinth.getTrapMNGR();
-        TrapMNGR.TrapType trap = trapManager.checkTrap(position);
-        if (trap != null) {
-            trapManager.applyTrapEffect(this, trap);
-        }
+        TileEffectMNGR trapManager = labyrinth.getTrapMNGR();
+        TileEffectMNGR.TrapType trap = trapManager.checkTrap(position);
+//        if (trap != null) {
+//            trapManager.applyTrapEffect(this, trap);
+//        }
 
         if (isMoving) {
+        // Speed up the movement by reducing totalMoveTime
+        totalMoveTime = 0.15f; // Adjust this value to control movement speed
             timeAccumulation += delta;
-            float alpha = timeAccumulation / totalMoveTime;
+        float alpha = Math.min(timeAccumulation / totalMoveTime, 1.0f);
 
-            if (alpha > 1f) {
-                alpha = 1f;
-            }
+//            if (alpha > 1f) {
+//                alpha = 1f;
+//            }
 
             position.x = startPosition.x + (targetPosition.x - startPosition.x) * alpha;
             position.y = startPosition.y + (targetPosition.y - startPosition.y) * alpha;
 
             if (alpha >= 1.0f) {
                 isMoving = false;
+            position.set(targetPosition);
             }
 
             bounds.setPosition(position.x, position.y);
@@ -100,7 +103,7 @@ public class Player extends Actor {
         MovementREQ request = handleInput();
         if (request != null) {
             Vector2 newPixelPos = MovementSYS.processMovement(
-                    position,      // current pixel pos
+                position,
                     labyrinth,
                     tileWidth,
                     tileHeight,
@@ -290,6 +293,10 @@ public class Player extends Actor {
 
     public void damage(Enemy enemy) {
         enemy.takeDamage(damage);
+    }
+
+    public void heal(float amount) {
+        this.health += Math.min(100f, this.health + amount);
     }
     public boolean shootsFireBall() {
         return shootsFireball;

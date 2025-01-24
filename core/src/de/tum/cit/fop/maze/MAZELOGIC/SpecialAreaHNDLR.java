@@ -69,15 +69,12 @@ public class SpecialAreaHNDLR {
         float tileWidth = baseLayer.getTileWidth();
         float tileHeight = baseLayer.getTileHeight();
 
-        // Find spawn point (first walkable tile from top-left)
         findSpawnPoint(baseLayer, width, height, tileWidth, tileHeight);
 
-        // Find exit point (first walkable tile from bottom-right)
         findExitPoint(baseLayer, width, height, tileWidth, tileHeight);
 
-        // Create the actual areas
-        createArea(baseLayer, width, height, true);  // Spawn area
-        createArea(baseLayer, width, height, false); // Exit area
+        createArea(baseLayer, width, height, true);
+        createArea(baseLayer, width, height, false);
 
         areasCreated = true;
     }
@@ -239,7 +236,6 @@ public class SpecialAreaHNDLR {
         return exitPoint;
     }
 
-    // Reset the singleton instance when loading a new level
     public static void reset() {
         instance = null;
     }
