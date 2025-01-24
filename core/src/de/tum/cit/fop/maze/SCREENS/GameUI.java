@@ -15,6 +15,7 @@ public class GameUI {
     // UI Labels
     private Label healthLabel;
     private Label scoreLabel;
+    private int score = 0;
 
     //UI Bars
     private ProgressBar healthBar;
@@ -44,15 +45,19 @@ public class GameUI {
         healthLabel = new Label("Health: 100", skin);
         healthBar = new ProgressBar(0, 100, 1, false, skin);
         healthBar.setValue(100);
-        healthSection.add(healthLabel).left().padRight(5);
-        healthSection.add(healthBar).width(150);
 
-        // Score and timer
+        // Make the health bar smaller
+        healthSection.add(healthLabel).left().padRight(5);
+        healthSection.add(healthBar).width(80).height(20); // Smaller width & height
+
+        // Score label
         scoreLabel = new Label("Score: 0", skin);
 
-        // Add all elements to top bar
-        topBar.add(healthSection).left().expandX();
-        topBar.add(scoreLabel).center().expandX();
+        // Add healthSection to the left and the scoreLabel to the right
+        // Use empty cell (expandX) to push the score to the right
+        topBar.add(healthSection).left().padLeft(10).padRight(10);
+        topBar.add().expandX();                 // This empty cell expands and pushes next cell to the right
+        topBar.add(scoreLabel).right().pad(10); // Score label aligned right with some padding
 
         mainTable.add(topBar).growX().top();
     }
@@ -79,7 +84,9 @@ public class GameUI {
     }
 
     public void updateScore(int score) {
-        scoreLabel.setText("Score: " + score);
+        this.score+=score;
+        scoreLabel.setText("Score: " + this.score);
+
     }
 
     public void togglePause() {

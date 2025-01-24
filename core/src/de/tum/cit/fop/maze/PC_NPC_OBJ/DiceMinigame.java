@@ -29,14 +29,15 @@ public class DiceMinigame {
     public void start() {
         active = true;
         time   = 0f;
-        diceResult    = -1;
+        diceResult    =         (int) (Math.random() * 6) + 1;
+
         showingResult = false;
     }
+
 
     public void stop() {
         active = false;
         // roll the dice
-        diceResult = (int) (Math.random() * 6) + 1;
         System.out.println("Dice roll result: " + diceResult);
 
         // start showing the final face
@@ -84,6 +85,9 @@ public class DiceMinigame {
             batch.draw(finalFace, offsetX, offsetY, 64, 64);
         }
         batch.end();
+    }
+    public int getDiceResult() {
+        return diceResult;
     }
 }
 

@@ -20,12 +20,21 @@ import de.tum.cit.fop.maze.PC_NPC_OBJ.*;
 /**
  * The GameScreen class is responsible for managing gameplay.
  */
+
+
 public class GameScreen implements Screen {
+    private boolean isPaused = false;
+    public LevelMNGR.LevelInfo getLevel() {
+        return level;
+    }
+
     private final MazeRunnerGame game;
     private final OrthographicCamera camera;
     private final Labyrinth labyrinth;
     private final Player player;
-    private final Enemy enemy;
+    //private final Enemy enemy;
+    private  Array<Enemy> enemies;
+    int amountOfEnemies = 1;
     private final Dice dice;
     private AnimationMNGR animationMNGR;
     private GameUI gameUI;
@@ -34,6 +43,8 @@ public class GameScreen implements Screen {
     private LevelMNGR.LevelInfo level;
     private HitParticle hitParticle1;
     private DiceMinigame diceMinigame;
+    private Heart heart;
+    private ExitPointer exitPointer;
 
 
     public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
@@ -62,14 +73,22 @@ public class GameScreen implements Screen {
         initializeTileAnimations();
 
         Vector2 spawnPoint = labyrinth.getSpawnPoint();
-        Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
         Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
+        Vector2 heartSpawnPoint = labyrinth.getValidSpawnPoint();
         player = new Player(spawnPoint.x, spawnPoint.y);
-        enemy = new Enemy(enemySpawnPoint.x, enemySpawnPoint.y);
+        enemies = new Array<>();
+        for(int i = 0; i < amountOfEnemies; i++){
+
+            Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
+            enemies.add(new Enemy(enemySpawnPoint.x, enemySpawnPoint.y));
+        }
+
         dice = new Dice(diceSpawnPoint.x, diceSpawnPoint.y);
         hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
         diceMinigame = new DiceMinigame(animationMNGR);
+        heart = new Heart(heartSpawnPoint.x, heartSpawnPoint.y);
         gameUI = new GameUI(game.getSpriteBatch(), this.game.getSkin());
+        exitPointer = new ExitPointer();
 
 
         initializeMazeMatrix();
@@ -139,16 +158,27 @@ public class GameScreen implements Screen {
                 game.goToMenu(); // If no more levels
             }
         }
-
-        player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemy);
-        enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
+        player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
         dice.update(delta, player);
-        hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
-        System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
-        gameUI.update(delta, player, enemy);
+        heart.update(delta, player);
+        player.getFireBall().update(delta, player, labyrinth, enemies);
+        for (int i = 0; i < amountOfEnemies; i++) {
+            Enemy enemy = enemies.get(i);
+            enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
+
+            hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
+
+            gameUI.update(delta, player, enemy);
+
+
+        }
+
         handleInput();
         if (dice.isMinigameActive() && !diceMinigame.isActive()) {
             diceMinigame.start();
+            if(!dice.isGotcolelcted()){
+                gameUI.updateScore(diceMinigame.getDiceResult());
+            }
             diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
 
         }
@@ -162,24 +192,31 @@ public class GameScreen implements Screen {
         }
 
 
+
         // Render game elements
         labyrinth.render(camera);
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
 
         player.render(batch);
-        if (enemy.getLifeStatus() == true) {
-            enemy.render(batch);
+        for(int i = 0; i < amountOfEnemies; i++){
+            Enemy enemy = enemies.get(i);
+            if (enemy.getLifeStatus() == true) {
+                enemy.render(batch);
+            }
         }
         dice.render(batch);
+        heart.render(batch);
         hitParticle1.render(batch);
         if (diceMinigame.isActive()) {
             System.out.println("Dice Minigame is active");
         }
         // In your GameScreen render or update method
-        player.getFireBall().update(delta, player, labyrinth, enemy);
         player.getFireBall().render(batch);
 
+        Vector2 playerPos = player.getPosition();
+        Vector2 exitPos = labyrinth.getExitPoint();
+        exitPointer.render(batch, playerPos, exitPos);
 
         batch.end();
         diceMinigame.render(batch, cameraX, cameraY);
@@ -197,6 +234,10 @@ public class GameScreen implements Screen {
         var SHIFT = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
         var COMMA = Gdx.input.isKeyPressed(Input.Keys.COMMA);
         var PERIOD = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
+        boolean escapedPressed = Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE);
+        if(escapedPressed){
+            isPaused = !isPaused;
+        }
 
         if (ESCAPE) {
             game.goToMenu();

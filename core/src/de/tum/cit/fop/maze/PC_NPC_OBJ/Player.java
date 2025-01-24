@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
 import de.tum.cit.fop.maze.MAZELOGIC.MovementREQ;
@@ -45,6 +46,7 @@ public class Player extends Actor {
     private FireBall fireBall;
 
 
+
     public Player(float x, float y) {
         this.texture = new Texture("bush.png");
         this.position = new Vector2(x, y);
@@ -69,7 +71,7 @@ public class Player extends Actor {
     }
 
     public void update(float delta, float labyrinthWidth, float labyrinthHeight,
-                       float tileWidth, float tileHeight, Labyrinth labyrinth, Enemy enemy) {
+                       float tileWidth, float tileHeight, Labyrinth labyrinth, Array<Enemy> enemies) {
 
         time += delta;
 
@@ -115,9 +117,12 @@ public class Player extends Actor {
             }
         }
         bounds.setPosition(position.x, position.y);
-        boolean overlaps = bounds.overlaps(enemy.getBounds());
-        if (overlaps && this.hitting) {
-            damage(enemy);
+        for(int i = 0; i < enemies.size; i++) {
+            Enemy enemy = enemies.get(i);
+            boolean overlaps = bounds.overlaps(enemy.getBounds());
+            if (overlaps && this.hitting) {
+                damage(enemy);
+            }
         }
         fireballCooldown -= delta;
         if (fireballCooldown < 0) {
@@ -270,6 +275,9 @@ public class Player extends Actor {
 
     public void takeDamage(float damage) {
         this.health -= damage;
+    }
+    public void increaseHealth(float health) {
+        this.health += health;
     }
 
 
