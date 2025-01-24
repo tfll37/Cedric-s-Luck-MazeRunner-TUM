@@ -5,38 +5,30 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 
-public class Dice extends Collectable {
+public class Heart extends Collectable{
     private AnimationMNGR animationMNGR;
     private float time = 0f;
     private TextureRegion currentFrame;
-    private boolean minigameActive = false; // Flag for the minigame state
-    private boolean gotcolelcted = true;
-    public Dice(float x, float y) {
+    public Heart(float x, float y) {
         super(x, y);
         this.animationMNGR = new AnimationMNGR();
     }
 
+    public void update(float delta) {
+    }
     @Override
     public void update(float delta, Player player) {
         time += delta;
-        if(collected) gotcolelcted = true;
-        if (!collected) {
-            currentFrame = animationMNGR.getDiceAnimation().getKeyFrame(time, true);
+        if(!collected) {
+            currentFrame = animationMNGR.getHeartAnimation().getKeyFrame(time, true);
         }
-        //System.out.println("Player x: " + player.getTilePosition(16,16).x + " Player y: " + player.getTilePosition(16,16).y);
-        //System.out.println("Dice x: " + x + " Dice y: " + y);
         if (!collected && player.getTilePosition(16, 16).x == this.getTilePosition(16, 16).x && player.getTilePosition(16, 16).y == this.getTilePosition(16, 16).y) {
             collected = true;
-            minigameActive = true; // Activate the minigame when the dice is collected
-            gotcolelcted = false;
+            player.increaseHealth(50);
+
         }
-    }
 
-    @Override
-    public void update(float delta) {
-        time += delta;
     }
-
     @Override
     public void render(SpriteBatch batch) {
         if (collected) return;
@@ -46,17 +38,7 @@ public class Dice extends Collectable {
 
         batch.draw(currentFrame, centeredX, centeredY, 8, 8);
     }
-    public boolean isMinigameActive() {
-        return minigameActive;
-    }
-
-    public void deactivateMinigame() {
-        minigameActive = false;
-    }
     public Vector2 getTilePosition(float tileWidth, float tileHeight) {
         return new Vector2((int) (x / tileWidth), (int) (y / tileHeight));
-    }
-    public boolean isGotcolelcted() {
-        return gotcolelcted;
     }
 }

@@ -67,10 +67,11 @@ public class MenuScreen implements Screen {
             TextButton levelButton = new TextButton(
                     "Level " + level.name() + " (" + level.mapSize() + "x" + level.mapSize() + ")",
                     game.getSkin()
-            );
-            levelButton.addListener(new ChangeListener() {
+            );levelButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
+                    // If we had a paused game for that level, we’ll resume it
+                    // Otherwise we’ll create a new GameScreen
                     game.goToGame(level);
                 }
             });

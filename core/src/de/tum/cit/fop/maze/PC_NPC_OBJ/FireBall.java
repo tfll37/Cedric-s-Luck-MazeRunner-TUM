@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
 
@@ -27,7 +28,7 @@ public class FireBall {
         return new Rectangle((int)x, (int)y, (int)width, (int)height);
     }
 
-    public void update(float delta, Player player, Labyrinth labyrinth, Enemy enemy) {
+    public void update(float delta, Player player, Labyrinth labyrinth, Array<Enemy> enemies) {
         if (!appear) return;
 
         // Move the fireball first
@@ -60,11 +61,15 @@ public class FireBall {
         }
 
         // 2) Check collision with the enemy (only if it's still alive)
-        if (enemy.getLifeStatus() && getBounds().overlaps(enemy.getBounds())) {
-            // Damage the enemy, then disappear
-            enemy.takeDamage(70f);   // or any damage value you want
-            appear = false;
+        for(int i = 0; i < enemies.size; i++) {
+            Enemy enemy = enemies.get(i);
+            if (enemy.getLifeStatus() && getBounds().overlaps(enemy.getBounds())) {
+                // Damage the enemy, then disappear
+                enemy.takeDamage(70f);   // or any damage value you want
+                appear = false;
+            }
         }
+
     }
 
     public void render(SpriteBatch batch) {

@@ -19,6 +19,8 @@ public class AnimationMNGR implements Disposable {
 
     private static Animation<TextureRegion> hitAnimation1;
 
+    private static Animation<TextureRegion> heartAnimation;
+
     private static Animation<TextureRegion> fireBallAnimationLeft;
     private static Animation<TextureRegion> fireBallAnimationRight;
     private static Animation<TextureRegion> fireBallAnimationUp;
@@ -158,6 +160,7 @@ public class AnimationMNGR implements Disposable {
 
     public void loadDiceAnimation() {
         Texture diceSheet = new Texture(Gdx.files.internal("dice.png"));
+        Texture heartSheet = new Texture(Gdx.files.internal("objects.png"));
         int frameWidth = 16;
         int frameHeight = 16;
         int animationFrames = 6;
@@ -178,6 +181,13 @@ public class AnimationMNGR implements Disposable {
                     frameHeight
             );
         }
+
+        Array<TextureRegion> heartFrames = new Array<>(TextureRegion.class);
+        animationFrames = 4;
+        for (int col = 0; col < animationFrames; col++) {
+            heartFrames.add(new TextureRegion(heartSheet, col * frameWidth, 3*frameHeight, frameWidth, frameHeight));
+        }
+        heartAnimation = new Animation<>(0.1f, heartFrames);
     }
 
     public void loadHitAnimations(){
@@ -301,7 +311,9 @@ public class AnimationMNGR implements Disposable {
     public static Animation<TextureRegion> getFireBallAnimationRight() {return fireBallAnimationRight;}
     public static Animation<TextureRegion> getFireBallAnimationUp() {return fireBallAnimationUp;}
     public static Animation<TextureRegion> getFireBallAnimationDown() {return fireBallAnimationDown;}
-
+    public static Animation<TextureRegion> getHeartAnimation() {
+        return heartAnimation;
+    }
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }

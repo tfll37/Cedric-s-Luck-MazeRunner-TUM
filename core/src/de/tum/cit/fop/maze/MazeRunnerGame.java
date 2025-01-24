@@ -25,6 +25,7 @@ public class MazeRunnerGame extends Game {
     private WelcomeScreen welcomeScreen;
     private MenuScreen menuScreen;
     private GameScreen gameScreen;
+    private GameScreen currentGameScreen;
 
     // Core rendering components
     private SpriteBatch spriteBatch;
@@ -86,10 +87,10 @@ public class MazeRunnerGame extends Game {
      */
     public void goToMenu() {
         this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
-        if (gameScreen != null) {
+        /*if (gameScreen != null) {
             gameScreen.dispose(); // Dispose the game screen if it exists
             gameScreen = null;
-        }
+        }*/
     }
 
     /**
@@ -97,11 +98,12 @@ public class MazeRunnerGame extends Game {
      */
     public void goToGame(LevelMNGR.LevelInfo level) {
         // Create a new GameScreen if needed
-        gameScreen = new GameScreen(this, level);
-        setScreen(gameScreen);
-        if (menuScreen != null) {
-            menuScreen.dispose(); // Dispose the menu screen if it exists
-            menuScreen = null;
+        if (currentGameScreen != null && currentGameScreen.getLevel() == level) {
+            setScreen(currentGameScreen);
+        } else {
+            // Otherwise, create a new GameScreen
+            currentGameScreen = new GameScreen(this, level);
+            setScreen(currentGameScreen);
         }
     }
 
