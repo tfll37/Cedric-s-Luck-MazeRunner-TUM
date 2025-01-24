@@ -116,7 +116,15 @@ Major update implementing collectible system and minigame mechanics. Added new i
 - Corridors` walking area inside the maze is doubled to 2 tiles wide.
 - Reversion of the updates number
 
-# Update 5
+# Update 5 (0.3.1)
 ## Overview
 - Fixed bugs occurring when creating the Special Areas, across several classes
 - Updated the level-2,4.properties files
+
+# Update 6 (0.3.2)
+## Overview
+- Fixed camera issues, fixed zoom
+- Improved camera movement, improved player movement(tile-to-pixel movement)
+- Implemented screen shake
+- Added more levels
+
