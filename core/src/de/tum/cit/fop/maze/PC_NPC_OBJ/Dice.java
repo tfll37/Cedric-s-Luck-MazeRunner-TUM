@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze.PC_NPC_OBJ;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -10,10 +12,15 @@ public class Dice extends Collectable {
     private float time = 0f;
     private TextureRegion currentFrame;
     private boolean minigameActive = false; // Flag for the minigame state
+    private Sound diceCollectedSound;
+
     private boolean gotcolelcted = true;
     public Dice(float x, float y) {
         super(x, y);
         this.animationMNGR = new AnimationMNGR();
+
+        // Load the sound for collecting the dice
+        diceCollectedSound = Gdx.audio.newSound(Gdx.files.internal("assets//music//94031__loafdv__dice-roll.mp3"));
     }
 
     @Override
@@ -23,12 +30,17 @@ public class Dice extends Collectable {
         if (!collected) {
             currentFrame = animationMNGR.getDiceAnimation().getKeyFrame(time, true);
         }
-        //System.out.println("Player x: " + player.getTilePosition(16,16).x + " Player y: " + player.getTilePosition(16,16).y);
-        //System.out.println("Dice x: " + x + " Dice y: " + y);
-        if (!collected && player.getTilePosition(16, 16).x == this.getTilePosition(16, 16).x && player.getTilePosition(16, 16).y == this.getTilePosition(16, 16).y) {
+
+        // Check collision with player
+        if (!collected && player.getTilePosition(16, 16).x == this.getTilePosition(16, 16).x
+                && player.getTilePosition(16, 16).y == this.getTilePosition(16, 16).y) {
             collected = true;
             minigameActive = true; // Activate the minigame when the dice is collected
             gotcolelcted = false;
+            minigameActive = true; // Activate the minigame
+
+            // Play the dice collection sound
+            diceCollectedSound.play();
         }
     }
 
@@ -46,6 +58,7 @@ public class Dice extends Collectable {
 
         batch.draw(currentFrame, centeredX, centeredY, 8, 8);
     }
+
     public boolean isMinigameActive() {
         return minigameActive;
     }
@@ -53,8 +66,13 @@ public class Dice extends Collectable {
     public void deactivateMinigame() {
         minigameActive = false;
     }
+
     public Vector2 getTilePosition(float tileWidth, float tileHeight) {
         return new Vector2((int) (x / tileWidth), (int) (y / tileHeight));
+    }
+
+    public void dispose() {
+        diceCollectedSound.dispose();
     }
     public boolean isGotcolelcted() {
         return gotcolelcted;

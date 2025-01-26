@@ -45,7 +45,7 @@ public class Player extends Actor {
     private static final float FIREBALL_COOLDOWN_TIME = 3.0f;// Cooldown duration in
     private FireBall fireBall;
 
-
+//settings
 
     public Player(float x, float y) {
         this.texture = new Texture("bush.png");
