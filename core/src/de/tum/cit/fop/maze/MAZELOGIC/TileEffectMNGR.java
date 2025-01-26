@@ -4,12 +4,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import de.tum.cit.fop.maze.PC_NPC_OBJ.Player;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class TileEffectMNGR {
     public static final int TRAP_MARKER = 2;
     public static final int POWERUP_MARKER = 4;
+
+    private final ObjectMap<Vector2, TrapType> trapLocations;
+    private final ObjectMap<Vector2, PowerUpType> powerUpLocations;
+    private final ObjectMap<Vector2, TileEffect> tileEffects;
+    private final Random random;
 
     // Base interface for all effects
     public interface TileEffect {
@@ -42,10 +46,12 @@ public class TileEffectMNGR {
         public int getTileId() {
             return tileId;
         }
+
         @Override
         public String getName() {
             return name;
         }
+
         @Override
         public void applyEffect(Player player) {
             if (damage > 0) {
@@ -55,15 +61,18 @@ public class TileEffectMNGR {
                 player.setSpeedModifier(speedModifier);
             }
         }
+
         public static TrapType getByTileId(int tileId) {
             for (TrapType type : values()) {
                 if (type.tileId == tileId) return type;
             }
             return null;
         }
+
         public float getDamage() {
             return damage;
         }
+
         public float getSpeedModifier() {
             return speedModifier;
         }
@@ -99,14 +108,15 @@ public class TileEffectMNGR {
             return tileId;
         }
 
-        @Override
+
         public void applyEffect(Player player) {
             if (healing > 0) {
                 player.heal(healing);
+                System.out.println("Applied " + healing + " healing from " + name);
             }
             if (speedModifier != 1.0f) {
                 player.setSpeedModifier(speedModifier);
-                // TODO: Add duration handling for temporary effects
+                System.out.println("Applied speed modifier " + speedModifier + " from " + name);
             }
         }
 
@@ -120,21 +130,22 @@ public class TileEffectMNGR {
 
     }
 
-    private final ObjectMap<Vector2, TrapType> trapLocations;
-    private final ObjectMap<Vector2, TileEffect> tileEffects;
-    private final ObjectMap<Vector2, PowerUpType> powerUpLocations;
-    private final Random random;
 
     public TileEffectMNGR() {
         this.trapLocations = new ObjectMap<>();
-        this.tileEffects = new ObjectMap<>();
+       this.tileEffects = new ObjectMap<>();
         this.powerUpLocations = new ObjectMap<>();
         this.random = new Random();
     }
 
-    public void registerPowerUp(int x, int y, PowerUpType powerUp) {
-        Vector2 location = new Vector2(x, y);
-        powerUpLocations.put(location, powerUp);
+    public void registerPowerUp(int x, int y) {
+        Vector2 position = new Vector2(x, y);
+        // Only register if not already present
+        if (!powerUpLocations.containsKey(position)) {
+            PowerUpType randomPowerUp = getRandomPowerUp();
+            powerUpLocations.put(position, randomPowerUp);
+            System.out.println("Registered new " + randomPowerUp.getName() + " powerup at " + x + "," + y);
+        }
     }
 
     public PowerUpType getPowerUpAtLocation(int x, int y) {
@@ -157,10 +168,13 @@ public class TileEffectMNGR {
     }
 
     public void registerTrapLocation(int x, int y) {
-        Vector2 location = new Vector2(x, y);
-        TrapType[] trapTypes = TrapType.values();
-        TrapType randomTrap = trapTypes[random.nextInt(trapTypes.length)];
-        trapLocations.put(location, randomTrap);
+        Vector2 position = new Vector2(x, y);
+        // Only register if not already present
+        if (!trapLocations.containsKey(position)) {
+            TrapType randomTrap = getRandomTrap();
+            trapLocations.put(position, randomTrap);
+            System.out.println("Registered new " + randomTrap.getName() + " trap at " + x + "," + y);
+        }
     }
 
     public int getTileEffectId(int x, int y) {
@@ -173,6 +187,27 @@ public class TileEffectMNGR {
         return trapLocations.get(new Vector2(x, y));
     }
 
+    public void checkAndApplyEffects(Player player) {
+        int tileX = (int) (player.getPosition().x / 16);
+        int tileY = (int) (player.getPosition().y / 16);
+        Vector2 tilePos = new Vector2(tileX, tileY);
+
+        // Check and apply trap effects
+        TrapType trap = trapLocations.get(tilePos);
+        if (trap != null) {
+            System.out.println("Applying " + trap.getName() + " trap effect");
+            trap.applyEffect(player);
+            trapLocations.remove(tilePos); // Remove after triggering
+        }
+
+        // Check and apply powerup effects
+        PowerUpType powerUp = powerUpLocations.get(tilePos);
+        if (powerUp != null) {
+            System.out.println("Applying " + powerUp.getName() + " powerup effect");
+            powerUp.applyEffect(player);
+            powerUpLocations.remove(tilePos); // Remove after collecting
+        }
+    }
 
     public void applyEffect(Player player, TileEffect effect) {
         if (effect != null) {
@@ -186,16 +221,22 @@ public class TileEffectMNGR {
         return getEffectAtLocation(tileX, tileY);
     }
 
+    public TrapType getTrapAt(int x, int y) {
+        return trapLocations.get(new Vector2(x, y));
+    }
+
+    public PowerUpType getPowerUpAt(int x, int y) {
+        return powerUpLocations.get(new Vector2(x, y));
+    }
+
     public static TrapType getRandomTrap() {
         TrapType[] traps = TrapType.values();
-        int randomIndex = (int) (Math.random() * traps.length);
-        return traps[randomIndex];
+        return traps[new Random().nextInt(traps.length)];
     }
 
     public static PowerUpType getRandomPowerUp() {
         PowerUpType[] powerUps = PowerUpType.values();
-        int randomIndex = (int) (Math.random() * powerUps.length);
-        return powerUps[randomIndex];
+        return powerUps[new Random().nextInt(powerUps.length)];
     }
 
     public void clearTrap(int x, int y) {

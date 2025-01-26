@@ -37,7 +37,7 @@ public class Player extends Actor {
     private final AnimationMNGR animationMNGR;
     private float health = 100f;
     private float damage = 10f;
-    int dash_count = 5;
+    int dash_count = 100;
     private SpriteBatch batch;
     private final int dashCount;
     private boolean shootsFireball = false;
@@ -55,7 +55,7 @@ public class Player extends Actor {
         this.isMoving = false;
         this.timeAccumulation = 0f;
         this.baseSpeed = 1.0f;
-        this.speedModifier = 1.0f;
+        this.speedModifier = 2.0f;
         this.baseMoveTime = 0.07f;
         this.totalMoveTime = baseMoveTime;
         this.bounds = new Rectangle(x, y, 16, 16);

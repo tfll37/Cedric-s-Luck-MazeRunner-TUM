@@ -43,34 +43,32 @@ public class MazeLoader {
         return props;
     }
 
-    private void parseProperties() {
+   private void parseProperties() {
         for (String key : properties.stringPropertyNames()) {
-            Gdx.app.log("MazeLoader", "Key: " + key + " => " + properties.getProperty(key));
 
             try {
                 String[] coords = key.split(",");
                 if (coords.length == 2) {
                     int x = Integer.parseInt(coords[0]);
                     int y = Integer.parseInt(coords[1]);
-                    int transformedY =  y;
                     int tileType = Integer.parseInt(properties.getProperty(key));
 
-                    if (tileType == TileEffectMNGR.POWERUP_MARKER) {
-                        // Register powerup and get its tile ID
-                        TileEffectMNGR.PowerUpType powerUp = TileEffectMNGR.getRandomPowerUp();
-                        tileOverrides.put(new GridPoint2(x, transformedY), powerUp.getTileId());
+                if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                    // Register trap marker position and let TileEffectMNGR handle random type assignment
+                    tileOverrides.put(new GridPoint2(x, y), TileEffectMNGR.TRAP_MARKER);
 
+                    tileEffectMNGR.registerTrapLocation(x, y);
 
-                        tileEffectMNGR.registerPowerUp(x, transformedY, powerUp);
-                    } else if (tileType == TileEffectMNGR.TRAP_MARKER) {
-                        Gdx.app.log("MazeLoader", "Registered trap at (" + x + ", " + transformedY + ")");
-
-                        // Register trap and get its tile ID
-                        TileEffectMNGR.TrapType trap = TileEffectMNGR.getRandomTrap();
-                        tileOverrides.put(new GridPoint2(x, transformedY), trap.getTileId());
-                        tileEffectMNGR.registerTrapLocation(x, transformedY);
-                    } else {
-                        tileOverrides.put(new GridPoint2(x, transformedY), tileType);
+                    System.out.println("Registered trap marker at " + x + "," + y);
+                }
+                else if (tileType == TileEffectMNGR.POWERUP_MARKER) {
+                    // Register powerup marker position and let TileEffectMNGR handle random type assignment
+                    tileOverrides.put(new GridPoint2(x, y), TileEffectMNGR.POWERUP_MARKER);
+                    tileEffectMNGR.registerPowerUp(x, y);
+                    System.out.println("Registered powerup marker at " + x + "," + y);
+                }
+                else {
+                    tileOverrides.put(new GridPoint2(x, y), tileType);
                     }
                 }
             } catch (NumberFormatException e) {
@@ -99,9 +97,9 @@ public class MazeLoader {
             case 1:
                 return WallTiles.HORIZONTAL;
             case 2:
-                return TileEffectMNGR.getRandomTrap().getTileId();
+                return 23;
             case 3:
-                return 27;            // Enemy type 2
+                return TileEffectMNGR.getRandomTrap().getTileId();        // Enemy type 2
             case 4:
                 return TileEffectMNGR.getRandomPowerUp().getTileId();
             default:

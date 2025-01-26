@@ -47,8 +47,15 @@ public class Background {
         // 4. Finally, handle traps on second layer
         TiledMapTileLayer trapLayer = getSecondLayer();
         if (trapLayer != null) {
-            updateTrapLayer(trapLayer);
+            trapLayer = new TiledMapTileLayer(baseLayer.getWidth(), baseLayer.getHeight(),
+                    (int) baseLayer.getTileWidth(), (int) baseLayer.getTileHeight());
+            tiledMap.getLayers().add(trapLayer);
+
         }
+
+        updateTrapLayer(trapLayer);
+
+
     }
 
     private void updateBasicTiles(TiledMapTileLayer layer) {
@@ -88,9 +95,16 @@ public class Background {
                 }
 
                 // Get the correct tile ID based on type
-                int tileId = (tileType == TileEffectMNGR.TRAP_MARKER) ?
-                        TileEffectMNGR.getRandomTrap().getTileId() :
-                        TileEffectMNGR.getRandomPowerUp().getTileId();
+                int tileId;
+                if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                    TileEffectMNGR.TrapType trap = TileEffectMNGR.getRandomTrap();
+                    tileId = trap.getTileId();
+                    System.out.println("Placing trap tile with ID " + tileId + " at position " + pos.x + "," + pos.y);
+                } else {
+                    TileEffectMNGR.PowerUpType powerUp = TileEffectMNGR.getRandomPowerUp();
+                    tileId = powerUp.getTileId();
+                    System.out.println("Placing powerup tile with ID " + tileId + " at position " + pos.x + "," + pos.y);
+                }
 
                 cell.setTile(tiledMap.getTileSets().getTile(tileId));
             }
