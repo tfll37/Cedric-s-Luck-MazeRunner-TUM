@@ -17,8 +17,8 @@ public class Background {
 
     public Background(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
+        this.tileEffectMNGR = new TileEffectMNGR();
     }
-
 
     public void loadTiledMap(String tmxPath, String propertiesPath) {
         // Load the base TMX map
@@ -59,13 +59,12 @@ public class Background {
             var pos = entry.getKey();
             int tileType = entry.getValue();
 
-            // Skip trap tiles - they'll be handled in updateTrapLayer
-            if (tileType == TileEffectMNGR.TRAP_MARKER) {
-                continue;
+            if (tileType == TileEffectMNGR.TRAP_MARKER || tileType == TileEffectMNGR.POWERUP_MARKER) {
+                placeTile(layer, pos.x, pos.y, 0);  // Place floor tile
+            } else {
+                placeTile(layer, pos.x, pos.y, tileType);
             }
 
-            // Update the cell in the layer
-            placeTile(layer, pos.x, pos.y, tileType);
         }
     }
 
@@ -75,16 +74,25 @@ public class Background {
 //    }
 
     private void updateTrapLayer(TiledMapTileLayer layer) {
-        // Get all overrides and only process trap tiles
         var overrides = mazeLoader.getAllOverrides();
 
         for (var entry : overrides.entrySet()) {
             var pos = entry.getKey();
             int tileType = entry.getValue();
 
-            // Only place trap tiles
-            if (tileType == TileEffectMNGR.TRAP_MARKER) {
-                placeTile(layer, pos.x, pos.y, tileType);
+            if (tileType == TileEffectMNGR.TRAP_MARKER || tileType == TileEffectMNGR.POWERUP_MARKER) {
+                TiledMapTileLayer.Cell cell = layer.getCell(pos.x, pos.y);
+                if (cell == null) {
+                    cell = new TiledMapTileLayer.Cell();
+                    layer.setCell(pos.x, pos.y, cell);
+                }
+
+                // Get the correct tile ID based on type
+                int tileId = (tileType == TileEffectMNGR.TRAP_MARKER) ?
+                        TileEffectMNGR.getRandomTrap().getTileId() :
+                        TileEffectMNGR.getRandomPowerUp().getTileId();
+
+                cell.setTile(tiledMap.getTileSets().getTile(tileId));
             }
         }
     }

@@ -15,11 +15,11 @@ import de.tum.cit.fop.maze.MAZELOGIC.MovementREQ;
 import de.tum.cit.fop.maze.MAZELOGIC.MovementSYS;
 import de.tum.cit.fop.maze.MAZELOGIC.TileEffectMNGR;
 
+import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.RUN_MOVE_TIME;
+import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
+
 
 public class Player extends Actor {
-    // Visualisation variables
-    private final Texture texture;
-
     // Mechanics variables
     private final Vector2 position;
     private final Vector2 startPosition;
@@ -48,7 +48,7 @@ public class Player extends Actor {
 //settings
 
     public Player(float x, float y) {
-        this.texture = new Texture("bush.png");
+//        this.texture = new Texture("bush.png");
         this.position = new Vector2(x, y);
         this.startPosition = new Vector2(x, y);
         this.targetPosition = new Vector2(x, y);
@@ -82,10 +82,10 @@ public class Player extends Actor {
 //        }
 
         if (isMoving) {
-        // Speed up the movement by reducing totalMoveTime
-        totalMoveTime = 0.15f; // Adjust this value to control movement speed
+            // Speed up the movement by reducing totalMoveTime
+            totalMoveTime = 0.15f; // Adjust this value to control movement speed
             timeAccumulation += delta;
-        float alpha = Math.min(timeAccumulation / totalMoveTime, 1.0f);
+            float alpha = Math.min(timeAccumulation / totalMoveTime, 1.0f);
 
 //            if (alpha > 1f) {
 //                alpha = 1f;
@@ -96,7 +96,7 @@ public class Player extends Actor {
 
             if (alpha >= 1.0f) {
                 isMoving = false;
-            position.set(targetPosition);
+                position.set(targetPosition);
             }
 
             bounds.setPosition(position.x, position.y);
@@ -105,7 +105,7 @@ public class Player extends Actor {
         MovementREQ request = handleInput();
         if (request != null) {
             Vector2 newPixelPos = MovementSYS.processMovement(
-                position,
+                    position,
                     labyrinth,
                     tileWidth,
                     tileHeight,
@@ -165,6 +165,7 @@ public class Player extends Actor {
             }
         }
     }
+    private boolean isRunning;
 
     private MovementREQ handleInput() {
         var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
@@ -174,6 +175,11 @@ public class Player extends Actor {
         var DASH = Gdx.input.isKeyPressed(Input.Keys.X);
         var HIT = Gdx.input.isKeyPressed(Input.Keys.SPACE);
         var ENTER = Gdx.input.isKeyPressed(Input.Keys.ENTER);
+        var RUN = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+
+        isRunning = RUN;
+
+        totalMoveTime = isRunning ? RUN_MOVE_TIME : WALK_MOVE_TIME;
 
 
         if (UP) {
@@ -223,6 +229,9 @@ public class Player extends Actor {
             fireballCooldown = FIREBALL_COOLDOWN_TIME; // Reset cooldown
         }
 
+//        private static final float WALK_MOVE_TIME = 0.07f;
+//        private static final float RUN_MOVE_TIME = 0.04f;  // Faster movement time when running
+//        isRunning = false;
 
 
         return null;
@@ -238,26 +247,33 @@ public class Player extends Actor {
 //        float scaleHeight = texture.getHeight() * gameCONFIG.UNIT_SCALE;
 
         TextureRegion currentFrame;
+        float animationSpeed = time * (isRunning ? 1.5f : 1.0f);
+
         if (hitting) {
             if (lookingDirection == 0) {
-                currentFrame = animationMNGR.getCharacterUpHitAnimation().getKeyFrame(time, true);
+                currentFrame = animationMNGR.getCharacterUpHitAnimation().getKeyFrame(animationSpeed, true);
             } else if (lookingDirection == 1) {
-                currentFrame = animationMNGR.getCharacterRightHitAnimation().getKeyFrame(time, true);
+                currentFrame = animationMNGR.getCharacterRightHitAnimation().getKeyFrame(animationSpeed, true);
             } else if (lookingDirection == 2) {
-                currentFrame = animationMNGR.getCharacterDownHitAnimation().getKeyFrame(time, true);
+                currentFrame = animationMNGR.getCharacterDownHitAnimation().getKeyFrame(animationSpeed, true);
             } else {
-                currentFrame = animationMNGR.getCharacterLeftHitAnimation().getKeyFrame(time, true);
+                currentFrame = animationMNGR.getCharacterLeftHitAnimation().getKeyFrame(animationSpeed, true);
             }
         } else if (lookingDirection == 0) {
-            currentFrame = animationMNGR.getCharacterUpAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getCharacterUpAnimation().getKeyFrame(animationSpeed, true);
         } else if (lookingDirection == 1) {
-            currentFrame = animationMNGR.getCharacterRightAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getCharacterRightAnimation().getKeyFrame(animationSpeed, true);
         } else if (lookingDirection == 2) {
-            currentFrame = animationMNGR.getCharacterDownAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getCharacterDownAnimation().getKeyFrame(animationSpeed, true);
         } else {
-            currentFrame = animationMNGR.getCharacterLeftAnimation().getKeyFrame(time, true);
+            currentFrame = animationMNGR.getCharacterLeftAnimation().getKeyFrame(animationSpeed, true);
         }
+
         batch.draw(currentFrame, position.x, position.y);
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
     public Rectangle getBounds() {
@@ -318,10 +334,6 @@ public class Player extends Actor {
         this.startPosition.set(position);
         this.targetPosition.set(position);
         this.bounds.setPosition(position.x, position.y);
-    }
-
-    public void dispose() {
-        texture.dispose();
     }
 
     public boolean hits() {

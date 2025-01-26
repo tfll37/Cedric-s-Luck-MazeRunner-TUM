@@ -122,13 +122,23 @@ public class TileEffectMNGR {
 
     private final ObjectMap<Vector2, TrapType> trapLocations;
     private final ObjectMap<Vector2, TileEffect> tileEffects;
-
+    private final ObjectMap<Vector2, PowerUpType> powerUpLocations;
     private final Random random;
 
     public TileEffectMNGR() {
         this.trapLocations = new ObjectMap<>();
         this.tileEffects = new ObjectMap<>();
+        this.powerUpLocations = new ObjectMap<>();
         this.random = new Random();
+    }
+
+    public void registerPowerUp(int x, int y, PowerUpType powerUp) {
+        Vector2 location = new Vector2(x, y);
+        powerUpLocations.put(location, powerUp);
+    }
+
+    public PowerUpType getPowerUpAtLocation(int x, int y) {
+        return powerUpLocations.get(new Vector2(x, y));
     }
 
     public void registerTileEffect(int x, int y, boolean isTrap) {

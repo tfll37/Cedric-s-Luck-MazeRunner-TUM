@@ -24,7 +24,7 @@ public class Heart extends Collectable{
         }
         if (!collected && player.getTilePosition(16, 16).x == this.getTilePosition(16, 16).x && player.getTilePosition(16, 16).y == this.getTilePosition(16, 16).y) {
             collected = true;
-            player.increaseHealth(50);
+            player.heal(50);
 
         }
 

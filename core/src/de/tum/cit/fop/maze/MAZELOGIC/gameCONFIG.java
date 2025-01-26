@@ -19,4 +19,9 @@ public class gameCONFIG {
     public static final float LIGHT_SHAKE_INTENSITY = 3.0f;
     public static final float HEAVY_SHAKE_DURATION = 0.4f;
     public static final float HEAVY_SHAKE_INTENSITY = 7.0f;
+
+
+    public static final float WALK_MOVE_TIME = 0.07f;
+    public static final float RUN_MOVE_TIME = 0.04f;  // Faster movement time when running
+    private boolean isRunning = false;
 }

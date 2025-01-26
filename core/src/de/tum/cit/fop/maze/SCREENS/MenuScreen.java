@@ -96,7 +96,7 @@ public class MenuScreen implements Screen {
         // Create level selection buttons
         for (LevelMNGR.LevelInfo level : LevelMNGR.getAvailableLevels()) {
             TextButton levelButton = new TextButton(
-                    "Level " + level.name() + " (" + level.mapSize() + "x" + level.mapSize() + ")",
+                    level.name() + " "+ "(" + level.difficulty() + ")",
                     game.getSkin()
             );levelButton.addListener(new ChangeListener() {
                 @Override

@@ -20,11 +20,11 @@ public class MazeLoader {
     private final TileEffectMNGR tileEffectMNGR;
 
     public MazeLoader(String propertiesPath, TiledMap tiledMap, TileEffectMNGR tileEffectMNGR) {
-        this.tileEffectMNGR = new TileEffectMNGR();
         this.tileOverrides = new HashMap<>();
         this.properties = loadProperties(propertiesPath);
         this.tiledMap = tiledMap;
         this.mapHeight = tiledMap.getProperties().get("height", Integer.class);
+        this.tileEffectMNGR = tileEffectMNGR;
         parseProperties();
     }
 
@@ -45,24 +45,28 @@ public class MazeLoader {
                 String[] coords = key.split(",");
                 if (coords.length == 2) {
                     int x = Integer.parseInt(coords[0]);
-                    int originalY = Integer.parseInt(coords[1]);
-                    int transformedY = mapHeight - 1 - originalY;
+                    int y = Integer.parseInt(coords[1]);
+                    int transformedY = mapHeight - 1 - y;
                     int tileType = Integer.parseInt(properties.getProperty(key));
 
-                    tileOverrides.put(new GridPoint2(x, transformedY), tileType);
+                    if (tileType == TileEffectMNGR.POWERUP_MARKER) {
+                        // Register powerup and get its tile ID
+                        TileEffectMNGR.PowerUpType powerUp = TileEffectMNGR.getRandomPowerUp();
+                        tileOverrides.put(new GridPoint2(x, transformedY), powerUp.getTileId());
 
 
-                    if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                        tileEffectMNGR.registerPowerUp(x, transformedY, powerUp);
+                    } else if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                        // Register trap and get its tile ID
+                        TileEffectMNGR.TrapType trap = TileEffectMNGR.getRandomTrap();
+                        tileOverrides.put(new GridPoint2(x, transformedY), trap.getTileId());
                         tileEffectMNGR.registerTrapLocation(x, transformedY);
-                        // Get the actual trap tile ID for rendering
-                        int trapTileId = tileEffectMNGR.getTileEffectId(x, transformedY);
-                        tileOverrides.put(new GridPoint2(x, transformedY), trapTileId);
                     } else {
                         tileOverrides.put(new GridPoint2(x, transformedY), tileType);
                     }
                 }
             } catch (NumberFormatException e) {
-                Gdx.app.error("MazeLoader", "Invalid property format: " + key);
+                Gdx.app.error("MazeLoader", "Invalid property format: " + key, e);
             }
         }
     }

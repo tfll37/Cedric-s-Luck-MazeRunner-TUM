@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LevelMNGR {
-    // Simple level metadata
+
     public record LevelInfo(
             String name,
             String description,
             int mapSize,
             String propertiesFile,
+            String difficulty,
             int Level
     ) {
     }
@@ -17,21 +18,22 @@ public class LevelMNGR {
     private static final List<LevelInfo> availableLevels = new ArrayList<>();
 
     static {
-        // Register available levels
         availableLevels.add(new LevelInfo(
                 "Entrance",
                 "A small beginner maze",
                 16,
                 "maps/level-1-1.properties",
-                1
+                "Easy",
+                0
         ));
 
         availableLevels.add(new LevelInfo(
-                "The Treshhold",
+                "The Threshold",
                 "",
                 16,
                 "maps/level-1-2.properties",
-                2
+                "Easy",
+                1
         ));
 
         availableLevels.add(new LevelInfo(
@@ -39,7 +41,8 @@ public class LevelMNGR {
                 "Larger maze with more complexity",
                 32,
                 "maps/level-2-1.properties",
-                3
+                "Medium",
+                2
         ));
 
         availableLevels.add(new LevelInfo(
@@ -47,7 +50,8 @@ public class LevelMNGR {
                 "It's too slimey here. I wonder why?",
                 32,
                 "maps/level-2-2.properties",
-                4
+                "Medium",
+                3
         ));
 
         availableLevels.add(new LevelInfo(
@@ -55,7 +59,8 @@ public class LevelMNGR {
                 "It is hot in here",
                 64,
                 "maps/level-3-1.properties",
-                5
+                "Hard",
+                4
         ));
 
         availableLevels.add(new LevelInfo(
@@ -63,7 +68,8 @@ public class LevelMNGR {
                 "Massive maze for experts",
                 64,
                 "maps/level-3-2.properties",
-                6
+                "Hard",
+                5
         ));
     }
 
@@ -78,12 +84,11 @@ public class LevelMNGR {
         return null;
     }
 
-    // Add to LevelMNGR.java
     public static String getTmxPathForSize(int size) {
         return switch (size) {
-            case 16 -> "assets/Gamemap16.tmx";
-            case 32 -> "assets/Gamemap32.tmx";
-            case 64 -> "assets/Gamemap64.tmx";
+            case 16 -> "assets/Tiled/Gamemap16.tmx";
+            case 32 -> "assets/Tiled/Gamemap32.tmx";
+            case 64 -> "assets/Tiled/Gamemap64.tmx";
             default -> throw new IllegalArgumentException("No TMX template for size: " + size);
         };
     }
