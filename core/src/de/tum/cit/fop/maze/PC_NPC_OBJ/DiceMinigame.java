@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze.PC_NPC_OBJ;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
@@ -15,11 +17,16 @@ public class DiceMinigame {
     private float resultTimer;     // how long we’ve been showing the face
     private float resultDisplayTime = 1.5f; // how long to show final face
 
+    private Sound diceRollingSound;
+
     public DiceMinigame(AnimationMNGR animationMNGR) {
         this.animationMNGR = animationMNGR;
         this.active = false;
-        this.time   = 0f;
+        this.time = 0f;
         this.activeDuration = 2.0f;
+
+        // Load the sound for rolling the dice
+        diceRollingSound = Gdx.audio.newSound(Gdx.files.internal("assets//music//94031__loafdv__dice-roll.mp3"));
     }
 
     public void setActiveDuration(float duration) {
@@ -28,21 +35,32 @@ public class DiceMinigame {
 
     public void start() {
         active = true;
+        time = 0f;
+        diceResult = -1;
         time   = 0f;
         diceResult    =         (int) (Math.random() * 6) + 1;
 
         showingResult = false;
+
+        // Play dice rolling sound
+        diceRollingSound.play();
     }
 
 
     public void stop() {
         active = false;
+
+        // Stop the dice rolling sound (optional, depending on duration)
+        diceRollingSound.stop();
+
+        // Roll the dice
+        diceResult = (int) (Math.random() * 6) + 1;
         // roll the dice
         System.out.println("Dice roll result: " + diceResult);
 
-        // start showing the final face
+        // Start showing the final face
         showingResult = true;
-        resultTimer   = 0f;
+        resultTimer = 0f;
     }
 
     public boolean isActive() {
@@ -61,9 +79,9 @@ public class DiceMinigame {
         if (showingResult) {
             resultTimer += delta;
             if (resultTimer > resultDisplayTime) {
-                // hide the face after 1.5s
+                // Hide the face after 1.5s
                 showingResult = false;
-                diceResult    = -1;
+                diceResult = -1;
             }
         }
     }
@@ -86,8 +104,12 @@ public class DiceMinigame {
         }
         batch.end();
     }
+
     public int getDiceResult() {
         return diceResult;
     }
-}
 
+    public void dispose() {
+        diceRollingSound.dispose();
+    }
+}

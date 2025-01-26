@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -41,6 +42,9 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> characterDownHitAnimation;
     private LevelMNGR.LevelInfo currentLevel;
 
+    // Background music
+    private Music backgroundMusic;
+
     /**
      * CONSTRUCTOR
      *
@@ -51,7 +55,7 @@ public class MazeRunnerGame extends Game {
     }
 
     /**
-     * Called when the game is created. Initializes the SpriteBatch and Skin.
+     * Called when the game is created. Initializes the SpriteBatch, Skin, and Music.
      */
     @Override
     public void create() {
@@ -65,12 +69,14 @@ public class MazeRunnerGame extends Game {
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
 
-        //                              MUSIC
-//        Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
-//        backgroundMusic.setLooping(true);
-//        backgroundMusic.play();
+        // Initialize and play background music
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/music/455516__ispeakwaves__the-plan-upbeat-loop-no-voice-edit-mono-track.ogg"));
+        backgroundMusic.setLooping(true); // Loop the music
+        backgroundMusic.setVolume(0.3f); // Set the volume (0.0 = mute, 1.0 = max)
+        backgroundMusic.play(); // Start playing the music
 
         goToWelcomeScreen();
+
         backgroundTexture = new Texture(Gdx.files.internal("assets/DEV_grid.png"));
     }
 
@@ -136,6 +142,7 @@ public class MazeRunnerGame extends Game {
         getScreen().dispose(); // Dispose the current screen
         spriteBatch.dispose(); // Dispose the spriteBatch
         skin.dispose(); // Dispose the skin
+        backgroundMusic.dispose(); // Dispose the background music
     }
 
     // Getter methods
@@ -151,9 +158,7 @@ public class MazeRunnerGame extends Game {
         return spriteBatch;
     }
 
-
     /**
-     *
      * Getters and Setters for the TEXTURES
      */
     public Texture getBackgroundTexture() {
@@ -164,9 +169,7 @@ public class MazeRunnerGame extends Game {
         this.backgroundTexture = backgroundTexture;
     }
 
-
     /**
-     *
      * GETTERS AND SETTERS for Character Animation
      */
     public void setCharacterDownAnimation(Animation<TextureRegion> characterDownAnimation) {

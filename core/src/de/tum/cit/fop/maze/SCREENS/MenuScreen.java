@@ -3,6 +3,7 @@ package de.tum.cit.fop.maze.SCREENS;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -13,6 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -31,10 +35,14 @@ public class MenuScreen implements Screen {
     private Animation<Texture> animation;
     private float elapsedTime = 0;
     private Music backgroundMusic;
+    private Sound buttonClickSound;
 
     public MenuScreen(MazeRunnerGame game) {
         this.game = game;
         this.spriteBatch = game.getSpriteBatch();
+
+        // Load button click sound
+        buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("music/button-click-289742.mp3"));
 
         // Set up the camera and viewport
         var camera = new com.badlogic.gdx.graphics.OrthographicCamera();
@@ -43,24 +51,47 @@ public class MenuScreen implements Screen {
 
         // Load animation frames from the menuvid folder
         Array<Texture> frames = new Array<>();
-        for (int i = 1; i <= 200; i += 5) { // Assuming 200 frames
+        for (int i = 12; i <= 181; i += 2) { // Assuming 200 frames
             String framePath = String.format("menuvid/ezgif-frame-%03d.jpg", i);
             frames.add(new Texture(Gdx.files.internal(framePath)));
         }
         animation = new Animation<>(0.1f, frames, Animation.PlayMode.LOOP);
+
+        // Load button textures
+        Texture normalTexture = new Texture(Gdx.files.internal("assets/Buttons/[1] Normal.png"));
+        Texture hoverTexture = new Texture(Gdx.files.internal("assets/Buttons/[3] Hover.png"));
+        Texture clickedTexture = new Texture(Gdx.files.internal("assets/Buttons/[2] Clicked.png"));
+
+        Drawable normalDrawable = new TextureRegionDrawable(normalTexture);
+        Drawable hoverDrawable = new TextureRegionDrawable(hoverTexture);
+        Drawable clickedDrawable = new TextureRegionDrawable(clickedTexture);
 
         // Set up the UI
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        table.add(new Label("Diddy Party Escape", game.getSkin(), "title")).padBottom(80).row();
+        table.add(new Label("Diddy Party Escape", game.getSkin(), "title"))
+                .padTop(9)
+                .padBottom(200)
+                .row();
 
-        TextButton goToGameButton = new TextButton("Go To Game", game.getSkin());
-        TextButton testingButton = new TextButton("Testing", game.getSkin());
-        table.add(goToGameButton).width(300).row();
-        table.add(testingButton).width(350).row();
+        // Start Game Button
+        TextButton.TextButtonStyle startButtonStyle = new TextButton.TextButtonStyle();
+        startButtonStyle.up = normalDrawable;
+        startButtonStyle.over = hoverDrawable;
+        startButtonStyle.down = clickedDrawable;
+        startButtonStyle.font = game.getSkin().getFont("title");
 
+        TextButton startGameButton = new TextButton("Start Game", startButtonStyle);
+        startGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // Play button click sound
+                buttonClickSound.play();
+
+                // Dispose buttons and start game
+                disposeButtons();
         // Set up button listeners
         // Create level selection buttons
         for (LevelMNGR.LevelInfo level : LevelMNGR.getAvailableLevels()) {
@@ -78,12 +109,45 @@ public class MenuScreen implements Screen {
             table.add(levelButton).width(300).padBottom(20).row();
         }
 
-        table.add(testingButton).width(350).row();
+
+                // Start Game action
+                LevelMNGR.LevelInfo tutorialLevel = LevelMNGR.getAvailableLevels().get(0); // Assuming first level is tutorial
+                game.goToGame(tutorialLevel);
+            }
+        });
+        table.add(startGameButton).width(600).height(100).padBottom(60).row();
+        startGameButton.getLabel().setAlignment(Align.center);
+
+        // Settings Button
+        TextButton.TextButtonStyle settingsButtonStyle = new TextButton.TextButtonStyle();
+        settingsButtonStyle.up = normalDrawable;
+        settingsButtonStyle.over = hoverDrawable;
+        settingsButtonStyle.down = clickedDrawable;
+        settingsButtonStyle.font = game.getSkin().getFont("title");
+
+        TextButton settingsButton = new TextButton("Settings", settingsButtonStyle);
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // Play button click sound
+                buttonClickSound.play();
+
+                // Dispose buttons and open settings (currently does nothing)
+                disposeButtons();
+            }
+        });
+        table.add(settingsButton).width(600).height(100).padBottom(60).row();
 
         // Load background music
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/i must rest here a moment - spiritual brother.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets//music//Wallpaper Engine - Batman Arkham Knight - Batman Overlooking Gotham from Wayne Tower_1.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
+
+        startButtonStyle.font.getData().setScale(0.7f);
+        settingsButtonStyle.font.getData().setScale(0.7f);
+    }
+    private void disposeButtons() {
+        stage.clear();
     }
 
     @Override
@@ -123,6 +187,9 @@ public class MenuScreen implements Screen {
         }
         if (backgroundMusic != null) {
             backgroundMusic.dispose();
+        }
+        if (buttonClickSound != null) {
+            buttonClickSound.dispose();
         }
     }
 
