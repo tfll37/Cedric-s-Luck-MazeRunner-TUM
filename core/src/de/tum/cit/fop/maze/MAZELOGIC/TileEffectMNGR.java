@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class TileEffectMNGR {
-    public static final int TRAP_MARKER = 3;
+    public static final int TRAP_MARKER = 2;
     public static final int POWERUP_MARKER = 4;
 
     // Base interface for all effects

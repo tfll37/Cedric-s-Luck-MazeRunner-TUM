@@ -29,10 +29,14 @@ public class MazeLoader {
     }
 
     private Properties loadProperties(String path) {
+        Gdx.app.log("MazeLoader", "Loading properties from: " + path);
+
         Properties props = new Properties();
         try {
             FileHandle fileHandle = Gdx.files.internal(path);
             props.load(fileHandle.reader());
+            Gdx.app.log("MazeLoader", "Loaded " + props.stringPropertyNames().size() + " keys from " + path);
+
         } catch (Exception e) {
             throw new GdxRuntimeException("Failed to load properties file: " + path, e);
         }
@@ -41,12 +45,14 @@ public class MazeLoader {
 
     private void parseProperties() {
         for (String key : properties.stringPropertyNames()) {
+            Gdx.app.log("MazeLoader", "Key: " + key + " => " + properties.getProperty(key));
+
             try {
                 String[] coords = key.split(",");
                 if (coords.length == 2) {
                     int x = Integer.parseInt(coords[0]);
                     int y = Integer.parseInt(coords[1]);
-                    int transformedY = mapHeight - 1 - y;
+                    int transformedY =  y;
                     int tileType = Integer.parseInt(properties.getProperty(key));
 
                     if (tileType == TileEffectMNGR.POWERUP_MARKER) {
@@ -57,6 +63,8 @@ public class MazeLoader {
 
                         tileEffectMNGR.registerPowerUp(x, transformedY, powerUp);
                     } else if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                        Gdx.app.log("MazeLoader", "Registered trap at (" + x + ", " + transformedY + ")");
+
                         // Register trap and get its tile ID
                         TileEffectMNGR.TrapType trap = TileEffectMNGR.getRandomTrap();
                         tileOverrides.put(new GridPoint2(x, transformedY), trap.getTileId());

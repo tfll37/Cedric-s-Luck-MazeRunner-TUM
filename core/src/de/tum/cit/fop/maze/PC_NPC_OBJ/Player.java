@@ -77,9 +77,15 @@ public class Player extends Actor {
 
         TileEffectMNGR trapManager = labyrinth.getTrapMNGR();
         TileEffectMNGR.TrapType trap = trapManager.checkTrap(position);
-//        if (trap != null) {
-//            trapManager.applyTrapEffect(this, trap);
-//        }
+        int tileX = (int)(position.x / 16);   // or tileWidth
+        int tileY = (int)(position.y / 16);   // or tileHeight
+        Gdx.app.log("Player", "Checking trap at (" + tileX + ", " + tileY + ") => " + trap);
+
+        if (trap != null) {
+            Gdx.app.log("Player", "Stepped on trap: " + trap.getName());
+
+            trapManager.applyEffect(this, trap);
+        }
 
         if (isMoving) {
             // Speed up the movement by reducing totalMoveTime
