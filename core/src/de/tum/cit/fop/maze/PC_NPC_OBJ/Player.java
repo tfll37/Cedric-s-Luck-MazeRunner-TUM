@@ -86,6 +86,15 @@ public class Player extends Actor {
 
             trapManager.applyEffect(this, trap);
         }
+        TileEffectMNGR.PowerUpType powerUp = trapManager.getPowerUpAtLocation(tileX, tileY);
+
+        if (powerUp != null) {
+            // Actually apply the effect:
+            trapManager.applyEffect(this, powerUp);
+
+            // If you only want to pick it up once, remove it:
+            // trapManager.removePowerUp(tileX, tileY);
+        }
 
         if (isMoving) {
             // Speed up the movement by reducing totalMoveTime
