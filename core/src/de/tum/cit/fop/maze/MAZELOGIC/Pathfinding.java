@@ -65,8 +65,8 @@ public class Pathfinding {
     static class Node {
         Vector2 position;
         Node parent;
-        int g; // cost from start to this node
-        int h; // heuristic cost to goal
+        int g;
+        int h;
 
         Node(Vector2 position) {
             this.position = position;

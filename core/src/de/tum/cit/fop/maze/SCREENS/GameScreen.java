@@ -155,7 +155,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             if (nextLevel != null) {
                 game.goToGame(nextLevel);
             } else {
-                game.goToMenu(); // If no more levels
+                game.goToMenu();
             }
         }
 
@@ -179,7 +179,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             if(!dice.isGotcolelcted()){
                 gameUI.updateScore(diceMinigame.getDiceResult());
             }
-            diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
+            diceMinigame.setActiveDuration(3.0f);
 
         }
         if (!diceMinigame.isActive() && dice.isMinigameActive()) {
@@ -188,21 +188,15 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             int diceResult = diceMinigame.getDiceResult();
 
             if (diceResult > 0) {
-                // Subtract from the total needed to unlock
                 rollsNeededToOpenDoor -= diceResult;
-                // Make sure it doesn’t go below zero
                 if (rollsNeededToOpenDoor < 0) {
                     rollsNeededToOpenDoor = 0;
                 }
 
-                // Update the UI label
                 gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
 
-                // If we've reached zero or less, trigger door unlock (or load next level, etc.)
                 if (rollsNeededToOpenDoor <= 0) {
-                    // Door is considered unlocked -> do what you need:
                     System.out.println("Door unlocked!");
-                    // e.g., labyrinth.openDoor(); or next level...
                 }
             }
             dice.deactivateMinigame();
@@ -210,7 +204,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         diceMinigame.update(delta);
         if (!diceMinigame.isActive() && dice.isMinigameActive()) {
-            dice.deactivateMinigame(); // Disable the flag in the Dice class
+            dice.deactivateMinigame();
         }
 
 
@@ -232,7 +226,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         if (diceMinigame.isActive()) {
             System.out.println("Dice Minigame is active");
         }
-        // In your GameScreen render or update method
         player.getFireBall().render(batch);
 
         Vector2 playerPos = player.getPosition();
@@ -265,7 +258,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
     }
 
-    // InputProcessor methods
     @Override
     public boolean scrolled(float amountX, float amountY) {
         cameraMNGR.handleScroll(amountY);
@@ -280,9 +272,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     }
     @Override
     public void onDiceRolled(int diceResult) {
-        // This method is automatically called when `stop()` is invoked in `DiceMinigame`
 
-        // Decrement logic
         rollsNeededToOpenDoor -= diceResult;
         if (rollsNeededToOpenDoor < 0) {
             rollsNeededToOpenDoor = 0;
@@ -291,10 +281,8 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         if (rollsNeededToOpenDoor <= 0) {
             System.out.println("Door unlocked!");
-            // labyrinth.openDoor() or next level logic
         }
 
-        // Deactivate the dice
         dice.deactivateMinigame();
     }
     @Override
@@ -334,7 +322,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public void hide() {
-        // Remove this screen as the input processor when hiding
         Gdx.input.setInputProcessor(null);
     }
 
@@ -346,7 +333,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public void show() {
-        // Called when this screen becomes the current screen.
     }
 
     @Override
@@ -363,15 +349,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         if (rollsNeededToOpenDoor <= 0) {
             System.out.println("Door unlocked!");
-            // labyrinth.openDoor() or switch level
         }
 
-        // Deactivate the dice
         dice.deactivateMinigame();
     }
     @Override
     public void dispose() {
         labyrinth.dispose();
-//        gameUI.dispose();
     }
 }

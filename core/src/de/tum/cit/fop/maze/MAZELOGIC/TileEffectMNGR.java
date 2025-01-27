@@ -15,7 +15,6 @@ public class TileEffectMNGR {
     private final ObjectMap<Vector2, TileEffect> tileEffects;
     private final Random random;
 
-    // Base interface for all effects
     public interface TileEffect {
         int getTileId();
 
@@ -24,7 +23,6 @@ public class TileEffectMNGR {
         void applyEffect(Player player);
     }
 
-    // Define trap types and their corresponding tile IDs
     public enum TrapType implements TileEffect {
         POISON(2057, "Poison", 5f, 1.0f),      // damage over time
         SLOWDOWN(2060, "Slowdown", 0f, 0.5f),  // slows player by 50%
@@ -140,7 +138,6 @@ public class TileEffectMNGR {
 
     public void registerPowerUp(int x, int y) {
         Vector2 position = new Vector2(x, y);
-        // Only register if not already present
         if (!powerUpLocations.containsKey(position)) {
             PowerUpType randomPowerUp = getRandomPowerUp();
             powerUpLocations.put(position, randomPowerUp);
@@ -169,7 +166,6 @@ public class TileEffectMNGR {
 
     public void registerTrapLocation(int x, int y) {
         Vector2 position = new Vector2(x, y);
-        // Only register if not already present
         if (!trapLocations.containsKey(position)) {
             TrapType randomTrap = getRandomTrap();
             trapLocations.put(position, randomTrap);
@@ -192,7 +188,6 @@ public class TileEffectMNGR {
         int tileY = (int) (player.getPosition().y / 16);
         Vector2 tilePos = new Vector2(tileX, tileY);
 
-        // Check and apply trap effects
         TrapType trap = trapLocations.get(tilePos);
         if (trap != null) {
             System.out.println("Applying " + trap.getName() + " trap effect");
@@ -200,7 +195,6 @@ public class TileEffectMNGR {
             trapLocations.remove(tilePos); // Remove after triggering
         }
 
-        // Check and apply powerup effects
         PowerUpType powerUp = powerUpLocations.get(tilePos);
         if (powerUp != null) {
             System.out.println("Applying " + powerUp.getName() + " powerup effect");

@@ -41,15 +41,12 @@ public class MenuScreen implements Screen {
         this.game = game;
         this.spriteBatch = game.getSpriteBatch();
 
-        // Load button click sound
         buttonClickSound = Gdx.audio.newSound(Gdx.files.internal("music/button-click-289742.mp3"));
 
-        // Set up the camera and viewport
         var camera = new com.badlogic.gdx.graphics.OrthographicCamera();
         Viewport viewport = new ScreenViewport(camera);
         stage = new Stage(viewport, game.getSpriteBatch());
 
-        // Load animation frames from the menuvid folder
         Array<Texture> frames = new Array<>();
         for (int i = 12; i <= 181; i += 2) { // Assuming 200 frames
             String framePath = String.format("menuvid/ezgif-frame-%03d.jpg", i);
@@ -57,7 +54,6 @@ public class MenuScreen implements Screen {
         }
         animation = new Animation<>(0.1f, frames, Animation.PlayMode.LOOP);
 
-        // Load button textures
         Texture normalTexture = new Texture(Gdx.files.internal("assets/Buttons/[1] Normal.png"));
         Texture hoverTexture = new Texture(Gdx.files.internal("assets/Buttons/[3] Hover.png"));
         Texture clickedTexture = new Texture(Gdx.files.internal("assets/Buttons/[2] Clicked.png"));
@@ -66,7 +62,6 @@ public class MenuScreen implements Screen {
         Drawable hoverDrawable = new TextureRegionDrawable(hoverTexture);
         Drawable clickedDrawable = new TextureRegionDrawable(clickedTexture);
 
-        // Set up the UI
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
@@ -87,13 +82,9 @@ public class MenuScreen implements Screen {
         startGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Play button click sound
                 buttonClickSound.play();
 
-                // Dispose buttons and start game
                 disposeButtons();
-        // Set up button listeners
-        // Create level selection buttons
         for (LevelMNGR.LevelInfo level : LevelMNGR.getAvailableLevels()) {
             TextButton levelButton = new TextButton(
                     level.name() + " "+ "(" + level.difficulty() + ")",
@@ -101,8 +92,6 @@ public class MenuScreen implements Screen {
             );levelButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    // If we had a paused game for that level, we’ll resume it
-                    // Otherwise we’ll create a new GameScreen
                     game.goToGame(level);
                 }
             });
@@ -110,7 +99,6 @@ public class MenuScreen implements Screen {
         }
 
 
-                // Start Game action
                 LevelMNGR.LevelInfo tutorialLevel = LevelMNGR.getAvailableLevels().get(0); // Assuming first level is tutorial
                 game.goToGame(tutorialLevel);
             }
@@ -118,7 +106,6 @@ public class MenuScreen implements Screen {
         table.add(startGameButton).width(600).height(100).padBottom(60).row();
         startGameButton.getLabel().setAlignment(Align.center);
 
-        // Settings Button
         TextButton.TextButtonStyle settingsButtonStyle = new TextButton.TextButtonStyle();
         settingsButtonStyle.up = normalDrawable;
         settingsButtonStyle.over = hoverDrawable;
@@ -129,16 +116,13 @@ public class MenuScreen implements Screen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Play button click sound
                 buttonClickSound.play();
 
-                // Dispose buttons and open settings (currently does nothing)
                 disposeButtons();
             }
         });
         table.add(settingsButton).width(600).height(100).padBottom(60).row();
 
-        // Load background music
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets//music//Wallpaper Engine - Batman Arkham Knight - Batman Overlooking Gotham from Wayne Tower_1.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
@@ -154,13 +138,10 @@ public class MenuScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Update elapsed time
         elapsedTime += delta;
 
-        // Get the current frame of the animation
         Texture currentFrame = animation.getKeyFrame(elapsedTime);
 
-        // Draw the animated background
         spriteBatch.begin();
         spriteBatch.draw(
                 currentFrame,
@@ -169,7 +150,6 @@ public class MenuScreen implements Screen {
         );
         spriteBatch.end();
 
-        // Draw the UI
         stage.act(Math.min(delta, 1 / 30f));
         stage.draw();
     }
