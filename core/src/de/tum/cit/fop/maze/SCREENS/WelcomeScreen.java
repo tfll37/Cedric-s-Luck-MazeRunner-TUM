@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -15,12 +14,19 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WelcomeScreen implements Screen {
-    //variables
+    // Variables
     private final Stage stage;
     private final MazeRunnerGame game;
-    private final Label pressKeyLabel;
+    private final Label storyLabel;
 
+    private final List<String> storyLines;
+    private int currentLineIndex;
+    private int clickCount;
+    private boolean waitForNextClick;
 
     public WelcomeScreen(MazeRunnerGame game) {
         this.game = game;
@@ -31,87 +37,82 @@ public class WelcomeScreen implements Screen {
         Viewport viewport = new ScreenViewport(camera);
         stage = new Stage(viewport, game.getSpriteBatch());
 
-        pressKeyLabel = new Label("Press Key", game.getSkin(), "default");
-        pressKeyLabel.setFontScale(5.5f);
-        pressKeyLabel.setAlignment(Align.center);
-        pressKeyLabel.setColor(Color.RED);
+        // Initialize story text lines
+        storyLines = new ArrayList<>();
+        storyLines.add("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
+        storyLines.add("Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+        storyLines.add("Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.");
+        storyLines.add("Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.");
+        currentLineIndex = 0;
+        clickCount = 0;
+        waitForNextClick = false;
+
+        storyLabel = new Label(storyLines.get(currentLineIndex), game.getSkin(), "default");
+        storyLabel.setFontScale(3.5f);
+        storyLabel.setAlignment(Align.center);
+        storyLabel.setWrap(true);
+        storyLabel.setColor(Color.WHITE);
 
         Table table = new Table();
         table.setFillParent(true);
-        table.add(pressKeyLabel).expandX().center();
+        table.add(storyLabel).expand().center().pad(50).width(stage.getViewport().getWorldWidth() * 0.8f);
         stage.addActor(table);
-
-//        TextButton startButton = new TextButton("NNNN", game.getSkin());
-//        startButton.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                game.goToMenu();
-//            }
-//        });
-//
-//        table.add(startButton).width(500).row();
     }
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1); // Set background to black
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // Ensure backgroundTexture is not null
-        if (game.getBackgroundTexture() != null) {
-            game.getSpriteBatch().begin();
-            game.getSpriteBatch().draw(
-                    game.getBackgroundTexture(),
-                    0, 0,
-                    stage.getViewport().getWorldWidth(),
-                    stage.getViewport().getWorldHeight()
-            );
-            game.getSpriteBatch().end();
-        }
-
-        // Pulsing effect for the label
-        float alpha = Math.abs(MathUtils.sinDeg((System.currentTimeMillis() / 10) % 360));
-        pressKeyLabel.getColor().a = alpha;// Adjust transparency dynamically
-
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
 
-        // Check for key press or touch input
+        // Handle input to advance the story or transition to the menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isTouched()) {
-            game.goToMenu(); // Transition to MenuScreen
+            if (waitForNextClick) {
+                waitForNextClick = false;
+                return;
+            }
+
+            clickCount++;
+            if (clickCount < 3) {
+                if (currentLineIndex < storyLines.size() - 1) {
+                    currentLineIndex++;
+                    storyLabel.setText(storyLines.get(currentLineIndex));
+                    if (currentLineIndex == 1) {
+                        waitForNextClick = true; // Require another click from the second text
+                    }
+                }
+            } else {
+                game.goToMenu(); // Transition to MenuScreen
+            }
         }
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true); // Update the stage viewport on resize
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-        // Dispose of the stage when screen is disposed
         stage.dispose();
     }
 
     @Override
     public void show() {
-        // Set the input processor so the stage can receive input events
         Gdx.input.setInputProcessor(stage);
     }
-
 }
