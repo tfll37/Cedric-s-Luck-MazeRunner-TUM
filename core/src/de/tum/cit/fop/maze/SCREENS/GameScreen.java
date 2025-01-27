@@ -52,7 +52,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private boolean levelComplete = false;
 
 
-
     public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.camera = game.getCamera();
@@ -194,14 +193,14 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
             if (currentLevelScore >= requiredScore) {
-            // Load next level
-            int nextLevelIndex = level.Level() + 1;
-            LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
-            if (nextLevel != null) {
-                game.goToGame(nextLevel);
-            } else {
-                game.goToMenu(); // If no more levels
-            }
+                // Load next level
+                int nextLevelIndex = level.Level() + 1;
+                LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
+                if (nextLevel != null) {
+                    game.goToGame(nextLevel);
+                } else {
+                    game.goToMenu(); // If no more levels
+                }
             } else {
                 // Display message that more score is needed
                 gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
@@ -433,4 +432,5 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         labyrinth.dispose();
 //        gameUI.dispose();
     }
+
 }
