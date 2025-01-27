@@ -21,30 +21,23 @@ public class Background {
     }
 
     public void loadTiledMap(String tmxPath, String propertiesPath) {
-        // Load the base TMX map
         tiledMap = new TmxMapLoader().load(tmxPath);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
 
-        // Load maze configuration
         mazeLoader = new MazeLoader(propertiesPath, tiledMap, tileEffectMNGR);
 
-        // Update maze layout in proper order
         updateMazeLayout();
     }
 
     private void updateMazeLayout() {
-        // 1. First set up base layer with walls and floor
         TiledMapTileLayer baseLayer = getBaseLayer();
         mazeLoader.setTiledMap(tiledMap);
         updateBasicTiles(baseLayer);
 
-        // 2. Create special areas on base layer (will overwrite existing tiles)
         SpecialAreaHNDLR.getInstance(tiledMap, mazeLoader).createSpecialAreas();
 
-        // 3. Orient all walls after everything is placed on base layer
         mazeLoader.orientWallTiles(baseLayer);
 
-        // 4. Finally, handle traps on second layer
         TiledMapTileLayer trapLayer = getSecondLayer();
         if (trapLayer != null) {
             trapLayer = new TiledMapTileLayer(baseLayer.getWidth(), baseLayer.getHeight(),
@@ -59,7 +52,6 @@ public class Background {
     }
 
     private void updateBasicTiles(TiledMapTileLayer layer) {
-        // Get all overrides except traps
         var overrides = mazeLoader.getAllOverrides();
 
         for (var entry : overrides.entrySet()) {
@@ -75,10 +67,7 @@ public class Background {
         }
     }
 
-//    private boolean isSpecialAreaTile(int tileType) {
-//        // Add your special area tile types here
-//        return tileType == SPAWN_MARKER || tileType == EXIT_MARKER;
-//    }
+
 
     private void updateTrapLayer(TiledMapTileLayer layer) {
         var overrides = mazeLoader.getAllOverrides();
@@ -122,18 +111,14 @@ public class Background {
     }
 
     private void updateLayer(TiledMapTileLayer layer) {
-        // Get all overrides from the properties file
         var overrides = mazeLoader.getAllOverrides();
 
-        // Apply overrides to the map
         for (var entry : overrides.entrySet()) {
             var pos = entry.getKey();
             int tileType = entry.getValue();
 
-            // Convert tile type to actual tile ID
             int tileId = mazeLoader.getTileId(tileType);
 
-            // Update the cell in the layer
             TiledMapTileLayer.Cell cell = layer.getCell(pos.x, pos.y);
             if (cell == null) {
                 cell = new TiledMapTileLayer.Cell();
@@ -142,7 +127,6 @@ public class Background {
             cell.setTile(tiledMap.getTileSets().getTile(tileId));
         }
 
-//        mazeLoader.orientWallTiles(layer);
     }
 
     public TiledMapTileLayer getBaseLayer() {

@@ -18,7 +18,6 @@ public class Labyrinth extends TiledMap {
     private final TileEffectMNGR tileEffectMNGR;
 
     public Labyrinth(SpriteBatch spriteBatch, String tmxFile, String propertiesFile, TileEffectMNGR tileEffectMNGR) {
-        // Reset the SpecialAreaHNDLR when creating a new labyrinth
         SpecialAreaHNDLR.reset();
         this.objects = new Array<>();
         this.background = new Background(spriteBatch);

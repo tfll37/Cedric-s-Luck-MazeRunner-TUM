@@ -61,7 +61,7 @@ public class SpecialAreaHNDLR {
 
     public void createSpecialAreas() {
         if (areasCreated) {
-            return; // Prevent duplicate creation
+            return;
         }
         TiledMapTileLayer baseLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
         int width = baseLayer.getWidth();
@@ -106,13 +106,11 @@ public class SpecialAreaHNDLR {
             return;
         }
 
-        // Get or create cell
         TiledMapTileLayer.Cell cell = getOrCreateCell(layer, worldX, worldY);
 
         int tileId;
 
-        // Special handling for portal/door placement in center column
-        if (relativeX == 1) { // Center column
+        if (relativeX == 1) {
             if (isSpawn) {
                 if (relativeY == 0) tileId = SpawnTiles.SPAWN_PORTAL;      // Bottom - Portal
                 else if (relativeY == 1) tileId = SpawnTiles.CENTER;       // Middle - Spawn point
@@ -123,12 +121,10 @@ public class SpecialAreaHNDLR {
                 else tileId = ExitTiles.BOTTOM_EDGE;                       // Bottom
             }
         } else {
-            // Handle edge and corner tiles using bitmask
             int mask = calculateBitmask(relativeX, relativeY, AREA_WIDTH, AREA_HEIGHT);
             tileId = getTileIdFromMask(mask, relativeX == 1 && relativeY == 1, isSpawn);
         }
 
-        // Set the tile and overwrite any existing tile
         TiledMapTile tile = tiledMap.getTileSets().getTile(tileId);
         if (tile != null) {
             cell.setTile(tile);
@@ -167,7 +163,6 @@ public class SpecialAreaHNDLR {
 
     private void findSpawnPoint(TiledMapTileLayer layer, int width, int height, float tileWidth,
                                 float tileHeight) {
-        // Start from top-left corner
         for (int y = height - 1; y >= 0; y--) {
             for (int x = 0; x < width; x++) {
                 if (TilePropMNGR.isTileWalkable(layer, x, y)) {
@@ -181,7 +176,6 @@ public class SpecialAreaHNDLR {
     }
 
     private void findExitPoint(TiledMapTileLayer layer, int width, int height, float tileWidth, float tileHeight) {
-        // Start from bottom-right corner
         for (int y = 0; y < height; y++) {
             for (int x = width - 1; x >= 0; x--) {
                 if (TilePropMNGR.isTileWalkable(layer, x, y)) {
@@ -190,7 +184,6 @@ public class SpecialAreaHNDLR {
                 }
             }
         }
-        // Fallback to default if no suitable location found
         exitPoint = new Vector2((width - 2) * tileWidth, (height - 2) * tileHeight);
     }
 

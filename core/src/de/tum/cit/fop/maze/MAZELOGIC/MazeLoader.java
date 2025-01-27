@@ -164,11 +164,9 @@ public class MazeLoader {
 
     private String getOrientationFromMask(int mask) {
         switch (mask) {
-            // Full cross (all directions)
             case NORTH | EAST | SOUTH | WEST:
                 return "cross_4directional";
 
-            // T-junctions
             case EAST | SOUTH | WEST:
                 return "top_horizontal_3exits";
             case NORTH | EAST | WEST:
@@ -178,13 +176,11 @@ public class MazeLoader {
             case NORTH | SOUTH | EAST:
                 return "left_side_vertical_3exits";
 
-            // Straight pieces
             case NORTH | SOUTH:
                 return "straight_vertical";
             case EAST | WEST:
                 return "straight_horizontal";
 
-            // Corners
             case SOUTH | EAST:
                 return "top_left_edge";
             case SOUTH | WEST:
@@ -194,13 +190,11 @@ public class MazeLoader {
             case NORTH | WEST:
                 return "bottom_right_edge";
 
-            // End pieces
             case NORTH:
                 return "bottom_vetical_end";
             case SOUTH:
                 return "top_vertical_end";
 
-            // Default case
             default:
                 return "default_wall_texture";
         }
@@ -231,7 +225,6 @@ public class MazeLoader {
             default -> WallTiles.HORIZONTAL;
         };
 
-        // Set the tile directly using the ID
         TiledMapTile tile = tiledMap.getTileSets().getTile(tileId);
         if (tile != null) {
             cell.setTile(tile);

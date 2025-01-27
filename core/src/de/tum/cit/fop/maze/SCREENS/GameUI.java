@@ -19,6 +19,8 @@ public class GameUI {
 
     //UI Bars
     private ProgressBar healthBar;
+    private Label doorUnlockLabel;
+
 
     private final Skin skin;
     private boolean isPaused;
@@ -58,8 +60,11 @@ public class GameUI {
         topBar.add(healthSection).left().padLeft(10).padRight(10);
         topBar.add().expandX();                 // This empty cell expands and pushes next cell to the right
         topBar.add(scoreLabel).right().pad(10); // Score label aligned right with some padding
+        doorUnlockLabel = new Label("Needed to Unlock: 20", skin);
 
         mainTable.add(topBar).growX().top();
+        mainTable.row();
+        mainTable.add(doorUnlockLabel).right().pad(10);
     }
 
     public void update(float delta, Player player, Enemy enemy) {
@@ -104,7 +109,9 @@ public class GameUI {
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
-
+    public void setDoorUnlockProgress(int remainingRolls) {
+        doorUnlockLabel.setText("Needed to Unlock: " + remainingRolls);
+    }
     public void dispose() {
         stage.dispose();
     }
