@@ -79,10 +79,10 @@ public class Player extends Actor {
         TileEffectMNGR.TrapType trap = trapManager.checkTrap(position);
         int tileX = (int)(position.x / 16);   // or tileWidth
         int tileY = (int)(position.y / 16);   // or tileHeight
-        Gdx.app.log("Player", "Checking trap at (" + tileX + ", " + tileY + ") => " + trap);
+        //Gdx.app.log("Player", "Checking trap at (" + tileX + ", " + tileY + ") => " + trap);
 
         if (trap != null) {
-            Gdx.app.log("Player", "Stepped on trap: " + trap.getName());
+            //Gdx.app.log("Player", "Stepped on trap: " + trap.getName());
 
             trapManager.applyEffect(this, trap);
         }

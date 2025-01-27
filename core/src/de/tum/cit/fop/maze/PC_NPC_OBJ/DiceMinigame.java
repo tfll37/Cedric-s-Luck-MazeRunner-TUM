@@ -5,6 +5,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
+import de.tum.cit.fop.maze.SCREENS.DiceMinigameListener;
+import de.tum.cit.fop.maze.SCREENS.GameScreen;
 
 public class DiceMinigame {
     private AnimationMNGR animationMNGR;
@@ -18,7 +20,11 @@ public class DiceMinigame {
     private float resultDisplayTime = 1.5f; // how long to show final face
 
     private Sound diceRollingSound;
+    private DiceMinigameListener listener;
 
+    public void setListener(DiceMinigameListener listener) {
+        this.listener = listener;
+    }
     public DiceMinigame(AnimationMNGR animationMNGR) {
         this.animationMNGR = animationMNGR;
         this.active = false;
@@ -57,7 +63,9 @@ public class DiceMinigame {
         diceResult = (int) (Math.random() * 6) + 1;
         // roll the dice
         System.out.println("Dice roll result: " + diceResult);
-
+        if (listener != null) {
+            listener.onDiceRolled(diceResult);
+        }
         // Start showing the final face
         showingResult = true;
         resultTimer = 0f;
@@ -72,6 +80,7 @@ public class DiceMinigame {
         if (active) {
             time += delta;
             if (time > activeDuration) {
+
                 stop();
             }
         }
