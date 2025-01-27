@@ -85,8 +85,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         initializeTileAnimations();
 
         Vector2 spawnPoint = labyrinth.getSpawnPoint();
-        Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
-        Vector2 heartSpawnPoint = labyrinth.getValidSpawnPoint();
+
         player = new Player(spawnPoint.x, spawnPoint.y);
         enemies = new Array<>();
         for(int i = 0; i < amountOfEnemies; i++){
@@ -287,7 +286,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private void handleInput() {
         if (gameOver && !isLostDismissed) {
             // Check if any key was just pressed or touch was detected
-            if (isAnyKeyJustPressed() || Gdx.input.justTouched()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isTouched()|| Gdx.input.justTouched()) {
                 System.out.println("Input detected! Navigating to the menu...");
                 isLostDismissed = true;
                 game.goToMenu();
