@@ -579,4 +579,7 @@ public class Player extends Actor {
     public boolean isDashing() {
         return isDashing;
     }
+    public int getDashCount(){
+        return dashCount;
+    }
 }

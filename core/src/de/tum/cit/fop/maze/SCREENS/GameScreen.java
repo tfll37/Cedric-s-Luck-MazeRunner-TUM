@@ -209,6 +209,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
 
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
+        gameUI.setDashCount(player.getDashCount());
         dice.update(delta, player);
         heart.update(delta, player);
         player.getFireBall().update(delta, player, labyrinth, enemies);
