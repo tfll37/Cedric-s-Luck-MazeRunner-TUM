@@ -53,7 +53,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private boolean gameOver = false;
     // Set how many enemies you want in this level:
     private final int amountOfEnemies = 1;
-    private int rollsNeededToOpenDoor = 20;
+    private int rollsNeededToOpenDoor = 2;
 
 
 
@@ -200,6 +200,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
 
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
+        gameUI.setDashCount(player.getDashCount());
         dice.update(delta, player);
         heart.update(delta, player);
         player.getFireBall().update(delta, player, labyrinth, enemies);

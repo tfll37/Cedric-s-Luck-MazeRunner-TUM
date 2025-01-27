@@ -408,4 +408,7 @@ public class Player extends Actor {
     public FireBall getFireBall() {
         return fireBall;
     }
+    public int getDashCount(){
+        return dashCount;
+    }
 }
