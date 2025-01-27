@@ -308,10 +308,13 @@ public class Player extends Actor {
     }
 
     public void takeDamage(float damage) {
+
         this.health -= damage;
+        this.health = Math.max(this.health, 0 );
     }
     public void increaseHealth(float health) {
         this.health += health;
+
     }
 
 
@@ -333,9 +336,13 @@ public class Player extends Actor {
     public void damage(Enemy enemy) {
         enemy.takeDamage(damage);
     }
+    public boolean isDead(){
+        return health <= 0;
+    }
 
     public void heal(float amount) {
         this.health += Math.min(100f, this.health + amount);
+        this.health = Math.min(200, this.health);
     }
     public boolean shootsFireBall() {
         return shootsFireball;
