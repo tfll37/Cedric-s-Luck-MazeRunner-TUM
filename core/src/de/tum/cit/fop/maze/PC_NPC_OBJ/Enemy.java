@@ -13,24 +13,29 @@ import de.tum.cit.fop.maze.MAZELOGIC.Pathfinding;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
+
 /**
  * Represents an enemy character in the maze game.
  * The enemy can move, follow a path, and interact with the player.
  */
 public class Enemy {
     private Texture texture;
-    private Vector2 position;          // Current position of the enemy
-    private Vector2 startPosition;     // Start position for current movement
-    private Vector2 targetPosition;    // Target tile position
-    private boolean isMoving;          // Whether the enemy is currently moving
-    private float timeAccumulation;    // Time accumulator for interpolation
-    private float totalMoveTime;       // Time to move one tile
-    private List<Vector2> path;        // Path from the enemy to the player
-    private float timeSinceLastUpdate; // Time since last pathfinding update
-    private int lookingDirection;      // Direction the enemy is looking at
+    private Vector2 position;
+    private Vector2 startPosition;
+    private Vector2 targetPosition;
+    private boolean isMoving;
+    private float timeAccumulation;
+    private float baseMoveTime;        // Base time to move one tile
+    private float totalMoveTime;       // Actual time to move one tile (affected by modifiers)
+    private float baseSpeed;           // Base movement speed
+    private float speedModifier;       // Speed modification factor
+    private List<Vector2> path;
+    private float timeSinceLastUpdate;
+    private int lookingDirection;
     private float time = 0f;
     private AnimationMNGR animationMNGR = new AnimationMNGR();
-    private Vector2 lastKnownPlayerTile = new Vector2(-1, -1); // Initialize to an invalid position
+    private Vector2 lastKnownPlayerTile = new Vector2(-1, -1);
     private float damage = 1f;
     private float health = 100f;
     private SpriteBatch batch;
@@ -49,7 +54,10 @@ public class Enemy {
         this.targetPosition = new Vector2(x, y);
         this.isMoving = false;
         this.timeAccumulation = 0f;
-        this.totalMoveTime = 0.1f; // Time to move one tile (adjust for speed)
+        this.baseSpeed = 1.0f;
+        this.speedModifier = 1.0f;
+        this.baseMoveTime = WALK_MOVE_TIME;  // Use same base move time as player
+        this.totalMoveTime = baseMoveTime;
         this.path = new ArrayList<>();
         this.timeSinceLastUpdate = 0f;
         this.lookingDirection = 0;
@@ -92,38 +100,56 @@ public class Enemy {
                 displayHitParticle = false;
             }
 
-            if (!currentPlayerTile.equals(lastKnownPlayerTile)) {
+            // Only update path when we're not moving or path is empty
+            if ((!isMoving || path.isEmpty()) && !currentPlayerTile.equals(lastKnownPlayerTile)) {
                 Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
-                path = Pathfinding.findPath(maze, enemyTile, currentPlayerTile);
+                List<Vector2> newPath = Pathfinding.findPath(maze, enemyTile, currentPlayerTile);
+                // Only update path if we're not moving or new path is significantly better
+                if (!isMoving || (newPath.size() < path.size() - 1)) {
+                    path = newPath;
                 lastKnownPlayerTile.set(currentPlayerTile);
                 timeSinceLastUpdate = 0f;
             }
+            }
 
+            // Handle movement with smooth interpolation
             if (isMoving) {
                 timeAccumulation += delta;
-                float alpha = timeAccumulation / totalMoveTime;
-
-                if (alpha > 1f) alpha = 1f;
+                float alpha = Math.min(timeAccumulation / totalMoveTime, 1.0f);
 
                 position.x = startPosition.x + (targetPosition.x - startPosition.x) * alpha;
                 position.y = startPosition.y + (targetPosition.y - startPosition.y) * alpha;
 
                 if (alpha >= 1.0f) {
                     isMoving = false;
+                    position.set(targetPosition);
+
+                    // Immediately check if we should start next movement
+                    if (!path.isEmpty()) {
+                        Vector2 nextTile = path.remove(0);
+                        startPosition.set(position);
+                        targetPosition.set(nextTile.x * tileWidth, nextTile.y * tileHeight);
+                        isMoving = true;
+                        timeAccumulation = 0f;
+                        updateLookingDirection();
                 }
 
+                }
                 return;
             }
 
+            // Start new movement if we have a path
             if (!path.isEmpty() && !isMoving) {
                 Vector2 nextTile = path.remove(0);
                 startPosition.set(position);
                 targetPosition.set(nextTile.x * tileWidth, nextTile.y * tileHeight);
                 isMoving = true;
                 timeAccumulation = 0f;
+                updateLookingDirection();
                 return;
             }
 
+            // Update path periodically if we don't have one
             if (path.isEmpty() && timeSinceLastUpdate >= 1.0f) {
                 Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
                 Vector2 playerTile = new Vector2((int) (player.getPosition().x / tileWidth), (int) (player.getPosition().y / tileHeight));
@@ -134,6 +160,19 @@ public class Enemy {
             }
         }
     }
+
+    public void modifySpeed(float factor) {
+        this.speedModifier = factor;
+        this.totalMoveTime = baseMoveTime / speedModifier;
+    }
+
+    private void updateLookingDirection() {
+        if (targetPosition.x > startPosition.x) lookingDirection = 1;      // Right
+        else if (targetPosition.x < startPosition.x) lookingDirection = 3; // Left
+        else if (targetPosition.y > startPosition.y) lookingDirection = 0; // Up
+        else lookingDirection = 2;                                         // Down
+    }
+
 
     /**
      * Renders the enemy on the screen.

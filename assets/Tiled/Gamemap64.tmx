@@ -7,6 +7,7 @@
  <tileset firstgid="1936" source="basictiles.tsx"/>
  <tileset firstgid="2056" source="Trap0.tsx"/>
  <tileset firstgid="2096" source="Trap1.tsx"/>
+ <tileset firstgid="2136" source="Effect1Dawnlike.tsx"/>
  <layer id="1" name="Tile Layer 1" width="64" height="64">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

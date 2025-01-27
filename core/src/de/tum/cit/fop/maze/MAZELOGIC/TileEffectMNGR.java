@@ -63,14 +63,15 @@ public class TileEffectMNGR {
 
 
     public enum PowerUpType {
-        GIVE_DASH(2327, "Speed Boost") {
+        GIVE_DASH(2333, "Give Dashes") {
             @Override
             public void applyEffect(Player player) {
-                player.giveDashes();
+                player.addTemporaryDashes(5);
                 System.out.println("5 DASHES GIVEN");
+                System.out.println("Amount of dashes: " + player.getTotalDashCharges());
             }
         },
-        HEALTH_PACK(2324, "Health Pack") {
+        HEALTH_PACK(2334, "Health Pack") {
             @Override
             public void applyEffect(Player player) {
                 player.heal(25f);

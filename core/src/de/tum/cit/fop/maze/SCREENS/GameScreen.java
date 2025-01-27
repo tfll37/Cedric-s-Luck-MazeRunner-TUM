@@ -12,28 +12,20 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
-import de.tum.cit.fop.maze.MAZELOGIC.CameraMNGR;
-import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
-import de.tum.cit.fop.maze.MAZELOGIC.LevelMNGR;
-import de.tum.cit.fop.maze.MAZELOGIC.TileEffectMNGR;
-import de.tum.cit.fop.maze.MAZELOGIC.TilePropMNGR;
+import de.tum.cit.fop.maze.MAZELOGIC.*;
 import de.tum.cit.fop.maze.MazeRunnerGame;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.Dice;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.DiceMinigame;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.Enemy;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.ExitPointer;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.Heart;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.HitParticle;
-import de.tum.cit.fop.maze.PC_NPC_OBJ.Player;
+import de.tum.cit.fop.maze.PC_NPC_OBJ.*;
 
 /**
  * The GameScreen class is responsible for managing gameplay.
  */
 public class GameScreen implements Screen, InputProcessor, DiceMinigameListener {
     private boolean isPaused = false;
+
     public LevelMNGR.LevelInfo getLevel() {
         return level;
     }
+
     private final MazeRunnerGame game;
     private boolean isLostDismissed = false;
     private final OrthographicCamera camera;
@@ -53,7 +45,11 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private boolean gameOver = false;
     // Set how many enemies you want in this level:
     private final int amountOfEnemies = 1;
-    private int rollsNeededToOpenDoor = 20;
+    private int rollsNeededToOpenDoor;
+
+    private int currentLevelScore = 0;
+    private int requiredScore;
+    private boolean levelComplete = false;
 
 
 
@@ -67,6 +63,14 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         String tmxPath = LevelMNGR.getTmxPathForSize(level.mapSize());
         TileEffectMNGR tileEffectMNGR = new TileEffectMNGR();
+
+        this.gameUI = new GameUI(game.getSpriteBatch(), this.game.getSkin());
+
+
+        this.requiredScore = LevelMNGR.generateScoreRequirement(level);
+        this.rollsNeededToOpenDoor = this.requiredScore; // Set door requirement to match score requirement
+        this.gameUI.setScoreRequirement(requiredScore);
+        this.gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
 
         this.labyrinth = new Labyrinth(
                 game.getSpriteBatch(),
@@ -86,9 +90,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         Vector2 spawnPoint = labyrinth.getSpawnPoint();
 
-        player = new Player(spawnPoint.x, spawnPoint.y);
+        player = new Player(spawnPoint.x, spawnPoint.y, cameraMNGR);
         enemies = new Array<>();
-        for(int i = 0; i < amountOfEnemies; i++){
+        for (int i = 0; i < amountOfEnemies; i++) {
 
             Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
             enemies.add(new Enemy(enemySpawnPoint.x, enemySpawnPoint.y));
@@ -189,6 +193,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
         if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
+            if (currentLevelScore >= requiredScore) {
             // Load next level
             int nextLevelIndex = level.Level() + 1;
             LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
@@ -196,6 +201,10 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
                 game.goToGame(nextLevel);
             } else {
                 game.goToMenu(); // If no more levels
+            }
+            } else {
+                // Display message that more score is needed
+                gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
             }
         }
 
@@ -206,8 +215,8 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         for (int i = 0; i < amountOfEnemies; i++) {
             Enemy enemy = enemies.get(i);
             enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
-        hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
-        gameUI.update(delta, player, enemy);
+            hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
+            gameUI.update(delta, player, enemy);
 
         }
         handleInput();
@@ -216,7 +225,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         if (dice.isMinigameActive() && !diceMinigame.isActive()) {
             diceMinigame.start();
-            if(!dice.isGotcolelcted()){
+            if (!dice.isGotcolelcted()) {
                 gameUI.updateScore(diceMinigame.getDiceResult());
             }
             diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
@@ -257,7 +266,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         game.getSkin().getFont("font").getData().setScale(1.0f);
 
         player.render(batch);
-        for(int i = 0; i < amountOfEnemies; i++){
+        for (int i = 0; i < amountOfEnemies; i++) {
             Enemy enemy = enemies.get(i);
             if (enemy.getLifeStatus() == true) {
                 enemy.render(batch);
@@ -284,9 +293,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     }
 
     private void handleInput() {
+
         if (gameOver && !isLostDismissed) {
-            // Check if any key was just pressed or touch was detected
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isTouched()|| Gdx.input.justTouched()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isTouched() || Gdx.input.justTouched()) {
                 System.out.println("Input detected! Navigating to the menu...");
                 isLostDismissed = true;
                 game.goToMenu();
@@ -302,7 +311,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
     }
 
-    // InputProcessor methods
     @Override
     public boolean scrolled(float amountX, float amountY) {
         cameraMNGR.handleScroll(amountY);
@@ -313,6 +321,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     public boolean keyDown(int keycode) {
         return false;
     }
+
     @Override
     public void onDiceRolled(int diceResult) {
 
@@ -325,9 +334,27 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         if (rollsNeededToOpenDoor <= 0) {
             System.out.println("Door unlocked!");
         }
+        currentLevelScore += diceResult;
+        rollsNeededToOpenDoor -= diceResult;
+
+        if (rollsNeededToOpenDoor < 0) {
+            rollsNeededToOpenDoor = 0;
+        }
+
+        // Update UI
+        gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
+        gameUI.updateScore(currentLevelScore);
+
+        // Check if we've met level requirements
+        if (currentLevelScore >= requiredScore && rollsNeededToOpenDoor <= 0) {
+            levelComplete = true;
+            System.out.println("Level requirements met! Find the exit!");
+            gameUI.showLevelCompleteMessage();
+        }
 
         dice.deactivateMinigame();
     }
+
     @Override
     public boolean keyUp(int keycode) {
         return false;
@@ -387,6 +414,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void resume() {
     }
+
     public void handleDiceResult(int diceResult) {
         rollsNeededToOpenDoor -= diceResult;
         if (rollsNeededToOpenDoor < 0) rollsNeededToOpenDoor = 0;
@@ -398,6 +426,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         dice.deactivateMinigame();
     }
+
     @Override
     public void dispose() {
         labyrinth.dispose();

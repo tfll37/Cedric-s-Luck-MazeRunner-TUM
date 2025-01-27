@@ -3,15 +3,14 @@ package de.tum.cit.fop.maze.PC_NPC_OBJ;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.*;
 
-import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.RUN_MOVE_TIME;
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
 
 /**
@@ -33,14 +32,36 @@ public class Player extends Actor {
     private int lookingDirection = 0; // 0 = up, 1 = right, 2 = down, 3 = left
     private boolean hitting;
     private final AnimationMNGR animationMNGR;
+    private CameraMNGR cameraMNGR;
+
     private float health = 100f;
     private float damage = 10f;
     private int dashCount;
     private boolean shootsFireball = false;
-    private float fireballCooldown = 0; // Time remaining before next fireball can be shot
-    private static final float FIREBALL_COOLDOWN_TIME = 3.0f; // Cooldown duration in seconds
+    private float fireballCooldown = 0;
+    private static final float FIREBALL_COOLDOWN_TIME = 3.0f;
     private FireBall fireBall;
     private boolean isRunning;
+    private static final float SPRINT_SPEED_MULTIPLIER = 1.55f;
+    private static final float MAX_STAMINA = 100f;
+    private static final float STAMINA_DRAIN_RATE = 50f;
+    private static final float STAMINA_REGEN_RATE = 20f;
+    private static final float STAMINA_REGEN_DELAY = 1.5f;
+    private float currentStamina;
+    private float staminaRegenTimer;
+    private boolean canSprint;
+
+    private int maxDashCharges = 3;  // Maximum number of dash charges
+    private int dashCharges = maxDashCharges;  // Current dash charges
+    private float dashCooldown = 0f;  // Current cooldown timer
+    private static final float DASH_COOLDOWN_TIME = 5f;  // Time between dash charge regeneration
+    private static final float DASH_DISTANCE = 4f;  // How far the dash goes (in tiles)
+    private boolean isDashing = false;
+    private float dashInvulnerabilityTimer = 0f;
+    private static final float DASH_INVULNERABILITY_DURATION = 0.5f;
+    private int temporaryDashes = 0; // Additional dashes from power-ups
+
+
 
     /**
      * Creates a new player at the specified position.
@@ -48,15 +69,16 @@ public class Player extends Actor {
      * @param x the x-coordinate of the player's initial position
      * @param y the y-coordinate of the player's initial position
      */
-    public Player(float x, float y) {
+    public Player(float x, float y, CameraMNGR cameraMNGR) {
+        this.cameraMNGR = cameraMNGR;
         this.position = new Vector2(x, y);
         this.startPosition = new Vector2(x, y);
         this.targetPosition = new Vector2(x, y);
         this.isMoving = false;
         this.timeAccumulation = 0f;
         this.baseSpeed = 1.0f;
-        this.speedModifier = 2.0f;
-        this.baseMoveTime = 0.07f;
+        this.speedModifier = 1.0f;
+        this.baseMoveTime = WALK_MOVE_TIME;
         this.totalMoveTime = baseMoveTime;
         this.bounds = new Rectangle(x, y, 16, 16);
         this.hitting = false;
@@ -64,27 +86,41 @@ public class Player extends Actor {
         this.dashCount = 10;
         this.animationMNGR.loadPlayerAnimations();
         this.fireBall = new FireBall(position.x, position.y);
+
+        this.isRunning = false;
+        this.currentStamina = MAX_STAMINA;
+        this.staminaRegenTimer = 5f;
+        this.canSprint = true;
+
+        this.cameraMNGR = cameraMNGR;
+
+        this.dashCharges = maxDashCharges;
+
+
     }
 
     /**
      * Updates the player's state, including movement, interaction with traps and power-ups, and attacking enemies.
      *
-     * @param delta            the time in seconds since the last update
-     * @param labyrinthWidth   the width of the labyrinth
-     * @param labyrinthHeight  the height of the labyrinth
-     * @param tileWidth        the width of a single tile
-     * @param tileHeight       the height of a single tile
-     * @param labyrinth        the labyrinth object
-     * @param enemies          the array of enemies
+     * @param delta           the time in seconds since the last update
+     * @param labyrinthWidth  the width of the labyrinth
+     * @param labyrinthHeight the height of the labyrinth
+     * @param tileWidth       the width of a single tile
+     * @param tileHeight      the height of a single tile
+     * @param labyrinth       the labyrinth object
+     * @param enemies         the array of enemies
      */
     public void update(float delta, float labyrinthWidth, float labyrinthHeight,
                        float tileWidth, float tileHeight, Labyrinth labyrinth, Array<Enemy> enemies) {
         time += delta;
 
+        updateStamina(delta);
+        updateDash(delta);
+
         TileEffectMNGR trapManager = labyrinth.getTrapMNGR();
         TileEffectMNGR.TrapType trap = trapManager.checkTrap(position);
-        int tileX = (int) (position.x / 16); // or tileWidth
-        int tileY = (int) (position.y / 16); // or tileHeight
+        int tileX = (int) (position.x / 16);
+        int tileY = (int) (position.y / 16);
 
         if (trap != null) {
             Gdx.app.log("Player", "Stepped on trap: " + trap.getName());
@@ -102,9 +138,11 @@ public class Player extends Actor {
         }
 
         if (isMoving) {
-            totalMoveTime = 0.15f;
+            float currentMoveTime = (isRunning && canSprint) ?
+                    totalMoveTime / SPRINT_SPEED_MULTIPLIER : totalMoveTime;
+
             timeAccumulation += delta;
-            float alpha = Math.min(timeAccumulation / totalMoveTime, 1.0f);
+            float alpha = Math.min(timeAccumulation / currentMoveTime, 1.0f);
 
             position.x = startPosition.x + (targetPosition.x - startPosition.x) * alpha;
             position.y = startPosition.y + (targetPosition.y - startPosition.y) * alpha;
@@ -148,6 +186,48 @@ public class Player extends Actor {
         }
     }
 
+    private void updateDash(float delta) {
+        // Update dash cooldown
+        if (dashCooldown > 0) {
+            dashCooldown -= delta;
+            if (dashCooldown <= 0 && dashCharges < maxDashCharges) {
+                dashCharges++;
+                if (dashCharges < maxDashCharges) {
+                    dashCooldown = DASH_COOLDOWN_TIME;
+                }
+            }
+        }
+
+        // Update dash invulnerability
+        if (dashInvulnerabilityTimer > 0) {
+            dashInvulnerabilityTimer -= delta;
+            isDashing = dashInvulnerabilityTimer > 0;
+        }
+    }
+
+    private void updateStamina(float delta) {
+        if (isRunning && canSprint) {
+            currentStamina -= STAMINA_DRAIN_RATE * delta;
+            staminaRegenTimer = STAMINA_REGEN_DELAY;
+
+            if (currentStamina <= 0) {
+                currentStamina = 0;
+                canSprint = false;
+            }
+        } else {
+            if (staminaRegenTimer > 0) {
+                staminaRegenTimer -= delta;
+            } else {
+                currentStamina += STAMINA_REGEN_RATE * delta;
+                if (currentStamina >= MAX_STAMINA) {
+                    currentStamina = MAX_STAMINA;
+                    canSprint = true;
+                }
+            }
+        }
+    }
+
+
     /**
      * Handles the player's input and returns the corresponding movement request.
      *
@@ -164,7 +244,6 @@ public class Player extends Actor {
         var RUN = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 
         isRunning = RUN;
-        totalMoveTime = isRunning ? RUN_MOVE_TIME : WALK_MOVE_TIME;
 
         if (UP) {
             lookingDirection = 0;
@@ -207,6 +286,33 @@ public class Player extends Actor {
             fireballCooldown = FIREBALL_COOLDOWN_TIME; // Reset cooldown
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.X) && getTotalDashCharges() > 0) {
+            if (temporaryDashes > 0) {
+                temporaryDashes--;
+            } else {
+                dashCharges--;
+            }
+
+            if (dashCharges < maxDashCharges && dashCooldown <= 0) {
+                dashCooldown = DASH_COOLDOWN_TIME;
+            }
+
+            isDashing = true;
+            dashInvulnerabilityTimer = DASH_INVULNERABILITY_DURATION;
+
+            // Return dash movement based on looking direction
+            switch (lookingDirection) {
+                case 0: // Up
+                    return new MovementREQ(MovementREQ.MoveType.DASH, 0, (int) DASH_DISTANCE);
+                case 1: // Right
+                    return new MovementREQ(MovementREQ.MoveType.DASH, (int) DASH_DISTANCE, 0);
+                case 2: // Down
+                    return new MovementREQ(MovementREQ.MoveType.DASH, 0, (int) -DASH_DISTANCE);
+                case 3: // Left
+                    return new MovementREQ(MovementREQ.MoveType.DASH, (int) -DASH_DISTANCE, 0);
+            }
+        }
+
         return null;
     }
 
@@ -217,7 +323,7 @@ public class Player extends Actor {
      */
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame;
-        float animationSpeed = time * (isRunning ? 1.5f : 1.0f);
+        float animationSpeed = time * ((isRunning && canSprint) ? 1.5f : 1.0f);
 
         if (hitting) {
             if (lookingDirection == 0) {
@@ -240,6 +346,15 @@ public class Player extends Actor {
         }
 
         batch.draw(currentFrame, position.x, position.y);
+    }
+
+    // Getter for stamina (useful for UI)
+    public float getCurrentStamina() {
+        return currentStamina;
+    }
+
+    public float getMaxStamina() {
+        return MAX_STAMINA;
     }
 
     /**
@@ -286,9 +401,37 @@ public class Player extends Actor {
      * @param damage the amount of damage to inflict
      */
     public void takeDamage(float damage) {
-        this.health -= damage;
-        this.health = Math.max(this.health, 0);
+        if (!isDashing) {  // Only take damage if not dashing
+            this.health -= damage;
+            this.health = Math.max(this.health, 0);
 
+            if (damage <= 10) {
+                cameraMNGR.startLightShake();
+            } else if (damage > 10 && damage <= 50) {
+                cameraMNGR.startShake();
+            } else if (damage > 50) {
+                cameraMNGR.startHeavyShake();
+            }
+        }
+    }
+
+    // Add method to handle temporary dashes from power-ups
+    public void addTemporaryDashes(int amount) {
+        temporaryDashes += amount;
+        System.out.println("Added " + amount + " temporary dashes. Total temporary dashes: " + temporaryDashes);
+    }
+
+    // Update getter methods for UI display
+    public int getBaseDashCharges() {
+        return dashCharges;
+    }
+
+    public int getTemporaryDashes() {
+        return temporaryDashes;
+    }
+
+    public int getTotalDashCharges() {
+        return dashCharges + temporaryDashes;
     }
 
     /**
@@ -396,7 +539,7 @@ public class Player extends Actor {
     }
 
 
-    public void giveDashes(){
+    public void giveDashes() {
         this.dashCount += 5;
     }
 
@@ -407,5 +550,33 @@ public class Player extends Actor {
      */
     public FireBall getFireBall() {
         return fireBall;
+    }
+
+    // Add these getter methods for UI display
+    public int getDashCharges() {
+        return dashCharges;
+    }
+
+    public float getDashCooldown() {
+        return dashCooldown;
+    }
+
+    public int getMaxDashCharges() {
+        return maxDashCharges;
+    }
+
+    // Add method to handle power-ups affecting dash
+    public void addDashCharge() {
+        if (dashCharges < maxDashCharges) {
+            dashCharges++;
+        }
+    }
+
+    public void resetDashCooldown() {
+        dashCooldown = 0f;
+    }
+
+    public boolean isDashing() {
+        return isDashing;
     }
 }
