@@ -49,7 +49,7 @@ public class CameraMNGR {
     }
 
     private void setupCamera() {
-            camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
+        camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
 
         camera.update();
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -61,25 +61,26 @@ public class CameraMNGR {
             camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, CAMERA_LERP_SPEED);
         }
 
-            // Calculate effective viewport dimensions
+        // Calculate effective viewport dimensions
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
 
-            // Calculate boundaries
+        // Calculate boundaries
         float minX = effectiveViewportWidth / 2f;
         float maxX = worldWidth - (effectiveViewportWidth / 2f);
         float minY = effectiveViewportHeight / 2f;
         float maxY = worldHeight - (effectiveViewportHeight / 2f);
 
-            // Update target position
+        // Update target position
         float targetX = MathUtils.clamp(playerPosition.x, minX, maxX);
         float targetY = MathUtils.clamp(playerPosition.y, minY, maxY);
 
-            // Smooth camera movement
+        // Smooth camera movement
         camera.position.x = MathUtils.lerp(camera.position.x, targetX, CAMERA_LERP_SPEED);
         camera.position.y = MathUtils.lerp(camera.position.y, targetY, CAMERA_LERP_SPEED);
-            // Store original position for shake effect
-            originalPosition.set(camera.position);
+
+        // Store original position for shake effect
+        originalPosition.set(camera.position);
 
         // Handle screen shake
         updateScreenShake(Gdx.graphics.getDeltaTime());
@@ -104,6 +105,7 @@ public class CameraMNGR {
     public void startHeavyShake() {
         startShake(HEAVY_SHAKE_DURATION, HEAVY_SHAKE_INTENSITY);
     }
+
     public void startShake(float duration, float intensity) {
         this.shakeTime = 0;
         this.shakeDuration = duration;

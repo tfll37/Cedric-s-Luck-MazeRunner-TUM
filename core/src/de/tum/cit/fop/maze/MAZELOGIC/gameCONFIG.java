@@ -23,5 +23,4 @@ public class gameCONFIG {
 
     public static final float WALK_MOVE_TIME = 0.07f;
     public static final float RUN_MOVE_TIME = 0.04f;  // Faster movement time when running
-    private boolean isRunning = false;
 }

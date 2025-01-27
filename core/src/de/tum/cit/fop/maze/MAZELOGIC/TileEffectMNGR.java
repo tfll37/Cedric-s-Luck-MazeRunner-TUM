@@ -12,136 +12,103 @@ public class TileEffectMNGR {
 
     private final ObjectMap<Vector2, TrapType> trapLocations;
     private final ObjectMap<Vector2, PowerUpType> powerUpLocations;
-    private final ObjectMap<Vector2, TileEffect> tileEffects;
     private final Random random;
 
-    public interface TileEffect {
-        int getTileId();
 
+    // Base interface for all effects
+    public interface TileEffect {
         String getName();
 
-        void applyEffect(Player player);
     }
 
-    public enum TrapType implements TileEffect {
-        POISON(2057, "Poison", 5f, 1.0f),      // damage over time
-        SLOWDOWN(2060, "Slowdown", 0f, 0.5f),  // slows player by 50%
-        DEATH(2075, "Death", 100f, 1.0f);      // instant kill trap
+    // Define trap types and their corresponding tile IDs
+    public enum TrapType {
+        POISON(2057, "Poison", 5f) {
+            @Override
+            public void applyEffect(Player player) {
+                player.takeDamage(damage);
+                System.out.println("Poison trap applied " + damage + " damage");
+            }
+        },
+        STING(2060, "Sting", 10) {
+            @Override
+            public void applyEffect(Player player) {
+                player.takeDamage(damage);
+
+                System.out.println("STING");
+            }
+        },
+        HEAVY_BLOW(2075, "Heavy blow", 40) {
+            @Override
+            public void applyEffect(Player player) {
+                player.takeDamage(damage);
+                System.out.println("Death trap applied " + damage + " damage");
+            }
+        };
 
         private final int tileId;
         private final String name;
-        private final float damage;
-        private final float speedModifier;
+        protected final float damage;
 
-        TrapType(int tileId, String name, float damage, float speedModifier) {
+        TrapType(int tileId, String name, float damage) {
             this.tileId = tileId;
             this.name = name;
             this.damage = damage;
-            this.speedModifier = speedModifier;
         }
 
-        @Override
-        public int getTileId() {
-            return tileId;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public void applyEffect(Player player) {
-            if (damage > 0) {
-                player.takeDamage(damage);
-            }
-            if (speedModifier != 1.0f) {
-                player.setSpeedModifier(speedModifier);
-            }
-        }
-
-        public static TrapType getByTileId(int tileId) {
-            for (TrapType type : values()) {
-                if (type.tileId == tileId) return type;
-            }
-            return null;
-        }
-
-        public float getDamage() {
-            return damage;
-        }
-
-        public float getSpeedModifier() {
-            return speedModifier;
-        }
-
+        public int getTileId() { return tileId; }
+        public String getName() { return name; }
+        public abstract void applyEffect(Player player);
     }
 
-    public enum PowerUpType implements TileEffect {
-        SPEED_BOOST(2327, "Speed Boost", 2.0f, 0f, 5f),    // 2x speed for 5 seconds
-        HEALTH_PACK(2324, "Health Pack", 1.0f, 25f, 0f);
+
+    public enum PowerUpType {
+        GIVE_DASH(2327, "Speed Boost") {
+            @Override
+            public void applyEffect(Player player) {
+                player.giveDashes();
+                System.out.println("5 DASHES GIVEN");
+            }
+        },
+        HEALTH_PACK(2324, "Health Pack") {
+            @Override
+            public void applyEffect(Player player) {
+                player.heal(25f);
+                System.out.println("Health pack restored 25 health");
+            }
+        };
 
         private final int tileId;
         private final String name;
-        private final float speedModifier;
-        private final float healing;
-        private final float duration;
 
-
-        PowerUpType(int tileId, String name, float speedModifier, float healing, float duration) {
+        PowerUpType(int tileId, String name) {
             this.tileId = tileId;
             this.name = name;
-            this.speedModifier = speedModifier;
-            this.healing = healing;
-            this.duration = duration;
         }
 
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public int getTileId() {
-            return tileId;
-        }
-
-
-        public void applyEffect(Player player) {
-            if (healing > 0) {
-                player.heal(healing);
-                System.out.println("Applied " + healing + " healing from " + name);
-            }
-            if (speedModifier != 1.0f) {
-                player.setSpeedModifier(speedModifier);
-                System.out.println("Applied speed modifier " + speedModifier + " from " + name);
-            }
-        }
-
-        public static PowerUpType getByTileId(int tileId) {
-            for (PowerUpType type : values()) {
-                if (type.tileId == tileId) return type;
-            }
-            return null;
-        }
+        public int getTileId() { return tileId; }
+        public String getName() { return name; }
+        public abstract void applyEffect(Player player);
 
 
     }
+
 
 
     public TileEffectMNGR() {
         this.trapLocations = new ObjectMap<>();
-       this.tileEffects = new ObjectMap<>();
         this.powerUpLocations = new ObjectMap<>();
         this.random = new Random();
     }
 
     public void registerPowerUp(int x, int y) {
         Vector2 position = new Vector2(x, y);
+        // Only register if not already present
         if (!powerUpLocations.containsKey(position)) {
-            PowerUpType randomPowerUp = getRandomPowerUp();
+            PowerUpType[] powerUps = PowerUpType.values();
+            PowerUpType randomPowerUp = powerUps[random.nextInt(powerUps.length)];
             powerUpLocations.put(position, randomPowerUp);
-            System.out.println("Registered new " + randomPowerUp.getName() + " powerup at " + x + "," + y);
+            System.out.println("Registered " + randomPowerUp.getName() + " at (" + x + "," + y + ")");
         }
     }
 
@@ -149,23 +116,11 @@ public class TileEffectMNGR {
         return powerUpLocations.get(new Vector2(x, y));
     }
 
-    public void registerTileEffect(int x, int y, boolean isTrap) {
-        Vector2 location = new Vector2(x, y);
-        TileEffect effect;
 
-        if (isTrap) {
-            TrapType[] trapTypes = TrapType.values();
-            effect = trapTypes[random.nextInt(trapTypes.length)];
-        } else {
-            PowerUpType[] powerUpTypes = PowerUpType.values();
-            effect = powerUpTypes[random.nextInt(powerUpTypes.length)];
-        }
-
-        tileEffects.put(location, effect);
-    }
 
     public void registerTrapLocation(int x, int y) {
         Vector2 position = new Vector2(x, y);
+        // Only register if not already present
         if (!trapLocations.containsKey(position)) {
             TrapType randomTrap = getRandomTrap();
             trapLocations.put(position, randomTrap);
@@ -173,21 +128,17 @@ public class TileEffectMNGR {
         }
     }
 
-    public int getTileEffectId(int x, int y) {
-        Vector2 location = new Vector2(x, y);
-        TileEffect effect = tileEffects.get(location);
-        return effect != null ? effect.getTileId() : -1;
-    }
 
     public TrapType getEffectAtLocation(int x, int y) {
         return trapLocations.get(new Vector2(x, y));
     }
 
-    public void checkAndApplyEffects(Player player) {
+    public void applyEffect(Player player) {
         int tileX = (int) (player.getPosition().x / 16);
         int tileY = (int) (player.getPosition().y / 16);
         Vector2 tilePos = new Vector2(tileX, tileY);
 
+        // Check and apply trap effects
         TrapType trap = trapLocations.get(tilePos);
         if (trap != null) {
             System.out.println("Applying " + trap.getName() + " trap effect");
@@ -195,6 +146,7 @@ public class TileEffectMNGR {
             trapLocations.remove(tilePos); // Remove after triggering
         }
 
+        // Check and apply powerup effects
         PowerUpType powerUp = powerUpLocations.get(tilePos);
         if (powerUp != null) {
             System.out.println("Applying " + powerUp.getName() + " powerup effect");
@@ -203,24 +155,12 @@ public class TileEffectMNGR {
         }
     }
 
-    public void applyEffect(Player player, TileEffect effect) {
-        if (effect != null) {
-            effect.applyEffect(player);
-        }
-    }
+
 
     public TrapType checkTrap(Vector2 position) {
         int tileX = (int) (position.x / 16);
         int tileY = (int) (position.y / 16);
         return getEffectAtLocation(tileX, tileY);
-    }
-
-    public TrapType getTrapAt(int x, int y) {
-        return trapLocations.get(new Vector2(x, y));
-    }
-
-    public PowerUpType getPowerUpAt(int x, int y) {
-        return powerUpLocations.get(new Vector2(x, y));
     }
 
     public static TrapType getRandomTrap() {
@@ -233,7 +173,10 @@ public class TileEffectMNGR {
         return powerUps[new Random().nextInt(powerUps.length)];
     }
 
-    public void clearTrap(int x, int y) {
-        trapLocations.remove(new Vector2(x, y));
+    public TrapType getTrapAt(int x, int y) {
+        return trapLocations.get(new Vector2(x, y));
     }
+    public PowerUpType getPowerUpAt(int x, int y) {
+        return powerUpLocations.get(new Vector2(x, y));
+}
 }

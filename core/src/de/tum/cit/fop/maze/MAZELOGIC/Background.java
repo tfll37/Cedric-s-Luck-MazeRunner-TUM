@@ -8,6 +8,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+/**
+ * Manages the background and tile-based map system for the maze game.
+ * This class handles loading, rendering, and managing the tiled map including special tiles and effects.
+ */
 public class Background {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
@@ -15,11 +19,25 @@ public class Background {
     private MazeLoader mazeLoader;
     private TileEffectMNGR tileEffectMNGR;
 
+    /**
+     * Constructs a new Background instance.
+     * Initializes the sprite batch and tile effect manager.
+     *
+     * @param spriteBatch The SpriteBatch used for rendering
+     */
     public Background(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
         this.tileEffectMNGR = new TileEffectMNGR();
     }
 
+
+    /**
+     * Loads a tiled map from specified TMX and properties files.
+     * Initializes the map renderer and loads maze configuration.
+     *
+     * @param tmxPath        The file path to the TMX map file
+     * @param propertiesPath The file path to the properties configuration file
+     */
     public void loadTiledMap(String tmxPath, String propertiesPath) {
         tiledMap = new TmxMapLoader().load(tmxPath);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
@@ -28,6 +46,12 @@ public class Background {
 
         updateMazeLayout();
     }
+
+
+    /**
+     * Updates the maze layout including base tiles, special areas, wall orientations, and trap layers.
+     * This is a private helper method called during map loading.
+     */
 
     private void updateMazeLayout() {
         TiledMapTileLayer baseLayer = getBaseLayer();
@@ -41,7 +65,7 @@ public class Background {
         TiledMapTileLayer trapLayer = getSecondLayer();
         if (trapLayer != null) {
             trapLayer = new TiledMapTileLayer(baseLayer.getWidth(), baseLayer.getHeight(),
-                    (int) baseLayer.getTileWidth(), (int) baseLayer.getTileHeight());
+                    baseLayer.getTileWidth(), baseLayer.getTileHeight());
             tiledMap.getLayers().add(trapLayer);
 
         }
@@ -51,6 +75,11 @@ public class Background {
 
     }
 
+    /**
+     * Updates the basic floor and wall tiles in the specified layer based on tile overrides.
+     *
+     * @param layer The TiledMapTileLayer to update
+     */
     private void updateBasicTiles(TiledMapTileLayer layer) {
         var overrides = mazeLoader.getAllOverrides();
 
@@ -67,8 +96,12 @@ public class Background {
         }
     }
 
-
-
+    /**
+     * Updates the trap layer with trap and power-up tiles.
+     * Randomly assigns trap and power-up types to marked positions.
+     *
+     * @param layer The TiledMapTileLayer for traps and power-ups
+     */
     private void updateTrapLayer(TiledMapTileLayer layer) {
         var overrides = mazeLoader.getAllOverrides();
 
@@ -100,6 +133,14 @@ public class Background {
         }
     }
 
+    /**
+     * Places a specific tile type at the given coordinates in the specified layer.
+     *
+     * @param layer    The TiledMapTileLayer to modify
+     * @param x        The x-coordinate for the tile
+     * @param y        The y-coordinate for the tile
+     * @param tileType The type of tile to place
+     */
     private void placeTile(TiledMapTileLayer layer, int x, int y, int tileType) {
         int tileId = mazeLoader.getTileId(tileType);
         TiledMapTileLayer.Cell cell = layer.getCell(x, y);
@@ -110,6 +151,11 @@ public class Background {
         cell.setTile(tiledMap.getTileSets().getTile(tileId));
     }
 
+    /**
+     * Updates a layer with tiles based on the current override settings.
+     *
+     * @param layer The TiledMapTileLayer to update
+     */
     private void updateLayer(TiledMapTileLayer layer) {
         var overrides = mazeLoader.getAllOverrides();
 
@@ -129,15 +175,30 @@ public class Background {
 
     }
 
+    /**
+     * Gets the base layer of the tiled map.
+     *
+     * @return The base TiledMapTileLayer
+     */
     public TiledMapTileLayer getBaseLayer() {
         return (TiledMapTileLayer) tiledMap.getLayers().get(0);
     }
 
+    /**
+     * Gets the second layer of the tiled map (typically used for traps and power-ups).
+     *
+     * @return The second TiledMapTileLayer, or null if it doesn't exist
+     */
     public TiledMapTileLayer getSecondLayer() {
         return (TiledMapTileLayer) tiledMap.getLayers().get(1);
     }
 
-
+    /**
+     * Centers the camera on the tiled map.
+     * Calculates the center position based on map dimensions.
+     *
+     * @param camera The OrthographicCamera to center
+     */
     public void centerTiledMap(OrthographicCamera camera) {
         if (tiledMap != null) {
             MapProperties props = tiledMap.getProperties();
@@ -154,6 +215,11 @@ public class Background {
         }
     }
 
+    /**
+     * Renders the tiled map using the provided camera view.
+     *
+     * @param camera The OrthographicCamera defining the view to render
+     */
     public void renderTiledMap(OrthographicCamera camera) {
         if (tiledMapRenderer != null) {
             tiledMapRenderer.setView(camera);
@@ -161,10 +227,19 @@ public class Background {
         }
     }
 
+    /**
+     * Gets the current TiledMap instance.
+     *
+     * @return The current TiledMap
+     */
     public TiledMap getTiledMap() {
         return tiledMap;
     }
 
+    /**
+     * Disposes of resources used by the Background instance.
+     * Should be called when the Background is no longer needed.
+     */
     public void dispose() {
         if (tiledMap != null) {
             tiledMap.dispose();

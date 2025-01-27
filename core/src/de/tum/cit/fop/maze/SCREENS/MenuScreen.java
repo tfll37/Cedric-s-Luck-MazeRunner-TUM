@@ -112,17 +112,6 @@ public class MenuScreen implements Screen {
         settingsButtonStyle.down = clickedDrawable;
         settingsButtonStyle.font = game.getSkin().getFont("title");
 
-        TextButton settingsButton = new TextButton("Settings", settingsButtonStyle);
-        settingsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                buttonClickSound.play();
-
-                disposeButtons();
-            }
-        });
-        table.add(settingsButton).width(600).height(100).padBottom(60).row();
-
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets//music//Wallpaper Engine - Batman Arkham Knight - Batman Overlooking Gotham from Wayne Tower_1.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);

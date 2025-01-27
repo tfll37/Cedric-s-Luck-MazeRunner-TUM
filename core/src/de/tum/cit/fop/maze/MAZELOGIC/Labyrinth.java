@@ -27,10 +27,6 @@ public class Labyrinth extends TiledMap {
 
     }
 
-    public void addObject(TextureRegion object) {
-        objects.add(object);
-    }
-
     public void render(OrthographicCamera camera) {
         background.renderTiledMap(camera);
     }

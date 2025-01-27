@@ -3,16 +3,13 @@ package de.tum.cit.fop.maze.PC_NPC_OBJ;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
-import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
-import de.tum.cit.fop.maze.MAZELOGIC.MovementREQ;
-import de.tum.cit.fop.maze.MAZELOGIC.MovementSYS;
-import de.tum.cit.fop.maze.MAZELOGIC.TileEffectMNGR;
+import de.tum.cit.fop.maze.MAZELOGIC.*;
 
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.RUN_MOVE_TIME;
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
@@ -38,8 +35,7 @@ public class Player extends Actor {
     private final AnimationMNGR animationMNGR;
     private float health = 100f;
     private float damage = 10f;
-    private int dash_count = 100;
-    private final int dashCount;
+    private int dashCount;
     private boolean shootsFireball = false;
     private float fireballCooldown = 0; // Time remaining before next fireball can be shot
     private static final float FIREBALL_COOLDOWN_TIME = 3.0f; // Cooldown duration in seconds
@@ -65,7 +61,7 @@ public class Player extends Actor {
         this.bounds = new Rectangle(x, y, 16, 16);
         this.hitting = false;
         this.animationMNGR = new AnimationMNGR();
-        this.dashCount = 100;
+        this.dashCount = 10;
         this.animationMNGR.loadPlayerAnimations();
         this.fireBall = new FireBall(position.x, position.y);
     }
@@ -91,12 +87,18 @@ public class Player extends Actor {
         int tileY = (int) (position.y / 16); // or tileHeight
 
         if (trap != null) {
-            trapManager.applyEffect(this, trap);
+            Gdx.app.log("Player", "Stepped on trap: " + trap.getName());
+
+            trapManager.applyEffect(this);
         }
         TileEffectMNGR.PowerUpType powerUp = trapManager.getPowerUpAtLocation(tileX, tileY);
 
         if (powerUp != null) {
-            trapManager.applyEffect(this, powerUp);
+            // Actually apply the effect:
+            trapManager.applyEffect(this);
+
+            // If you only want to pick it up once, remove it:
+            // trapManager.removePowerUp(tileX, tileY);
         }
 
         if (isMoving) {
@@ -178,17 +180,17 @@ public class Player extends Actor {
             return new MovementREQ(MovementREQ.MoveType.STEP, 1, 0);
         }
 
-        if (DASH && lookingDirection == 0 && dash_count >= 0) {
-            dash_count -= 1;
+        if (DASH && lookingDirection == 0 && dashCount >= 0) {
+            dashCount -= 1;
             return new MovementREQ(MovementREQ.MoveType.DASH, 0, 3);
-        } else if (DASH && lookingDirection == 2 && dash_count > 0) {
-            dash_count -= 1;
+        } else if (DASH && lookingDirection == 2 && dashCount > 0) {
+            dashCount -= 1;
             return new MovementREQ(MovementREQ.MoveType.DASH, 0, -3);
-        } else if (DASH && lookingDirection == 3 && dash_count > 0) {
-            dash_count -= 1;
+        } else if (DASH && lookingDirection == 3 && dashCount > 0) {
+            dashCount -= 1;
             return new MovementREQ(MovementREQ.MoveType.DASH, -3, 0);
-        } else if (DASH && lookingDirection == 1 && dash_count > 0) {
-            dash_count -= 1;
+        } else if (DASH && lookingDirection == 1 && dashCount > 0) {
+            dashCount -= 1;
             return new MovementREQ(MovementREQ.MoveType.DASH, 3, 0);
         }
         if (HIT) {
@@ -286,6 +288,7 @@ public class Player extends Actor {
     public void takeDamage(float damage) {
         this.health -= damage;
         this.health = Math.max(this.health, 0);
+
     }
 
     /**
@@ -390,6 +393,11 @@ public class Player extends Actor {
      */
     public boolean hits() {
         return this.hitting;
+    }
+
+
+    public void giveDashes(){
+        this.dashCount += 5;
     }
 
     /**
