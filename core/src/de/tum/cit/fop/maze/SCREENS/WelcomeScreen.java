@@ -39,10 +39,10 @@ public class WelcomeScreen implements Screen {
 
         // Initialize story text lines
         storyLines = new ArrayList<>();
-        storyLines.add("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
-        storyLines.add("Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        storyLines.add("Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.");
-        storyLines.add("Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.");
+        storyLines.add("In the shadowed depths of Macao Maze, brave Sir Cedric roams,\n");
+        storyLines.add("Seeking the Sacred Crystal, through the darkened catacombs.\n");
+        storyLines.add("Ghosts of fallen warriors whisper secrets of the past,\n");
+        storyLines.add("As he faces lurking dangers, hoping freedom's within grasp and a roll.\n");
         currentLineIndex = 0;
         clickCount = 0;
         waitForNextClick = false;

@@ -73,9 +73,10 @@ public class AnimationMNGR implements Disposable {
     }
 
     public void loadPlayerAnimations() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
+        Texture walkSheet = new Texture(Gdx.files.internal("assets/AxeKnight_Blue.png"));
         Texture baldWalkSheet = new Texture(Gdx.files.internal("mobs.png"));
-        int frameWidth = 16;
+
+        int frameWidth = 32;
         int frameHeight = 32;
         int animationFrames = 4;
         int hitFrameWidth = 32;
@@ -95,28 +96,33 @@ public class AnimationMNGR implements Disposable {
 
 
         for (int col = 0; col < animationFrames; col++) {
-            walkDownFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
+            walkDownFrames.add(new TextureRegion(walkSheet, col * frameWidth, 6*frameHeight, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            walkUpFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight*2, frameWidth, frameHeight));
+            walkUpFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight*11, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            walkRightFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight, frameWidth, frameHeight));
+            walkRightFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            walkLeftFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight*3, frameWidth, frameHeight));
+            TextureRegion leftFrame = new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight);
+            leftFrame.flip(true, false);
+            walkLeftFrames.add(leftFrame);
+
         }
         for(int col = 0; col < animationFrames; col++) {
-            hitDownFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 4*frameHeight, hitFrameWidth, frameHeight));
+            hitDownFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 7*frameHeight, hitFrameWidth, frameHeight));
         }
         for(int col = 0; col < animationFrames; col++) {
-            hitUpFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 5*frameHeight, hitFrameWidth, frameHeight));
+            hitUpFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 12*frameHeight, hitFrameWidth, frameHeight));
         }
         for(int col = 0; col < animationFrames; col++) {
-            hitRightFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 6*frameHeight, hitFrameWidth, frameHeight));
+            hitRightFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 2*frameHeight, hitFrameWidth, frameHeight));
         }
         for(int col = 0; col < animationFrames; col++) {
-            hitLeftFrames.add(new TextureRegion(walkSheet, col * hitFrameWidth, 7*frameHeight, hitFrameWidth, frameHeight));
+            TextureRegion leftFrame = new TextureRegion(walkSheet, col * frameWidth, 2*frameHeight, frameWidth, frameHeight);
+            leftFrame.flip(true, false);
+            hitLeftFrames.add(leftFrame);
         }
         characterDownAnimation = new Animation<>(0.1f, walkDownFrames);
         characterUpAnimation = new Animation<>(0.1f, walkUpFrames);
