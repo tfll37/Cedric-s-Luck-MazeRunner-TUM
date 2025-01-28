@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Manages the background and tile-based map system for the maze game.
@@ -18,6 +19,7 @@ public class Background {
     private final SpriteBatch spriteBatch;
     private MazeLoader mazeLoader;
     private TileEffectMNGR tileEffectMNGR;
+//    private SpecialAreaMNGR specialAreaHandler;
 
     /**
      * Constructs a new Background instance.
@@ -41,9 +43,8 @@ public class Background {
     public void loadTiledMap(String tmxPath, String propertiesPath) {
         tiledMap = new TmxMapLoader().load(tmxPath);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
-
         mazeLoader = new MazeLoader(propertiesPath, tiledMap, tileEffectMNGR);
-
+//        specialAreaHandler = SpecialAreaMNGR.getInstance(tiledMap, mazeLoader);
         updateMazeLayout();
     }
 
@@ -58,7 +59,10 @@ public class Background {
         mazeLoader.setTiledMap(tiledMap);
         updateBasicTiles(baseLayer);
 
-        SpecialAreaHNDLR.getInstance(tiledMap, mazeLoader).createSpecialAreas();
+        SpecialAreaMNGR.getInstance(tiledMap, mazeLoader).createSpecialAreas();
+//        Vector2 spawnPoint = specialAreaHandler.getSpawnPoint();
+//        Vector2 exitPoint = specialAreaHandler.getExitPoint();
+
 
         mazeLoader.orientWallTiles(baseLayer);
 
@@ -71,6 +75,7 @@ public class Background {
         }
 
         updateTrapLayer(trapLayer);
+//        updateTrapLayerWithSpecialAreas(trapLayer, spawnPoint, exitPoint);
 
 
     }
@@ -95,6 +100,56 @@ public class Background {
 
         }
     }
+
+    private boolean isInSpecialArea(int x, int y, Vector2 spawnPoint, Vector2 exitPoint) {
+        // Convert spawn and exit points to tile coordinates
+        int spawnTileX = (int) (spawnPoint.x / 16);
+        int spawnTileY = (int) (spawnPoint.y / 16);
+        int exitTileX = (int) (exitPoint.x / 16);
+        int exitTileY = (int) (exitPoint.y / 16);
+
+        // Check if the position is within 2 tiles of spawn or exit points
+        boolean nearSpawn = Math.abs(x - spawnTileX) <= 2 && Math.abs(y - spawnTileY) <= 2;
+        boolean nearExit = Math.abs(x - exitTileX) <= 2 && Math.abs(y - exitTileY) <= 2;
+
+        return nearSpawn || nearExit;
+    }
+
+    private void updateTrapLayerWithSpecialAreas(TiledMapTileLayer layer, Vector2 spawnPoint, Vector2 exitPoint) {
+        var overrides = mazeLoader.getAllOverrides();
+
+        for (var entry : overrides.entrySet()) {
+            var pos = entry.getKey();
+            int tileType = entry.getValue();
+
+            // Skip if position is in special area
+            if (isInSpecialArea(pos.x, pos.y, spawnPoint, exitPoint)) {
+                continue;
+            }
+
+            if (tileType == TileEffectMNGR.TRAP_MARKER || tileType == TileEffectMNGR.POWERUP_MARKER) {
+                TiledMapTileLayer.Cell cell = layer.getCell(pos.x, pos.y);
+                if (cell == null) {
+                    cell = new TiledMapTileLayer.Cell();
+                    layer.setCell(pos.x, pos.y, cell);
+                }
+
+                int tileId;
+                if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                    TileEffectMNGR.TrapType trap = TileEffectMNGR.getRandomTrap();
+                    tileId = trap.getTileId();
+                    tileEffectMNGR.registerTrapLocation(pos.x, pos.y);
+                } else {
+                    TileEffectMNGR.PowerUpType powerUp = TileEffectMNGR.getRandomPowerUp();
+                    tileId = powerUp.getTileId();
+                    tileEffectMNGR.registerPowerUp(pos.x, pos.y);
+                }
+
+                cell.setTile(tiledMap.getTileSets().getTile(tileId));
+            }
+        }
+    }
+
 
     /**
      * Updates the trap layer with trap and power-up tiles.

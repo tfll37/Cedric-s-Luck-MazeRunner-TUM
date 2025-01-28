@@ -23,22 +23,21 @@ public class TileEffectMNGR {
 
     // Define trap types and their corresponding tile IDs
     public enum TrapType {
-        POISON(2057, "Poison", 5f) {
+        POISON(2080, "Poison", 5f) {
             @Override
             public void applyEffect(Player player) {
                 player.takeDamage(damage);
                 System.out.println("Poison trap applied " + damage + " damage");
             }
         },
-        STING(2060, "Sting", 10) {
+        STING(2082, "Sting", 10) {
             @Override
             public void applyEffect(Player player) {
                 player.takeDamage(damage);
-
                 System.out.println("STING");
             }
         },
-        HEAVY_BLOW(2075, "Heavy blow", 40) {
+        HEAVY_BLOW(2085, "Heavy blow", 40) {
             @Override
             public void applyEffect(Player player) {
                 player.takeDamage(damage);
@@ -66,15 +65,15 @@ public class TileEffectMNGR {
         GIVE_DASH(2333, "Give Dashes") {
             @Override
             public void applyEffect(Player player) {
-                player.addTemporaryDashes(5);
-                System.out.println("5 DASHES GIVEN");
+                player.addTemporaryDashes(1);
+                System.out.println("GIVEN A DASH");
                 System.out.println("Amount of dashes: " + player.getTotalDashCharges());
             }
         },
         HEALTH_PACK(2334, "Health Pack") {
             @Override
             public void applyEffect(Player player) {
-                player.heal(25f);
+                player.heal(10f);
                 System.out.println("Health pack restored 25 health");
             }
         };

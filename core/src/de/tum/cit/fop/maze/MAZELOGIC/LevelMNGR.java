@@ -27,7 +27,7 @@ public class LevelMNGR {
                 "maps/level-1-1.properties",
                 "Easy",
                 0,
-                1
+                0
         ));
 
         availableLevels.add(new LevelInfo(
@@ -37,7 +37,7 @@ public class LevelMNGR {
                 "maps/level-1-2.properties",
                 "Easy",
                 1,
-                30
+                0
         ));
 
         availableLevels.add(new LevelInfo(
@@ -47,7 +47,7 @@ public class LevelMNGR {
                 "maps/level-2-1.properties",
                 "Medium",
                 2,
-                50
+                0
         ));
 
         availableLevels.add(new LevelInfo(
@@ -57,7 +57,7 @@ public class LevelMNGR {
                 "maps/level-2-2.properties",
                 "Medium",
                 3,
-                70
+                0
         ));
 
         availableLevels.add(new LevelInfo(
@@ -67,7 +67,7 @@ public class LevelMNGR {
                 "maps/level-3-1.properties",
                 "Hard",
                 4,
-                100
+                0
         ));
 
         availableLevels.add(new LevelInfo(
@@ -77,7 +77,7 @@ public class LevelMNGR {
                 "maps/level-3-2.properties",
                 "Hard",
                 5,
-                120
+                0
         ));
     }
 

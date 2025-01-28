@@ -18,7 +18,7 @@ public class Labyrinth extends TiledMap {
     private final TileEffectMNGR tileEffectMNGR;
 
     public Labyrinth(SpriteBatch spriteBatch, String tmxFile, String propertiesFile, TileEffectMNGR tileEffectMNGR) {
-        SpecialAreaHNDLR.reset();
+        SpecialAreaMNGR.reset();
         this.objects = new Array<>();
         this.background = new Background(spriteBatch);
         this.background.loadTiledMap(tmxFile, propertiesFile);
@@ -68,11 +68,11 @@ public class Labyrinth extends TiledMap {
     }
 
     public Vector2 getSpawnPoint() {
-        return SpecialAreaHNDLR.getInstance(background.getTiledMap(), mazeLoader).getSpawnPoint();
+        return SpecialAreaMNGR.getInstance(background.getTiledMap(), mazeLoader).getSpawnPoint();
     }
 
     public Vector2 getExitPoint() {
-        return SpecialAreaHNDLR.getInstance(background.getTiledMap(), mazeLoader).getExitPoint();
+        return SpecialAreaMNGR.getInstance(background.getTiledMap(), mazeLoader).getExitPoint();
     }
 
     public MazeLoader getMazeLoader() {

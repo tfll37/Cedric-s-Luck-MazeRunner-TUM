@@ -302,13 +302,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
-            cameraMNGR.startShake();
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-            cameraMNGR.startLightShake();
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-            cameraMNGR.startHeavyShake();
-        }
     }
 
     @Override

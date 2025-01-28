@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
 
-public class SpecialAreaHNDLR {
+public class SpecialAreaMNGR {
     // Bitmask directions
     private static final int NORTH = 1;
     private static final int EAST = 2;
@@ -46,14 +46,14 @@ public class SpecialAreaHNDLR {
         static final int UNLOCKED_EXIT = 1848;
     }
 
-    private static SpecialAreaHNDLR instance;
+    private static SpecialAreaMNGR instance;
     private final TiledMap tiledMap;
     private final MazeLoader mazeLoader;
     private Vector2 spawnPoint;
     private Vector2 exitPoint;
     private boolean areasCreated = false;
 
-    public SpecialAreaHNDLR(TiledMap tiledMap, MazeLoader mazeLoader) {
+    public SpecialAreaMNGR(TiledMap tiledMap, MazeLoader mazeLoader) {
         this.tiledMap = tiledMap;
         this.mazeLoader = mazeLoader;
     }
@@ -153,9 +153,9 @@ public class SpecialAreaHNDLR {
         return cell;
     }
 
-    public static SpecialAreaHNDLR getInstance(TiledMap tiledMap, MazeLoader mazeLoader) {
+    public static SpecialAreaMNGR getInstance(TiledMap tiledMap, MazeLoader mazeLoader) {
         if (instance == null) {
-            instance = new SpecialAreaHNDLR(tiledMap, mazeLoader);
+            instance = new SpecialAreaMNGR(tiledMap, mazeLoader);
         }
         return instance;
     }

@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze.PC_NPC_OBJ;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -62,6 +63,11 @@ public class Player extends Actor {
     private int temporaryDashes = 0; // Additional dashes from power-ups
 
 
+    private float damageFlashDuration = 0f;
+    private static final float MAX_FLASH_DURATION = 1.0f; // Duration of flash in seconds
+    private static final Color DAMAGE_FLASH_COLOR = new Color(1, 0, 0, 0.5f); // Semi-transparent red
+    private Color currentTint = new Color(1, 1, 1, 1);
+
 
     /**
      * Creates a new player at the specified position.
@@ -83,7 +89,7 @@ public class Player extends Actor {
         this.bounds = new Rectangle(x, y, 16, 16);
         this.hitting = false;
         this.animationMNGR = new AnimationMNGR();
-        this.dashCount = 10;
+        this.dashCount = 3;
         this.animationMNGR.loadPlayerAnimations();
         this.fireBall = new FireBall(position.x, position.y);
 
@@ -96,6 +102,7 @@ public class Player extends Actor {
 
         this.dashCharges = maxDashCharges;
 
+        this.currentTint.set(1, 1, 1, 1); // Initialize to white (no tint)
 
     }
 
@@ -155,7 +162,9 @@ public class Player extends Actor {
             bounds.setPosition(position.x, position.y);
             return;
         }
+
         MovementREQ request = handleInput();
+
         if (request != null) {
             Vector2 newPixelPos = MovementSYS.processMovement(
                     position,
@@ -172,7 +181,9 @@ public class Player extends Actor {
                 timeAccumulation = 0f;
             }
         }
+
         bounds.setPosition(position.x, position.y);
+
         for (int i = 0; i < enemies.size; i++) {
             Enemy enemy = enemies.get(i);
             boolean overlaps = bounds.overlaps(enemy.getBounds());
@@ -183,6 +194,15 @@ public class Player extends Actor {
         fireballCooldown -= delta;
         if (fireballCooldown < 0) {
             fireballCooldown = 0;
+        }
+
+        if (damageFlashDuration > 0) {
+            damageFlashDuration -= delta;
+            // Calculate flash intensity
+            float flashIntensity = damageFlashDuration / MAX_FLASH_DURATION;
+            currentTint.set(1, 1 - flashIntensity * 0.5f, 1 - flashIntensity * 0.5f, 1);
+        } else {
+            currentTint.set(1, 1, 1, 1); // Reset to normal color
         }
     }
 
@@ -325,6 +345,10 @@ public class Player extends Actor {
         TextureRegion currentFrame;
         float animationSpeed = time * ((isRunning && canSprint) ? 1.5f : 1.0f);
 
+        Color prevColor = batch.getColor().cpy();
+        batch.setColor(currentTint);
+
+
         if (hitting) {
             if (lookingDirection == 0) {
                 currentFrame = animationMNGR.getCharacterUpHitAnimation().getKeyFrame(animationSpeed, true);
@@ -346,6 +370,8 @@ public class Player extends Actor {
         }
 
         batch.draw(currentFrame, position.x, position.y);
+        batch.setColor(prevColor);
+
     }
 
     // Getter for stamina (useful for UI)
@@ -404,6 +430,9 @@ public class Player extends Actor {
         if (!isDashing) {  // Only take damage if not dashing
             this.health -= damage;
             this.health = Math.max(this.health, 0);
+
+            damageFlashDuration = MAX_FLASH_DURATION;
+
 
             if (damage <= 10) {
                 cameraMNGR.startLightShake();
@@ -579,7 +608,8 @@ public class Player extends Actor {
     public boolean isDashing() {
         return isDashing;
     }
-    public int getDashCount(){
+
+    public int getDashCount() {
         return dashCount;
     }
 }

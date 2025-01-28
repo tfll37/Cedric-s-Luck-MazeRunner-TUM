@@ -1,6 +1,182 @@
-Here's a formatted version for your `README.md` file:
+# Diddy Party Escape 🎲
 
-# FOP Project
+[![Java](https://img.shields.io/badge/Java-17-red.svg)](https://www.oracle.com/java/)
+[![LibGDX](https://img.shields.io/badge/LibGDX-1.11.0-blue.svg)](https://libgdx.com/)
+
+A maze-based dungeon crawler that combines classic roguelike elements with innovative dice mechanics. Navigate through procedurally enhanced mazes, engage in tactical combat, and use your dice rolls wisely to progress through increasingly challenging levels.
+
+## ✨ Features
+
+- **Advanced Combat System**
+  - Real-time melee combat with spacebar-triggered attacks
+  - Directional combat system with different attack patterns based on player orientation
+  - Fireball projectile system with 3-second cooldown
+  - Enemy AI featuring A* pathfinding and tactical positioning
+  - Dynamic hit particle effects and damage feedback
+  - Screen shake system with variable intensity based on damage
+  - Invulnerability frames during dash maneuvers
+
+- **Strategic Movement**
+  - Fluid tile-based movement with WASD controls
+  - Sprint system with 100-point stamina bar
+  - Advanced dash mechanic with multiple charges
+    - Maximum 3 base dash charges
+    - 5-second cooldown per charge
+    - Temporary dash power-ups available
+  - Dynamic collision detection with multiple environment layers
+
+- **Interactive Game Elements**
+  - Dice-based progression system
+    - Roll-to-unlock mechanics for exits
+    - Score accumulation through successful rolls
+    - Varying requirements per level
+  - Power-up system with multiple effect types
+  - Health management with collectible hearts
+  - Multi-layered trap system with various effects
+
+- **Polished Game Mechanics**
+  - Smooth camera system with:
+    - Dynamic zoom (0.2x to 1.0x range)
+    - Intelligent follow mechanics
+    - Screen shake with three intensity levels
+  - Directional exit pointer system
+  - Multi-layer map system supporting:
+    - Base terrain layer
+    - Interactive objects layer
+    - Special areas (spawn points, exits)
+  - Comprehensive animation system for all game entities
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Java Development Kit (JDK) 17 or higher
+- Gradle 7.0 or higher
+- IDE with LibGDX support (IntelliJ IDEA recommended)
+- Minimum 2GB RAM
+- Graphics card supporting OpenGL 2.0
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/diddy-party-escape.git
+```
+
+2. Navigate to project directory:
+```bash
+cd TBD
+```
+
+3. Build the project:
+```bash
+./gradlew build
+```
+
+4. Run the game:
+```bash
+./gradlew run
+```
+
+## 🎮 How to Play
+
+1. **Game Start**
+  - Launch the game
+  - Navigate through the welcome screen
+  - Select your preferred level from the menu
+  - Levels are categorized by difficulty and size
+
+2. **Core Objectives**
+  - Each level has a score requirement to unlock the exit
+  - Collect dice and roll them to accumulate points
+  - Find and reach the exit point marked by the pointer
+  - Manage resources while avoiding or defeating enemies
+
+3. **Progression System**
+  - Complete levels to unlock harder challenges
+  - Each level features:
+    - Unique maze layouts
+    - Different score requirements
+    - Varying enemy patterns
+    - Special trap configurations
+
+4. **Combat Strategy**
+  - Use melee attacks for close combat
+  - Employ fireballs for ranged combat
+  - Utilize dash for both offense and defense
+  - Manage your dash charges strategically
+
+## ⌨️ Game Controls
+
+- **Basic Movement**: WASD keys
+- **Sprint**: Hold Left Shift (consumes stamina)
+- **Melee Attack**: Spacebar
+- **Dash**: X (requires dash charges)
+- **Fireball**: Enter (3-second cooldown)
+- **Camera Control**:
+  - Zoom In/Out: Mouse Scroll
+  - Camera follows player automatically
+
+## 🔧 Technical Details
+
+The game is built using LibGDX and features:
+
+- **Map System**
+  - TMX-based level design
+  - Property-driven configuration
+  - Multi-layer support for:
+    - Base terrain
+    - Interactive elements
+    - Trap systems
+  - Special area handling for spawns and exits
+
+- **Animation Framework**
+  - State-based animation system
+  - Direction-aware sprite management
+  - Particle effect integration
+  - Screen shake coordination
+
+- **Enemy AI**
+  - A* pathfinding implementation
+  - Dynamic target tracking
+  - State machine for behavior
+  - Collision avoidance
+
+- **Resource Management**
+  - Health system (max 200 points)
+  - Stamina system (100 points)
+  - Dash charge system
+  - Score tracking
+
+## 📁 Project Structure
+
+```
+diddy-party-escape/
+├── core/
+│   ├── src/
+│   │   ├── screens/           # Game screens (Menu, Game, Welcome)
+│   │   ├── pc_npc_obj/       # Game entities (Player, Enemy, Items)
+│   │   ├── mazelogic/        # Core systems (Pathfinding, Collision)
+│   │   └── design/           # Visual systems (Animation, Effects)
+├── assets/
+│   ├── maps/                 # Level TMX files and properties
+│   ├── textures/            # Sprite sheets and particles
+│   └── audio/               # Sound effects and music
+├── desktop/                 # Desktop launcher and configurations
+└── README.md
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Please ensure new features maintain compatibility with existing systems and include appropriate documentation.
+
+## 📝 Development Updates
 
 ## Update 1
 Construction of the game scaffold.
@@ -63,14 +239,13 @@ Major update of player movement and combat systems. Implemented enemy pathfindin
 **Misc:**
 - Due to major code conflicts with video animation loading at MenuScreen initialization, this push won't feature Djordje's update on this aspect of the game. This push is to summarize the progress of the team and provide helpful insight behind the development process of Team `Byteme`
 
-# Update 4 (ver 0.3.0)
-
-## Overview
+## Update 4 (ver 0.3.0)
+### Overview
 Major update implementing collectible system and minigame mechanics. Added new interactive elements including dice-based minigames, enhanced particle effects, and projectile combat system. Expanded the game's combat mechanics with fireball abilities and improved visual feedback systems. Implemented Player Spawn locations and Player Exit locations. Added support for Trap game mechanics. Support for a second tile layer is added(crucial for the Trap System). Reworks of other classes to support this update.
 
-## Changes
+### Changes
 
-### Files
+#### Files
 
 **New:**
 - `Collectable.java` - Base abstract class for all collectible items in the game. Implements core collection mechanics and bounds checking. Provides foundation for future collectible types
@@ -88,26 +263,26 @@ Major update implementing collectible system and minigame mechanics. Added new i
 
 **Modified:**
 - `Player.java`
-    - Added fireball shooting mechanics
-    - Implemented cooldown system for abilities
-    - Enhanced combat interaction with new projectiles
-    - Integrated collectible detection system
+  - Added fireball shooting mechanics
+  - Implemented cooldown system for abilities
+  - Enhanced combat interaction with new projectiles
+  - Integrated collectible detection system
 
 - `Enemy.java`
-    - Updated to handle projectile damage
-    - Enhanced hit detection system
-    - Improved death state handling
+  - Updated to handle projectile damage
+  - Enhanced hit detection system
+  - Improved death state handling
 
 - `AnimationMNGR.java`
-    - Added new animations for dice and fireballs
-    - Implemented directional projectile animations
-    - Enhanced hit particle effects
+  - Added new animations for dice and fireballs
+  - Implemented directional projectile animations
+  - Enhanced hit particle effects
 
 - `MazeLoader.java`
   - Reworks for the support of the new Trap System and for the Special Areas.
 
 - `Background.java`
-    - Reworks for the support of the new Trap System and for the Special Areas.
+  - Reworks for the support of the new Trap System and for the Special Areas.
 - Other supporting classes adjusted for the new systems.
 
 **Misc:**
@@ -116,15 +291,37 @@ Major update implementing collectible system and minigame mechanics. Added new i
 - Corridors` walking area inside the maze is doubled to 2 tiles wide.
 - Reversion of the updates number
 
-# Update 5 (0.3.1)
-## Overview
+## Update 5 (0.3.1)
+### Overview
 - Fixed bugs occurring when creating the Special Areas, across several classes
 - Updated the level-2,4.properties files
 
-# Update 6 (0.3.2)
-## Overview
+## Update 6 (0.3.2)
+### Overview
 - Fixed camera issues, fixed zoom
 - Improved camera movement, improved player movement(tile-to-pixel movement)
 - Implemented screen shake
 - Added more levels
+
+# Update 7 (0.4.0)
+#### Overview
+- Fixed numerous bugs - spawning of the traps and power-ups, interactions with the player; Overall maze loading 
+- Reworked mechanics - Reworked: sprinting system, dash system, dice system,  next level progression, trap and power-up effects, connected the screen shake to the game logic, smoothened movement of enemies + better pathfinding logic
+- Introduced new features - Player gets red when taking damage, 
+- New proper documentation
+- New skins for traps and power-ups
+
+## 🙏 Acknowledgments
+- LibGDX framework and community
+- [DawnBringer](https://pixeljoint.com/p/23821.htm) for the Dawnlike tileset
+- Sound effects from freesound.org
+- Claude AI, ChatGPT, DeepSeek
+- All contributors and testers
+
+## Authors
+- Mark Konstantinov
+- Andrei ... 
+- Djordje ...
+
+
 

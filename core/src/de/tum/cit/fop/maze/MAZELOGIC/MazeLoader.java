@@ -96,7 +96,7 @@ public class MazeLoader {
             case 4:
                 return TileEffectMNGR.getRandomPowerUp().getTileId();
             default:
-                return 1295; // default to safe ground
+                return 1295; //
         }
     }
 
