@@ -13,6 +13,8 @@ public abstract class Collectable implements IGameOBJ {
 
     protected float y;
 
+    protected boolean counted = false;
+
 
     protected boolean collected = false;
 
@@ -32,9 +34,16 @@ public abstract class Collectable implements IGameOBJ {
         collected = true;
     }
 
+    public void counted() {
+        counted = true;
+    }
+
 
     public boolean isCollected() {
         return collected;
+    }
+    public boolean isCounted(){
+        return counted;
     }
 
 

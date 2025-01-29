@@ -247,6 +247,11 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         for (int i = 0; i < amountOfEnemies; i++) {
             Enemy enemy = enemies.get(i);
             enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
+            if(enemy.getLifeStatus() == false && !enemy.isCounted()){
+                enemy.count();
+                gameUI.updateScore(10);
+
+            }
             hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
             gameUI.update(delta, player, enemy);
 
@@ -318,6 +323,10 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
         for (int i = 0; i <= amountOfHearts; i++) {
             Heart heart = hearts.get(i);
+            if(heart.isCollected() && !heart.isCounted()){
+                heart.counted();
+                gameUI.updateScore(5);
+            }
             heart.render(batch);
         }
         hitParticle1.render(batch);

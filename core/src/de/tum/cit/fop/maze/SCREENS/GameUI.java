@@ -119,11 +119,12 @@ public class GameUI {
     }
 
     public void updateScore(int currentScore) {
+        this.currentScore = this.currentScore + currentScore;
         updateScoreDisplay();
     }
 
     private void updateScoreDisplay() {
-        scoreLabel.setText(String.format("Score: %d / %d", currentScore, requiredScore));
+        scoreLabel.setText(String.format("Score: %d", currentScore));
     }
 
     public void showScoreRequirementMessage(int remaining) {

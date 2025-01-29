@@ -38,6 +38,7 @@ public class Enemy {
     private SpriteBatch batch;
     private boolean displayHitParticle = false;
     private boolean alive = true;
+    private boolean counted = false;
 
 
     public Enemy(float x, float y) {
@@ -174,6 +175,13 @@ public class Enemy {
         return new Rectangle(position.x, position.y, 16, 16);
     }
 
+    public void count(){
+        counted = true;
+    }
+    public boolean isCounted()
+    {
+        return counted;
+    }
 
     private void damage(Player player) {
         player.takeDamage(damage);
