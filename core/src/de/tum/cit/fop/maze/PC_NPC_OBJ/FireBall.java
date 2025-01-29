@@ -37,7 +37,7 @@ public class FireBall {
         // Move the fireball
         time += delta;
         float speed = 200 * delta; // Adjust speed as needed
-
+        animationMNGR.loadHitAnimations();
         switch (direction) {
             case 0: // Up
                 y += speed;
