@@ -138,6 +138,7 @@ public class Player extends Actor {
             return;
         }
 
+
         MovementREQ request = handleInput();
 
         if (request != null) {

@@ -102,10 +102,10 @@ public class AnimationMNGR implements Disposable {
             walkUpFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight*11, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            walkRightFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
+            walkRightFrames.add(new TextureRegion(walkSheet, col * frameWidth, frameHeight, frameWidth, frameHeight));
         }
         for (int col = 0; col < animationFrames; col++) {
-            TextureRegion leftFrame = new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight);
+            TextureRegion leftFrame = new TextureRegion(walkSheet, col * frameWidth, frameHeight, frameWidth, frameHeight);
             leftFrame.flip(true, false);
             walkLeftFrames.add(leftFrame);
 
