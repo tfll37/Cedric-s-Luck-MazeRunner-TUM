@@ -39,10 +39,14 @@ public class WelcomeScreen implements Screen {
 
         // Initialize story text lines
         storyLines = new ArrayList<>();
-        storyLines.add("In the shadowed depths of Macao Maze, brave Sir Cedric roams,\n");
-        storyLines.add("Seeking the Sacred Crystal, through the darkened catacombs.\n");
-        storyLines.add("Ghosts of fallen warriors whisper secrets of the past,\n");
-        storyLines.add("As he faces lurking dangers, hoping freedom's within grasp and a roll„.\n");
+
+        storyLines.add("In the shadowed depths of Macao Maze, brave Sir Cedric treads alone,\n");
+        storyLines.add("Through winding paths and ancient stones, far from all he's ever known.\n");
+        storyLines.add("Haunted by the tortured souls of those who failed to break their chains,\n");
+        storyLines.add("He battles onwards through the dark, where only echoed screams remain.\n");
+        storyLines.add("Each roll of fate could lead to freedom or seal his doom in these cold halls,\n");
+        storyLines.add("As shadows dance and whisper secrets from their age-old castle walls.\n");
+
         currentLineIndex = 0;
         clickCount = 0;
         waitForNextClick = false;
@@ -64,29 +68,17 @@ public class WelcomeScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
-
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isTouched()) {
-            if (waitForNextClick) {
-                waitForNextClick = false;
-                return;
-            }
-
-            clickCount++;
-            if (clickCount < 3) {
-                if (currentLineIndex < storyLines.size() - 1) {
-                    currentLineIndex++;
-                    storyLabel.setText(storyLines.get(currentLineIndex));
-                    if (currentLineIndex == 1) {
-                        waitForNextClick = true;
-                    }
-                }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.justTouched()) {
+            if (currentLineIndex < storyLines.size() - 1) {
+                currentLineIndex++;
+                storyLabel.setText(storyLines.get(currentLineIndex));
             } else {
                 game.goToMenu();
             }
         }
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 5 / 30f));
+        stage.draw();
     }
 
     @Override

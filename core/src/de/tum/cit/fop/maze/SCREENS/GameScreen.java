@@ -82,7 +82,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
 
         this.requiredScore = LevelMNGR.generateScoreRequirement(level);
-        this.rollsNeededToOpenDoor = level.Level()*3 + 2; // Set door requirement to match score requirement
+        this.rollsNeededToOpenDoor = level.Level() * 3 + 2; // Set door requirement to match score requirement
         this.gameUI.setScoreRequirement(requiredScore);
         this.gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
 
@@ -218,9 +218,14 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 playerTile = player.getTilePosition(16, 16);
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
-        if (playerTile.x == exitTile.x  && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor ==0 ) {
+        if (currentLevelScore >= requiredScore) {
+            SpecialAreaMNGR.getInstance(labyrinth.getBackground().getTiledMap(), labyrinth.getMazeLoader())
+                    .unlockExit();
+        }
 
-            if (playerTile.x == exitTile.x   && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor ==0) {
+        if (playerTile.x == exitTile.x && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor == 0) {
+
+            if (playerTile.x == exitTile.x && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor == 0) {
                 if (currentLevelScore >= requiredScore) {
                     // Show victory screen instead of immediately loading next level
                     setIsPaused(true);
@@ -231,32 +236,32 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
                 }
             }
         }
-        if(!isPaused){
-        player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
-        gameUI.setDashCount(player.getDashCount());
-        for (int i = 0; i <= amountOfDice; i++) {
-            Dice dice = dices.get(i);
-            dice.update(delta, player);
+        if (!isPaused) {
+            player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
+            gameUI.setDashCount(player.getDashCount());
+            for (int i = 0; i <= amountOfDice; i++) {
+                Dice dice = dices.get(i);
+                dice.update(delta, player);
 
-        }
-        for (int i = 0; i <= amountOfHearts; i++) {
-            Heart heart1 = hearts.get(i);
-            heart1.update(delta, player);
-        }
-        player.getFireBall().update(delta, player, labyrinth, enemies);
-        for (int i = 0; i < amountOfEnemies; i++) {
-            Enemy enemy = enemies.get(i);
-            enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
+            }
+            for (int i = 0; i <= amountOfHearts; i++) {
+                Heart heart1 = hearts.get(i);
+                heart1.update(delta, player);
+            }
+            player.getFireBall().update(delta, player, labyrinth, enemies);
+            for (int i = 0; i < amountOfEnemies; i++) {
+                Enemy enemy = enemies.get(i);
+                enemy.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, player, maze);
             if(enemy.getLifeStatus() == false && !enemy.isCounted()){
                 enemy.count();
                 gameUI.updateScore(10);
 
             }
-            hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
-            gameUI.update(delta, player, enemy);
+                hitParticle1.update(delta, player, enemy.isDisplayHitParticle());
+                gameUI.update(delta, player, enemy);
 
-        }
-        gameUI.update(delta, player);
+            }
+            gameUI.update(delta, player);
         }
 
         handleInput();
@@ -330,11 +335,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             heart.render(batch);
         }
         hitParticle1.render(batch);
-        for(int i = 0; i <=amountOfDice;i++){
+        for (int i = 0; i <= amountOfDice; i++) {
             DiceMinigame diceMinigame = minigames.get(i);
             if (diceMinigame.isActive()) {
-            System.out.println("Dice Minigame is active");
-        }}
+                System.out.println("Dice Minigame is active");
+            }
+        }
         // In your GameScreen render or update method
         player.getFireBall().render(batch);
 
@@ -343,7 +349,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         exitPointer.render(batch, playerPos, exitPos);
 
         batch.end();
-        for(int i = 0; i <=amountOfDice;i++){
+        for (int i = 0; i <= amountOfDice; i++) {
             DiceMinigame diceMinigame = minigames.get(i);
             diceMinigame.render(batch, cameraX, cameraY);
         }
@@ -518,7 +524,8 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void resume() {
     }
-    public void setIsPaused(boolean value){
+
+    public void setIsPaused(boolean value) {
         isPaused = value;
     }
 

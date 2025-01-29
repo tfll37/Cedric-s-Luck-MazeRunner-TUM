@@ -52,7 +52,8 @@ public class Pathfinding {
 
         // Boundary checks
         if (!isPositionValid(maze, start) || !isPositionValid(maze, goal)) {
-            throw new IllegalArgumentException("Start or goal position is out of maze bounds or not walkable.");
+            System.out.println("dash");
+//            throw new IllegalArgumentException("Start or goal position is out of maze bounds or not walkable.");
         }
 
         // PriorityQueue to select the node with the lowest f score

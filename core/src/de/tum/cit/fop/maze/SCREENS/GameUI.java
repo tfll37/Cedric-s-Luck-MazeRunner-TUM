@@ -139,21 +139,10 @@ public class GameUI {
         messageTimer = MESSAGE_DURATION;
     }
 
-    public void togglePause() {
-        isPaused = !isPaused;
-    }
-
     public void render() {
         stage.draw();
     }
 
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-    }
     public void setDoorUnlockProgress(int remainingRolls) {
         doorUnlockLabel.setText("Needed to Unlock: " + remainingRolls);
     }

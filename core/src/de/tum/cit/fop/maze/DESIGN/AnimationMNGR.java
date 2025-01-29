@@ -12,7 +12,21 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.TimeUtils;
-
+/**
+ * Manages and controls all animations in the maze game, including character animations,
+ * effects, and tile animations. This class serves as a central animation management system
+ * that handles loading, updating, and rendering of all animated elements.
+ *
+ * <p>The AnimationMNGR provides functionality for:</p>
+ * <ul>
+ *   <li>Character animations (walking, hitting in different directions)</li>
+ *   <li>Effect animations (fireballs, hits, hearts)</li>
+ *   <li>Tile animations in the game world</li>
+ *   <li>Dice rolling animations and face displays</li>
+ * </ul>
+ *
+ * <p>This class implements {@link Disposable} to properly handle texture resource cleanup.</p>
+ */
 public class AnimationMNGR implements Disposable {
     private static final float FRAME_DURATION = 0.1f;
     private static final float TILE_ANIMATION_INTERVAL = 0.5f;
@@ -58,13 +72,21 @@ public class AnimationMNGR implements Disposable {
     private TiledMapTileLayer baseLayer;
     private TiledMapTileLayer secondLayer;
 
+    /**
+     * Constructs a new AnimationMNGR with initialized collections for animated tiles
+     * and texture management.
+     */
     public AnimationMNGR() {
         this.animatedTiles = new ObjectMap<>();
         this.lastUpdateTimes = new ObjectMap<>();
 
         textures = new ObjectMap<>();
     }
-
+    /**
+     * Loads all animation assets required for the game.
+     * This includes player animations, dice animations, and hit effect animations.
+     * Should be called during the initialization phase of the game.
+     */
     public void loadAnimations() {
         loadPlayerAnimations();
         loadDiceAnimation();
@@ -72,6 +94,11 @@ public class AnimationMNGR implements Disposable {
 
     }
 
+    /**
+     * Loads player-specific animations including walking and attack animations
+     * for all directions (up, down, left, right).
+     * Also loads NPC (bald guy) animations for all directions.
+     */
     public void loadPlayerAnimations() {
         Texture walkSheet = new Texture(Gdx.files.internal("assets/AxeKnight_Blue.png"));
         Texture baldWalkSheet = new Texture(Gdx.files.internal("mobs.png"));
@@ -164,6 +191,10 @@ public class AnimationMNGR implements Disposable {
 
     }
 
+    /**
+     * Loads dice-related animations and heart animations.
+     * Creates animations for dice rolling and sets up static dice face textures.
+     */
     public void loadDiceAnimation() {
         Texture diceSheet = new Texture(Gdx.files.internal("dice.png"));
         Texture heartSheet = new Texture(Gdx.files.internal("objects.png"));
@@ -194,7 +225,10 @@ public class AnimationMNGR implements Disposable {
         }
         heartAnimation = new Animation<>(0.1f, heartFrames);
     }
-
+    /**
+     * Loads hit effect animations and fireball animations for all directions.
+     * These are used for combat and special effects in the game.
+     */
     public void loadHitAnimations(){
         Texture hit1_1 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_1.png"));
         Texture hit1_2 = new Texture(Gdx.files.internal("assets\\hit1\\hit1_2.png"));
@@ -268,29 +302,52 @@ public class AnimationMNGR implements Disposable {
         fireBallAnimationDown = new Animation<>(0.1f, fireBallFramesDown);
     }
 
-    public Animation<TextureRegion> createAnimation(TextureRegion[] frames, int frameCount) {
-        TextureRegion[] animationFrames = new TextureRegion[frameCount];
-        System.arraycopy(frames, 0, animationFrames, 0, frameCount);
-        return new Animation<>(FRAME_DURATION, animationFrames);
+    /**
+     * Updates animation states. Should be called each frame.
+     *
+     * @param delta The time elapsed since the last frame
+     */
+    public void update(float delta) {
+        // Update animations
+        spriteBatch.begin();
+
+        spriteBatch.end();
+
     }
 
     public static Animation<TextureRegion> getCharacterDownAnimation() {
         return characterDownAnimation;
     }
+    /**
+     * @return The animation for the character walking upward
+     */
     public static Animation<TextureRegion> getCharacterUpAnimation() {
         return characterUpAnimation;
     }
+    /**
+     * @return The animation for the character walking left
+     */
     public static Animation<TextureRegion> getCharacterLeftAnimation() {
         return characterLeftAnimation;
     }
+    /**
+     * @return The animation for the character walking right
+     */
     public static Animation<TextureRegion> getCharacterRightAnimation() {
         return characterRightAnimation;
     }
 
+    /**
+     * @return The animation for the character's downward attack
+     */
     public static Animation<TextureRegion> getCharacterDownHitAnimation() {
         return characterDownHitAnimation;
     }
+    /**
+     * @return The animation for the character's upward attack
+     */
     public static Animation<TextureRegion> getCharacterUpHitAnimation() {return characterUpHitAnimation;}
+
     public static Animation<TextureRegion> getCharacterLeftHitAnimation() {return characterLeftHitAnimation;}
     public static Animation<TextureRegion> getCharacterRightHitAnimation() {return characterRightHitAnimation;}
 
@@ -439,13 +496,7 @@ public class AnimationMNGR implements Disposable {
         spriteBatch.draw(animation.getKeyFrame(delta, true), x, y);
         spriteBatch.end();
     }
-    public void update(float delta) {
-        // Update animations
-        spriteBatch.begin();
 
-        spriteBatch.end();
-
-    }
     @Override
     public void dispose() {
         for (Texture texture : textures.values()) {

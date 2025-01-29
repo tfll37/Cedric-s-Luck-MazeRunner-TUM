@@ -377,4 +377,365 @@ Major update implementing collectible system and minigame mechanics. Added new i
 - Djordje Vidakovic
 
 
+# Technical Deep Dive: MAZELOGIC Package
+
+Loading Pipeline of game files
+```java
+File Processing Flow:
+┌───────────────┐
+│ .properties   │
+│ File Loading  │
+└───────┬───────┘
+        ▼
+┌───────────────┐
+│ Coordinates   │
+│ Parsing       │
+└───────┬───────┘
+        ▼
+┌───────────────┐
+│ Tile Type     │
+│ Assignment    │
+└───────────────┘
+```
+![Processing scheme ](docs/file_processing_scheme.png)
+[Processing scheme ](docs/file_processing_scheme.png)
+
+[DependencyGraphSnapshot0.svg](..%2F..%2FDesktop%2FJArchitect2024.1%2FDependencyGraphSnapshot0.svg)
+
+### Wall Orientation System
+The maze uses a bitmask system to determine wall orientations:
+```java
+Direction Bits:
+N = 1 (0001)  E = 2 (0010)
+S = 4 (0100)  W = 8 (1000)
+Example Combinations:
+┌─────────┬────────┬──────────┐
+│ Pattern │ Binary │ Tile ID  │
+├─────────┼────────┼──────────┤
+│ Cross   │  1111  │   265    │
+│ Horiz   │  1010  │   242    │
+│ Vert    │  0101  │   261    │
+└─────────┴────────┴──────────┘
+```
+
+### Movement System
+#### Three-layer approach:
+```java
+Movement Flow:
+┌──────────────┐
+│ Input Layer  │ MovementREQ.java
+│  (Intent)    │ - STEP/DASH/KNOCKBACK
+├──────────────┤
+│ Processing   │ MovementSYS.java
+│  (Physics)   │ - Collision/Position
+├──────────────┤
+│ Output Layer │ Vector2 Position
+│ (Position)   │ - Final Coordinates
+└──────────────┘
+```
+```
+Movement State Machine:
+┌─────────────┐
+│   IDLE      │──────┐
+├─────────────┤      │
+│   WALKING   │<─────┼───────┐
+├─────────────┤      │       │
+│   DASHING   │      │       │
+└─────────────┘      │       │
+                     │       │
+Movement Request     │       │
+┌─────────────┐      │       │
+│ Type        │      │       │
+│ DeltaTileX  │>─────┘       │
+│ DeltaTileY  │              │
+└─────────────┘              │
+                             │
+Validation                   │
+┌─────────────┐              │
+│ Collision   │>─────────────┘
+│ Boundaries  │
+│ State Check │
+└─────────────┘
+```
+### Movement Interpolation System
+#### Overview
+```java
+ Pipeline:
+┌─────────────┐
+│ Input       │ Raw position change
+├─────────────┤
+│ Lerp        │ Smooth transition
+├─────────────┤
+│ Output      │ Final position
+└─────────────┘
+
+```
+Why Interpolation?
+Problem Without Interpolation
+```java
+CopyGrid Movement:
+Before  After
+        ┌─┐     ┌─┐
+        │P│ --> │P│
+        └─┘     └─┘
+```
+Instant jump between tiles causes:
+1. Visual jarring
+2. Loss of motion feel
+3. Reduced game polish
+
+
+Benefits of using Interpolation:
+1. Visual smoothness
+2. Better game feel
+3. Professional polish
+   Linear Interpolation (Lerp)
+   Basic Formula
+4. CopyLerp Formula:
+   ``current = start + (target - start) * alpha``
+
+Where:
+- start: Starting position
+- target: Target position
+- alpha: Interpolation factor (0 to 1)
+
+Implementation
+ ```java
+- Movement Components:
+  ┌──────────────────┐
+  │ Position         │
+  ├──────────────────┤
+  │ currentPos: Vec2 │
+  │ targetPos:  Vec2 │
+  │ alpha:     float │
+  └──────────────────┘
+```
+```java
+Update Cycle:
+┌────────────────────┐
+│ alpha += speed * dt│
+│ if alpha > 1       │
+│   alpha = 1        │
+└────────────────────┘
+Delta Time Integration
+javaCopyTime Management:
+┌───────────────┬────────────┐
+│ Component     │ Purpose    │
+├───────────────┼────────────┤
+│ deltaTime     │ Frame time │
+│ moveSpeed     │ Base speed │
+│ currentAlpha  │ Progress   │
+└───────────────┴────────────┘
+```
+
+Speed Calculation:
+
+`speed = baseSpeed * deltaTime`
+
+
+Interpolation Implementation Example
+```java
+public class MovementInterpolator {
+private Vector2 currentPos;
+private Vector2 targetPos;
+private float alpha;
+private float speed;
+
+    public void updatePosition(float deltaTime) {
+        // Update alpha
+        alpha += speed * deltaTime;
+        if (alpha > 1f) alpha = 1f;
+
+        // Interpolate position
+        currentPos.x = lerp(startPos.x, targetPos.x, alpha);
+        currentPos.y = lerp(startPos.y, targetPos.y, alpha);
+    }
+
+    private float lerp(float start, float target, float alpha) {
+        return start + (target - start) * alpha;
+    }
+}
+
+```
+#### Implementation Example in Game
+```java
+public class MovementREQ {
+    public enum MoveType { STEP, DASH, KNOCKBACK }
+    public MoveType moveType;
+    public int deltaTileX;
+    public int deltaTileY;
+}
+```
+
+### Wall Bitmask System
+```java
+Direction Values:
+N = 1 (0001)    ↑
+E = 2 (0010)    →
+S = 4 (0100)    ↓
+W = 8 (1000)    ←
+
+Common Patterns:
+┌──────────┬────────┬─────┬────────┐
+│ Pattern  │ Binary │ Sum │ Visual │
+├──────────┼────────┼─────┼────────┤
+│ Cross    │  1111  │ 15  │   ┼    │
+│ T-shape  │  1110  │ 14  │   ┤    │
+│ Corner   │  0011  │  3  │   └    │
+│ Straight │  1010  │ 10  │   ─    │
+└──────────┴────────┴─────┴────────┘
+
+Example:
+To check if a wall has a northern connection:
+bitmask & NORTH (1) != 0
+```
+
+### Pathfinding Implementation
+
+```java
+A* pathfinding system visualization:
+(S) to Goal (G):
+        
+┌───┬───┬───┬───┐
+│ S │   │ ■ │   │
+├───┼───┼───┼───┤
+│   │ ■ │   │   │
+├───┼───┼───┼───┤
+│   │   │ ■ │ G │
+└───┴───┴───┴───┘
+■ = Wall
+```
+
+### Tile Effect Management
+#### Structure of effect system:
+```java
+┌─────────────┐
+│ TileEffect  │
+├─────────────┤
+│ - TrapType  │
+│ - PowerUp   │
+└─────────────┘
+Implementation:
+enum TrapType {
+    POISON(2080, "Poison", 5f),
+    STING(2082, "Sting", 10f),
+    HEAVY_BLOW(2085, "Heavy blow", 40f)
+}
+```
+
+### Special Area Management
+The game uses an area generation system utilizing bitmasks and tile overrides:
+
+```java
+Area generation pattern:
+Copy3x3 Special Area:
+┌───┬───┬───┐
+│ C │ E │ C │ C = Corner
+├───┼───┼───┤ E = Edge
+│ E │ S │ E │ S = Special
+├───┼───┼───┤    (Spawn/Exit)
+│ C │ E │ C │
+└───┴───┴───┘
+```
+
+```java
+Area Components:
+┌─────────────┐  ┌─────────────┐
+│ Spawn Area  │  │  Exit Area  │
+├─────────────┤  ├─────────────┤
+│ 3x3 Grid    │  │ 3x3 Grid    │
+│ Portal Tile │  │ Door Tile   │
+│ Safe Zone   │  │ Unlock Zone │
+└─────────────┘  └─────────────┘
+
+Tile Override Map:
+┌───┬───┬───┐
+│1,1│1,2│1,3│ Each cell contains:
+├───┼───┼───┤ - Base tile ID
+│2,1│2,2│2,3│ - Properties
+├───┼───┼───┤ - Effect markers
+│3,1│3,2│3,3│
+└───┴───┴───┘
+```
+
+
+
+### Camera System Architecture
+The camera management system consists of three core components working in tandem:
+
+```java
+Camera Components:
+┌──────────────────┐
+│ Follow System    │
+├──────────────────┤
+│ currentPos Vec2  │
+│ targetPos  Vec2  │
+│ lerpSpeed  float │
+└──────────────────┘
+
+┌──────────────────┐
+│ Zoom Control     │
+├──────────────────┤
+│ minZoom    float │
+│ maxZoom    float │
+│ zoomSpeed  float │
+└──────────────────┘
+
+┌──────────────────┐
+│ Screen Shake     │
+├──────────────────┤
+│ duration   float │
+│ intensity  float │
+│ decay      float │
+└──────────────────┘
+```
+
+### Tile Effect System
+The game features a comprehensive effect management system:
+
+```java
+Effect Hierarchy:
+┌─────────────┐
+│ BaseEffect  │
+├─────────────┼───────────┐
+│ TrapEffect  │ PowerUp   │
+├─────────────┤           │
+│ - Poison    │ - Dash    │
+│ - Sting     │ - Health  │
+│ - Heavy     │ - Speed   │
+└─────────────┴───────────┘
+
+Effect Registration:
+Position Hash = x + y * mapWidth
+
+Effect Storage:
+┌─────────────┬──────────┐
+│ Position    │ Effect   │
+├─────────────┼──────────┤
+│ (1,1)       │ POISON   │
+│ (5,3)       │ DASH     │
+│ (2,4)       │ STING    │
+└─────────────┴──────────┘
+```
+## Implementation Notes
+
+1. All position calculations are done using tile coordinates internally and converted to pixel coordinates only for rendering
+2. Effect systems use a hash-based lookup for O(1) access time
+3. Camera interpolation uses delta time for smooth movement regardless of frame rate
+4. Special area generation is done once during level load to minimize runtime overhead
+
+
+
+
+# Technical Deep Dive: PC_NPC_OBJ Package
+
+# Technical Deep Dive: SCREENS Package
+
+# Technical Deep Dive: DESIGN Package
+
+
+
+
+
+
 

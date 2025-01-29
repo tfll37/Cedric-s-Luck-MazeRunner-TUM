@@ -48,11 +48,11 @@ public class Player extends Actor {
     private float staminaRegenTimer;
     private boolean canSprint;
 
-    private int maxDashCharges = 3;
+    private int maxDashCharges = 2;
     private int dashCharges = maxDashCharges;
-    private float dashCooldown = 0f;
+    private float dashCooldown = 1f;
     private static final float DASH_COOLDOWN_TIME = 5f;
-    private static final float DASH_DISTANCE = 4f;
+    private static final float DASH_DISTANCE = 3f;
     private boolean isDashing = false;
     private float dashInvulnerabilityTimer = 0f;
     private static final float DASH_INVULNERABILITY_DURATION = 0.5f;
@@ -78,7 +78,7 @@ public class Player extends Actor {
         this.bounds = new Rectangle(x, y, 16, 16);
         this.hitting = false;
         this.animationMNGR = new AnimationMNGR();
-        this.dashCount = 3;
+        this.dashCount = 2;
         this.animationMNGR.loadPlayerAnimations();
         this.fireBall = new FireBall(position.x, position.y);
 

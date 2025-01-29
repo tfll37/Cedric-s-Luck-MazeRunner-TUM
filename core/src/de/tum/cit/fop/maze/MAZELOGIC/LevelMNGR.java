@@ -20,6 +20,7 @@ public class LevelMNGR {
     private static final List<LevelInfo> availableLevels = new ArrayList<>();
 
     static {
+
         availableLevels.add(new LevelInfo(
                 "Entrance",
                 "A small beginner maze",
@@ -27,7 +28,7 @@ public class LevelMNGR {
                 "maps/level-1-1.properties",
                 "Easy",
                 0,
-                0
+                3
         ));
 
         availableLevels.add(new LevelInfo(
@@ -37,7 +38,7 @@ public class LevelMNGR {
                 "maps/level-1-2.properties",
                 "Easy",
                 1,
-                0
+                7
         ));
 
         availableLevels.add(new LevelInfo(
@@ -47,17 +48,17 @@ public class LevelMNGR {
                 "maps/level-2-1.properties",
                 "Medium",
                 2,
-                0
+                10
         ));
 
         availableLevels.add(new LevelInfo(
                 "Diddy's Den",
-                "It's too slimey here. I wonder why?",
+                "It's too slimy here. I wonder why?",
                 32,
                 "maps/level-2-2.properties",
                 "Medium",
                 3,
-                0
+                10
         ));
 
         availableLevels.add(new LevelInfo(
@@ -67,7 +68,7 @@ public class LevelMNGR {
                 "maps/level-3-1.properties",
                 "Hard",
                 4,
-                0
+                10
         ));
 
         availableLevels.add(new LevelInfo(

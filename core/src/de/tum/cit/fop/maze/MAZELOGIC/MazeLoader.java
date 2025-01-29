@@ -156,41 +156,22 @@ public class MazeLoader {
     }
 
     private String getOrientationFromMask(int mask) {
-        switch (mask) {
-            case NORTH | EAST | SOUTH | WEST:
-                return "cross_4directional";
-
-            case EAST | SOUTH | WEST:
-                return "top_horizontal_3exits";
-            case NORTH | EAST | WEST:
-                return "bottom_horizontal_3exits";
-            case NORTH | SOUTH | WEST:
-                return "right_side_vertical_3exits";
-            case NORTH | SOUTH | EAST:
-                return "left_side_vertical_3exits";
-
-            case NORTH | SOUTH:
-                return "straight_vertical";
-            case EAST | WEST:
-                return "straight_horizontal";
-
-            case SOUTH | EAST:
-                return "top_left_edge";
-            case SOUTH | WEST:
-                return "top_right_edge";
-            case NORTH | EAST:
-                return "bottom_left_edge";
-            case NORTH | WEST:
-                return "bottom_right_edge";
-
-            case NORTH:
-                return "bottom_vetical_end";
-            case SOUTH:
-                return "top_vertical_end";
-
-            default:
-                return "default_wall_texture";
-        }
+        return switch (mask) {
+            case NORTH | EAST | SOUTH | WEST -> "cross_4directional";
+            case EAST | SOUTH | WEST -> "top_horizontal_3exits";
+            case NORTH | EAST | WEST -> "bottom_horizontal_3exits";
+            case NORTH | SOUTH | WEST -> "right_side_vertical_3exits";
+            case NORTH | SOUTH | EAST -> "left_side_vertical_3exits";
+            case NORTH | SOUTH -> "straight_vertical";
+            case EAST | WEST -> "straight_horizontal";
+            case SOUTH | EAST -> "top_left_edge";
+            case SOUTH | WEST -> "top_right_edge";
+            case NORTH | EAST -> "bottom_left_edge";
+            case NORTH | WEST -> "bottom_right_edge";
+            case NORTH -> "bottom_vetical_end";
+            case SOUTH -> "top_vertical_end";
+            default -> "default_wall_texture";
+        };
     }
 
     private void setOrientedWallTile(TiledMapTileLayer layer, int x, int y, String orientation) {
