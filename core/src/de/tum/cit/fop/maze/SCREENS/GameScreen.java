@@ -236,6 +236,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
                 if (currentLevelScore >= requiredScore) {
                     // Show victory screen instead of immediately loading next level
+                    setIsPaused(true);
                     victoryScreen.show();
                 } else {
                     // Display message that more score is needed
