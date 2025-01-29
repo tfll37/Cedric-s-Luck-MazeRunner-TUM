@@ -37,6 +37,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private LevelMNGR.LevelInfo level;
     private HitParticle hitParticle1;
     private DiceMinigame diceMinigame;
+    private Array<DiceMinigame> minigames = new Array<>();
     private Array<Heart> hearts = new Array<>();
     private ExitPointer exitPointer;
     private boolean gameOver = false;
@@ -81,7 +82,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
 
         this.requiredScore = LevelMNGR.generateScoreRequirement(level);
-        this.rollsNeededToOpenDoor = this.requiredScore; // Set door requirement to match score requirement
+        this.rollsNeededToOpenDoor = level.Level()*3 + 6; // Set door requirement to match score requirement
         this.gameUI.setScoreRequirement(requiredScore);
         this.gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
 
@@ -122,12 +123,15 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         for (int i = 0; i <= amountOfDice; i++) {
             Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
             dices.add(new Dice(diceSpawnPoint.x, diceSpawnPoint.y));
+            DiceMinigame mini = new DiceMinigame(animationMNGR);
+            mini.setListener(this);
+            minigames.add(mini);
         }
 
 
         hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
-        diceMinigame = new DiceMinigame(animationMNGR);
-        diceMinigame.setListener(this);
+        //diceMinigame = new DiceMinigame(animationMNGR);
+        //diceMinigame.setListener(this);
 
         gameUI = new GameUI(game.getSpriteBatch(), this.game.getSkin());
         exitPointer = new ExitPointer();
@@ -214,9 +218,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 playerTile = player.getTilePosition(16, 16);
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
-        if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
+        if (playerTile.x == exitTile.x && playerTile.y == exitTile.y && rollsNeededToOpenDoor ==0 ) {
 
-            if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
+            if (playerTile.x == exitTile.x && playerTile.y == exitTile.y && rollsNeededToOpenDoor ==0) {
                 if (currentLevelScore >= requiredScore) {
                     // Show victory screen instead of immediately loading next level
                     setIsPaused(true);
@@ -255,6 +259,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 //        animationMNGR.updateTileAnimations();
         for (int i = 0; i <= amountOfDice; i++) {
             Dice dice = dices.get(i);
+            DiceMinigame diceMinigame = minigames.get(i);
             if (dice.isMinigameActive() && !diceMinigame.isActive()) {
                 diceMinigame.start();
                 if (!dice.isGotcolelcted()) {
@@ -264,6 +269,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
             }
             if (!diceMinigame.isActive() && dice.isMinigameActive()) {
+
                 System.out.println("Reached post-minigame logic!");
 
                 int diceResult = diceMinigame.getDiceResult();
@@ -315,9 +321,11 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             heart.render(batch);
         }
         hitParticle1.render(batch);
-        if (diceMinigame.isActive()) {
+        for(int i = 0; i <=amountOfDice;i++){
+            DiceMinigame diceMinigame = minigames.get(i);
+            if (diceMinigame.isActive()) {
             System.out.println("Dice Minigame is active");
-        }
+        }}
         // In your GameScreen render or update method
         player.getFireBall().render(batch);
 
@@ -326,7 +334,10 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         exitPointer.render(batch, playerPos, exitPos);
 
         batch.end();
-        diceMinigame.render(batch, cameraX, cameraY);
+        for(int i = 0; i <=amountOfDice;i++){
+            DiceMinigame diceMinigame = minigames.get(i);
+            diceMinigame.render(batch, cameraX, cameraY);
+        }
 
         if (pauseMenu.isVisible()) {
             pauseMenu.render();
@@ -374,7 +385,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public void onDiceRolled(int diceResult) {
-
+        System.out.println(diceResult);
         rollsNeededToOpenDoor -= diceResult;
         if (rollsNeededToOpenDoor < 0) {
             rollsNeededToOpenDoor = 0;
@@ -385,7 +396,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             System.out.println("Door unlocked!");
         }
         currentLevelScore += diceResult;
-        rollsNeededToOpenDoor -= diceResult;
 
         if (rollsNeededToOpenDoor < 0) {
             rollsNeededToOpenDoor = 0;
