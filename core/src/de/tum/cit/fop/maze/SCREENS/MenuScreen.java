@@ -48,7 +48,7 @@ public class MenuScreen implements Screen {
         stage = new Stage(viewport, game.getSpriteBatch());
 
         Array<Texture> frames = new Array<>();
-        for (int i = 12; i <= 181; i += 2) { // Assuming 200 frames
+        for (int i = 12; i <= 181; i += 2) {
             String framePath = String.format("menuvid/ezgif-frame-%03d.jpg", i);
             frames.add(new Texture(Gdx.files.internal(framePath)));
         }
@@ -79,45 +79,76 @@ public class MenuScreen implements Screen {
         startButtonStyle.font = game.getSkin().getFont("title");
 
         TextButton startGameButton = new TextButton("Start Game", startButtonStyle);
+
         startGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 buttonClickSound.play();
 
-                disposeButtons();
-        for (LevelMNGR.LevelInfo level : LevelMNGR.getAvailableLevels()) {
-            TextButton levelButton = new TextButton(
-                    level.name() + " "+ "(" + level.difficulty() + ")",
-                    game.getSkin()
-            );levelButton.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent event, Actor actor) {
-                    game.goToGame(level);
+                // Clear existing buttons
+                table.clear();
+
+                // Add title
+                table.add(new Label("Select Level", game.getSkin(), "title"))
+                        .padTop(50)
+                        .padBottom(50)
+                        .row();
+
+                // Add level buttons
+                for (LevelMNGR.LevelInfo level : LevelMNGR.getAvailableLevels()) {
+                    TextButton levelButton = new TextButton(
+                            level.name() + " (" + level.difficulty() + ")",
+                            game.getSkin()
+                    );
+                    levelButton.addListener(new ChangeListener() {
+                        @Override
+                        public void changed(ChangeEvent event, Actor actor) {
+                            buttonClickSound.play();
+                            game.goToGame(level);
+                        }
+                    });
+                    table.add(levelButton).width(300).padBottom(20).row();
                 }
-            });
-            table.add(levelButton).width(300).padBottom(20).row();
-        }
 
-
-                LevelMNGR.LevelInfo tutorialLevel = LevelMNGR.getAvailableLevels().get(0); // Assuming first level is tutorial
-                game.goToGame(tutorialLevel);
+                // Add back button
+                TextButton backButton = new TextButton("Back", game.getSkin());
+                backButton.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        buttonClickSound.play();
+                        game.goToMenu();
+                    }
+                });
+                table.add(backButton).width(200).padTop(30);
             }
         });
         table.add(startGameButton).width(600).height(100).padBottom(60).row();
         startGameButton.getLabel().setAlignment(Align.center);
 
-        TextButton.TextButtonStyle settingsButtonStyle = new TextButton.TextButtonStyle();
-        settingsButtonStyle.up = normalDrawable;
-        settingsButtonStyle.over = hoverDrawable;
-        settingsButtonStyle.down = clickedDrawable;
-        settingsButtonStyle.font = game.getSkin().getFont("title");
+        // Add Quit Button
+        TextButton.TextButtonStyle quitButtonStyle = new TextButton.TextButtonStyle();
+        quitButtonStyle.up = normalDrawable;
+        quitButtonStyle.over = hoverDrawable;
+        quitButtonStyle.down = clickedDrawable;
+        quitButtonStyle.font = game.getSkin().getFont("title");
 
+        TextButton quitButton = new TextButton("Quit Game", quitButtonStyle);
+        quitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                buttonClickSound.play();
+                Gdx.app.exit();
+            }
+        });
+        table.add(quitButton).width(600).height(100).padBottom(60).row();
+        quitButton.getLabel().setAlignment(Align.center);
+
+        // Load and setup background music
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets//music//Wallpaper Engine - Batman Arkham Knight - Batman Overlooking Gotham from Wayne Tower_1.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
 
         startButtonStyle.font.getData().setScale(0.7f);
-        settingsButtonStyle.font.getData().setScale(0.7f);
     }
     private void disposeButtons() {
         stage.clear();

@@ -155,7 +155,6 @@ public class MazeRunnerGame extends Game {
             getScreen().hide();
             getScreen().dispose();
         }
-        // Dispose other resources
         spriteBatch.dispose();
         skin.dispose();
         backgroundMusic.dispose();
@@ -164,9 +163,6 @@ public class MazeRunnerGame extends Game {
         }
     }
 
-    // ------------------------------------------------------------------------
-    // GETTERS
-    // ------------------------------------------------------------------------
     public Skin getSkin() {
         return skin;
     }
@@ -195,23 +191,9 @@ public class MazeRunnerGame extends Game {
         return camera;
     }
 
-    // ------------------------------------------------------------------------
-    // SETTERS
-    // ------------------------------------------------------------------------
-    public void setBackgroundTexture(Texture backgroundTexture) {
-        this.backgroundTexture = backgroundTexture;
-    }
-
-    public void setCharacterDownAnimation(Animation<TextureRegion> characterDownAnimation) {
-        this.characterDownAnimation = characterDownAnimation;
-    }
-
-    public void setCharacterDownHitAnimation(Animation<TextureRegion> characterDownHitAnimation) {
-        this.characterDownHitAnimation = characterDownHitAnimation;
-    }
-
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+        viewport.update(width, height, true); // Add true parameter
+        camera.update();
     }
 }

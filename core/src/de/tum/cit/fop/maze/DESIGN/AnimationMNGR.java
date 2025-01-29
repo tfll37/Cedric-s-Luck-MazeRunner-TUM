@@ -80,7 +80,7 @@ public class AnimationMNGR implements Disposable {
         int frameHeight = 32;
         int animationFrames = 4;
         int hitFrameWidth = 32;
-        // libGDX internal Array instead of ArrayList because of performance
+
         Array<TextureRegion> walkDownFrames = new Array<>(TextureRegion.class);
 
         Array<TextureRegion> walkUpFrames = new Array<>(TextureRegion.class);

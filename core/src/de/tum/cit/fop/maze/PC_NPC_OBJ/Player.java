@@ -52,20 +52,20 @@ public class Player extends Actor {
     private float staminaRegenTimer;
     private boolean canSprint;
 
-    private int maxDashCharges = 3;  // Maximum number of dash charges
-    private int dashCharges = maxDashCharges;  // Current dash charges
-    private float dashCooldown = 0f;  // Current cooldown timer
-    private static final float DASH_COOLDOWN_TIME = 5f;  // Time between dash charge regeneration
-    private static final float DASH_DISTANCE = 4f;  // How far the dash goes (in tiles)
+    private int maxDashCharges = 3;
+    private int dashCharges = maxDashCharges;
+    private float dashCooldown = 0f;
+    private static final float DASH_COOLDOWN_TIME = 5f;
+    private static final float DASH_DISTANCE = 4f;
     private boolean isDashing = false;
     private float dashInvulnerabilityTimer = 0f;
     private static final float DASH_INVULNERABILITY_DURATION = 0.5f;
-    private int temporaryDashes = 0; // Additional dashes from power-ups
+    private int temporaryDashes = 0;
 
 
     private float damageFlashDuration = 0f;
-    private static final float MAX_FLASH_DURATION = 1.0f; // Duration of flash in seconds
-    private static final Color DAMAGE_FLASH_COLOR = new Color(1, 0, 0, 0.5f); // Semi-transparent red
+    private static final float MAX_FLASH_DURATION = 1.0f;
+    private static final Color DAMAGE_FLASH_COLOR = new Color(1, 0, 0, 0.5f);
     private Color currentTint = new Color(1, 1, 1, 1);
 
 
@@ -102,7 +102,7 @@ public class Player extends Actor {
 
         this.dashCharges = maxDashCharges;
 
-        this.currentTint.set(1, 1, 1, 1); // Initialize to white (no tint)
+        this.currentTint.set(1, 1, 1, 1);
 
     }
 
@@ -137,11 +137,8 @@ public class Player extends Actor {
         TileEffectMNGR.PowerUpType powerUp = trapManager.getPowerUpAtLocation(tileX, tileY);
 
         if (powerUp != null) {
-            // Actually apply the effect:
             trapManager.applyEffect(this);
 
-            // If you only want to pick it up once, remove it:
-            // trapManager.removePowerUp(tileX, tileY);
         }
 
         if (isMoving) {
@@ -346,8 +343,7 @@ public class Player extends Actor {
         float animationSpeed = time * ((isRunning && canSprint) ? 1.5f : 1.0f);
 
 
-        Color prevColor = batch.getColor().cpy();
-        batch.setColor(currentTint);
+    // Get current frame based on direction and state
 
         
 
@@ -371,7 +367,14 @@ public class Player extends Actor {
             currentFrame = animationMNGR.getCharacterLeftAnimation().getKeyFrame(animationSpeed, true);
         }
 
-        batch.draw(currentFrame, position.x, position.y);
+    Color prevColor = batch.getColor().cpy();
+    batch.setColor(currentTint);
+
+    // Calculate offset to center the 32x32 sprite on a 16x16 tile
+    float offsetX = -8f; // (32 - 16) / 2 = 8
+    float offsetY = -8f; // (32 - 16) / 2 = 8
+
+    batch.draw(currentFrame, position.x + offsetX, position.y + offsetY);
         batch.setColor(prevColor);
 
     }

@@ -1,9 +1,6 @@
 package de.tum.cit.fop.maze.SCREENS;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -56,6 +53,8 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private PauseMenuScreen pauseMenu;
     private VictoryScreen victoryScreen;
 
+    private InputMultiplexer inputMultiplexer;
+
     public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.camera = game.getCamera();
@@ -63,7 +62,16 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         this.pauseMenu = new PauseMenuScreen(game, this);
         this.victoryScreen = new VictoryScreen(game, this, level);
-        Gdx.input.setInputProcessor(this);
+
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(this);
+        if (pauseMenu != null && pauseMenu.getStage() != null) {
+            inputMultiplexer.addProcessor(pauseMenu.getStage());
+        }
+        if (victoryScreen != null && victoryScreen.getStage() != null) {
+            inputMultiplexer.addProcessor(victoryScreen.getStage());
+        }
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
 
         String tmxPath = LevelMNGR.getTmxPathForSize(level.mapSize());
@@ -107,13 +115,11 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             enemies.add(new Enemy(enemySpawnPoint.x, enemySpawnPoint.y));
         }
 
-        for (int i = 0; i<= amountOfHearts; i++)
-        {
+        for (int i = 0; i <= amountOfHearts; i++) {
             Vector2 heartSpawnPoint = labyrinth.getValidSpawnPoint();
             hearts.add(new Heart(heartSpawnPoint.x, heartSpawnPoint.y));
         }
-        for (int i = 0; i<= amountOfDice; i++)
-        {
+        for (int i = 0; i <= amountOfDice; i++) {
             Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
             dices.add(new Dice(diceSpawnPoint.x, diceSpawnPoint.y));
         }
@@ -183,10 +189,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             game.getSkin().getFont("font").draw(batch, "YOU LOST",
                     camera.position.x - 100, camera.position.y);
 
+            // Reset the font scale back to normal
+            game.getSkin().getFont("font").getData().setScale(1.0f);
             batch.end();
 
-            handleInput(); // Check if user presses a key/touch to go to menu
-            return;        // Skip the rest of game logic/rendering
+            handleInput();
+            return;
         }
 
         // Update camera following the player, handle tile animations
@@ -233,14 +241,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
         gameUI.setDashCount(player.getDashCount());
-        for(int i = 0; i<= amountOfDice;i++)
-        {
+        for (int i = 0; i <= amountOfDice; i++) {
             Dice dice = dices.get(i);
             dice.update(delta, player);
 
         }
-        for(int i= 0; i <= amountOfHearts; i++)
-        {
+        for (int i = 0; i <= amountOfHearts; i++) {
             Heart heart1 = hearts.get(i);
             heart1.update(delta, player);
         }
@@ -255,7 +261,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         handleInput();
         cameraMNGR.update(player.getPosition());
 //        animationMNGR.updateTileAnimations();
-        for (int i = 0; i <= amountOfDice ; i++){
+        for (int i = 0; i <= amountOfDice; i++) {
             Dice dice = dices.get(i);
             if (dice.isMinigameActive() && !diceMinigame.isActive()) {
                 diceMinigame.start();
@@ -292,7 +298,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
 
 
-
         // Render game elements
         labyrinth.render(camera);
         SpriteBatch batch = game.getSpriteBatch();
@@ -308,14 +313,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
                 enemy.render(batch);
             }
         }
-        for(int i= 0 ;i<= amountOfDice;i++)
-        {
+        for (int i = 0; i <= amountOfDice; i++) {
             Dice dice = dices.get(i);
             dice.render(batch);
 
         }
-        for(int i = 0;i<= amountOfHearts;i++)
-        {
+        for (int i = 0; i <= amountOfHearts; i++) {
             Heart heart = hearts.get(i);
             heart.render(batch);
         }
@@ -375,8 +378,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             return true;
         }
         return false;
-
-
     }
 
     @Override
@@ -408,10 +409,25 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             System.out.println("Level requirements met! Find the exit!");
             gameUI.showLevelCompleteMessage();
         }
-        for(int i = 0; i<=amountOfDice;i++)
-        {
+        for (int i = 0; i <= amountOfDice; i++) {
             dices.get(i).deactivateMinigame();
         }
+    }
+
+    public void addInputProcessor(InputProcessor processor) {
+        if (inputMultiplexer != null && !inputMultiplexer.getProcessors().contains(processor, true)) {
+            inputMultiplexer.addProcessor(0, processor);
+        }
+    }
+
+    public void removeInputProcessor(InputProcessor processor) {
+        if (inputMultiplexer != null) {
+            inputMultiplexer.removeProcessor(processor);
+        }
+    }
+
+    public InputMultiplexer getInputMultiplexer() {
+        return inputMultiplexer;
     }
 
     @Override
@@ -451,22 +467,37 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public void hide() {
-        // Remove this screen as the input processor when hiding
-        Gdx.input.setInputProcessor(null);
+        if (inputMultiplexer != null) {
+            Gdx.input.setInputProcessor(null);
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         cameraMNGR.resize(width, height);
-        if (pauseMenu != null) pauseMenu.resize(width, height);
-        victoryScreen.resize(width, height);
-
+        if (pauseMenu != null) {
+            pauseMenu.resize(width, height);
+        }
+        if (victoryScreen != null) {
+            victoryScreen.resize(width, height);
+        }
+        game.getViewport().update(width, height, true);
+        camera.update();
     }
 
 
     @Override
     public void show() {
-        // Called when this screen becomes the current screen.
+        // Reset input processor to handle both the game screen and scroll input
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(this);  // 'this' handles the scroll input
+        if (pauseMenu != null && pauseMenu.getStage() != null) {
+            inputMultiplexer.addProcessor(pauseMenu.getStage());
+        }
+        if (victoryScreen != null && victoryScreen.getStage() != null) {
+            inputMultiplexer.addProcessor(victoryScreen.getStage());
+        }
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     @Override
@@ -478,12 +509,14 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     }
 
 
-
     @Override
     public void dispose() {
+        if (inputMultiplexer != null) {
+            inputMultiplexer.clear();
+        }
         labyrinth.dispose();
         if (pauseMenu != null) pauseMenu.dispose();
-        victoryScreen.dispose();
+        if (victoryScreen != null) victoryScreen.dispose();
     }
 
 }

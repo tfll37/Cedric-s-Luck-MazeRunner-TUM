@@ -88,8 +88,6 @@ public class CameraMNGR {
     }
 
     public void handleScroll(float amount) {
-        // Note: Scroll amount is positive when scrolling up/away, negative when scrolling down/toward
-        // We invert it so scrolling up zooms out and scrolling down zooms in
         float zoomDelta = -amount * gameCONFIG.ZOOM_SPEED;
         targetZoom = MathUtils.clamp(targetZoom + zoomDelta, gameCONFIG.MIN_ZOOM, gameCONFIG.MAX_ZOOM);
     }

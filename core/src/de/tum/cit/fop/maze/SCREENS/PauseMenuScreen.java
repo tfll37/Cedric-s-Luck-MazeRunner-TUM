@@ -97,6 +97,10 @@ public class PauseMenuScreen {
         stage.getViewport().update(width, height, true);
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public void dispose() {
         stage.dispose();
     }

@@ -22,10 +22,8 @@ public class DesktopLauncher {
 		config.setWindowIcon("ico/coma.jpg"); //icon
 
 		Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
-		config.setWindowedMode(
-				Math.round(0.8f * displayMode.width),
-				Math.round(0.8f * displayMode.height)
-		);
+		config.setFullscreenMode(displayMode);
+
 		config.useVsync(true);
 		config.setForegroundFPS(60);// Set the foreground FPS
 

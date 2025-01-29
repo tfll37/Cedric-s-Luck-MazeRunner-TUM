@@ -47,16 +47,16 @@ public class VictoryScreen {
         TextButton nextLevelButton = new TextButton("Next Level", game.getSkin());
         TextButton menuButton = new TextButton("Return to Menu", game.getSkin());
 
-        // Add listeners
         nextLevelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 int nextLevelIndex = currentLevel.Level() + 1;
                 LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
                 if (nextLevel != null) {
+                    // Remove the victory screen's input processor before transitioning
+                    Gdx.input.setInputProcessor(null);
                     game.goToGame(nextLevel);
                 } else {
-                    // If there are no more levels, go to menu
                     game.goToMenu();
                 }
             }
@@ -113,6 +113,10 @@ public class VictoryScreen {
 
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     public void dispose() {
