@@ -82,7 +82,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
 
         this.requiredScore = LevelMNGR.generateScoreRequirement(level);
-        this.rollsNeededToOpenDoor = level.Level()*3 + 6; // Set door requirement to match score requirement
+        this.rollsNeededToOpenDoor = level.Level()*3 + 2; // Set door requirement to match score requirement
         this.gameUI.setScoreRequirement(requiredScore);
         this.gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
 
@@ -218,9 +218,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 playerTile = player.getTilePosition(16, 16);
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
-        if (playerTile.x == exitTile.x && playerTile.y == exitTile.y && rollsNeededToOpenDoor ==0 ) {
+        if (playerTile.x == exitTile.x  && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor ==0 ) {
 
-            if (playerTile.x == exitTile.x && playerTile.y == exitTile.y && rollsNeededToOpenDoor ==0) {
+            if (playerTile.x == exitTile.x   && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor ==0) {
                 if (currentLevelScore >= requiredScore) {
                     // Show victory screen instead of immediately loading next level
                     setIsPaused(true);
