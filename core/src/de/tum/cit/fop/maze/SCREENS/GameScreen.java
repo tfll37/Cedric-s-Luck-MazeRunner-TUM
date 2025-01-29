@@ -171,7 +171,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void render(float delta) {
         // Clear the screen
+
         ScreenUtils.clear(0, 0, 0, 1);
+
+
+
+
 
         // If player is dead and gameOver wasn't yet triggered, set gameOver
         if (player.isDead() && !gameOver) {
@@ -238,7 +243,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
                 }
             }
         }
-
+        if(!isPaused){
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
         gameUI.setDashCount(player.getDashCount());
         for (int i = 0; i <= amountOfDice; i++) {
@@ -258,6 +263,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             gameUI.update(delta, player, enemy);
 
         }
+        gameUI.update(delta, player);
+        }
+
         handleInput();
         cameraMNGR.update(player.getPosition());
 //        animationMNGR.updateTileAnimations();
@@ -370,10 +378,10 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         if (keycode == Input.Keys.ESCAPE) {
             if (!pauseMenu.isVisible()) {
                 pauseMenu.show();
-                isPaused = true;
+                this.isPaused = true;
             } else {
                 pauseMenu.hide();
-                isPaused = false;
+                this.isPaused = false;
             }
             return true;
         }
@@ -507,7 +515,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void resume() {
     }
-
+    public void setIsPaused(boolean value){
+        isPaused = value;
+    }
 
     @Override
     public void dispose() {

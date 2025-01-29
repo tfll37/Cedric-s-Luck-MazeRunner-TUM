@@ -65,6 +65,7 @@ public class PauseMenuScreen {
     public void hide() {
         visible = false;
         // Reset input processor back to game screen
+        gameScreen.setIsPaused(false);
         Gdx.input.setInputProcessor(gameScreen);
     }
 

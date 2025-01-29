@@ -92,6 +92,21 @@ public class GameUI {
         }
 
     }
+    public void update(float delta, Player player) {
+        if (!isPaused) {
+        }
+        stage.act(delta);
+        this.updateHealth(player.getHealth());
+
+        if (messageTimer > 0) {
+            messageTimer -= delta;
+            if (messageTimer <= 0) {
+                messageLabel.setVisible(false);
+            }
+        }
+
+    }
+
 
     public void updateHealth(float health) {
         healthLabel.setText("Health: " + health);
