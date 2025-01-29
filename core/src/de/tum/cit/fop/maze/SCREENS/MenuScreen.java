@@ -45,7 +45,7 @@ public class MenuScreen implements Screen {
 
         Array<Texture> frames = new Array<>();
         for (int i = 1; i <= 181; i += 2) {
-            String framePath = String.format("C:\\Users\\djole\\fophn2425projectfop-byteme\\assets\\menuvid\\ezgif-frame-%03d.jpg", i);
+            String framePath = String.format("assets/menuvid/ezgif-frame-%03d.jpg", i);
             frames.add(new Texture(Gdx.files.internal(framePath)));
         }
         animation = new Animation<>(0.1f, frames, Animation.PlayMode.LOOP);
@@ -134,7 +134,7 @@ public class MenuScreen implements Screen {
         table.add(quitButton).width(600).height(100).padBottom(60).row();
         quitButton.getLabel().setAlignment(Align.center);
 
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("C:\\Users\\djole\\fophn2425projectfop-byteme\\assets\\music\\TEMPLAR'S RESPITE _ Meditative Chant & Crackling Fire Sounds _ ASMR_3 (1).mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/music/TEMPLAR'S RESPITE _ Meditative Chant & Crackling Fire Sounds _ ASMR_3 (1).mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
 
