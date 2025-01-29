@@ -345,9 +345,11 @@ public class Player extends Actor {
         TextureRegion currentFrame;
         float animationSpeed = time * ((isRunning && canSprint) ? 1.5f : 1.0f);
 
+
         Color prevColor = batch.getColor().cpy();
         batch.setColor(currentTint);
 
+        
 
         if (hitting) {
             if (lookingDirection == 0) {

@@ -51,12 +51,16 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private int requiredScore;
     private boolean levelComplete = false;
 
+    private PauseMenuScreen pauseMenu;
+    private VictoryScreen victoryScreen;
 
     public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.camera = game.getCamera();
         this.level = level;
 
+        this.pauseMenu = new PauseMenuScreen(game, this);
+        this.victoryScreen = new VictoryScreen(game, this, level);
         Gdx.input.setInputProcessor(this);
 
 
@@ -192,18 +196,27 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
         if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
-            if (currentLevelScore >= requiredScore) {
-                // Load next level
-                int nextLevelIndex = level.Level() + 1;
-                LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
-                if (nextLevel != null) {
-                    game.goToGame(nextLevel);
+//            if (currentLevelScore >= requiredScore) {
+//                // Load next level
+//                int nextLevelIndex = level.Level() + 1;
+//                LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
+//                if (nextLevel != null) {
+//                    game.goToGame(nextLevel);
+//                } else {
+//                    game.goToMenu(); // If no more levels
+//                }
+//            } else {
+//                // Display message that more score is needed
+//                gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
+//            }
+            if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
+                if (currentLevelScore >= requiredScore) {
+                    // Show victory screen instead of immediately loading next level
+                    victoryScreen.show();
                 } else {
-                    game.goToMenu(); // If no more levels
+                    // Display message that more score is needed
+                    gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
                 }
-            } else {
-                // Display message that more score is needed
-                gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
             }
         }
 
@@ -288,6 +301,13 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         batch.end();
         diceMinigame.render(batch, cameraX, cameraY);
 
+        if (pauseMenu.isVisible()) {
+            pauseMenu.render();
+        }
+
+        if (victoryScreen.isVisible()) {
+            victoryScreen.render();
+        }
 
         gameUI.render();
     }
@@ -312,7 +332,19 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            if (!pauseMenu.isVisible()) {
+                pauseMenu.show();
+                isPaused = true;
+            } else {
+                pauseMenu.hide();
+                isPaused = false;
+            }
+            return true;
+        }
         return false;
+
+
     }
 
     @Override
@@ -392,6 +424,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void resize(int width, int height) {
         cameraMNGR.resize(width, height);
+        if (pauseMenu != null) pauseMenu.resize(width, height);
+        victoryScreen.resize(width, height);
+
     }
 
 
@@ -423,7 +458,8 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void dispose() {
         labyrinth.dispose();
-//        gameUI.dispose();
+        if (pauseMenu != null) pauseMenu.dispose();
+        victoryScreen.dispose();
     }
 
 }
