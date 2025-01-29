@@ -42,7 +42,7 @@ public class WelcomeScreen implements Screen {
         storyLines.add("In the shadowed depths of Macao Maze, brave Sir Cedric roams,\n");
         storyLines.add("Seeking the Sacred Crystal, through the darkened catacombs.\n");
         storyLines.add("Ghosts of fallen warriors whisper secrets of the past,\n");
-        storyLines.add("As he faces lurking dangers, hoping freedom's within grasp and a roll.\n");
+        storyLines.add("As he faces lurking dangers, hoping freedom's within grasp and a roll„.\n");
         currentLineIndex = 0;
         clickCount = 0;
         waitForNextClick = false;

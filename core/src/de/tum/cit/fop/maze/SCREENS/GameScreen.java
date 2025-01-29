@@ -32,7 +32,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private final Labyrinth labyrinth;
     private final Player player;
     private Array<Enemy> enemies;
-    private final Dice dice;
+    private Array<Dice> dices = new Array<>();
     private AnimationMNGR animationMNGR;
     private GameUI gameUI;
     private Array<Array<Integer>> maze;
@@ -40,11 +40,13 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private LevelMNGR.LevelInfo level;
     private HitParticle hitParticle1;
     private DiceMinigame diceMinigame;
-    private Heart heart;
+    private Array<Heart> hearts = new Array<>();
     private ExitPointer exitPointer;
     private boolean gameOver = false;
     // Set how many enemies you want in this level:
-    private final int amountOfEnemies = 1;
+    private int amountOfEnemies = 1;
+    private int amountOfDice = 1;
+    private int amountOfHearts = 1;
     private int rollsNeededToOpenDoor;
 
     private int currentLevelScore = 0;
@@ -95,23 +97,32 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         player = new Player(spawnPoint.x, spawnPoint.y, cameraMNGR);
         enemies = new Array<>();
+        amountOfEnemies = level.Level() * 2;
+        amountOfDice = level.Level() * 3;
+        amountOfHearts = level.Level() * 3;
+
         for (int i = 0; i < amountOfEnemies; i++) {
 
             Vector2 enemySpawnPoint = labyrinth.getValidSpawnPoint();
             enemies.add(new Enemy(enemySpawnPoint.x, enemySpawnPoint.y));
         }
 
-        Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
-        dice = new Dice(diceSpawnPoint.x, diceSpawnPoint.y);
+        for (int i = 0; i<= amountOfHearts; i++)
+        {
+            Vector2 heartSpawnPoint = labyrinth.getValidSpawnPoint();
+            hearts.add(new Heart(heartSpawnPoint.x, heartSpawnPoint.y));
+        }
+        for (int i = 0; i<= amountOfDice; i++)
+        {
+            Vector2 diceSpawnPoint = labyrinth.getValidSpawnPoint();
+            dices.add(new Dice(diceSpawnPoint.x, diceSpawnPoint.y));
+        }
 
-        Vector2 heartSpawnPoint = labyrinth.getValidSpawnPoint();
-        heart = new Heart(heartSpawnPoint.x, heartSpawnPoint.y);
 
         hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
         diceMinigame = new DiceMinigame(animationMNGR);
         diceMinigame.setListener(this);
 
-        heart = new Heart(heartSpawnPoint.x, heartSpawnPoint.y);
         gameUI = new GameUI(game.getSpriteBatch(), this.game.getSkin());
         exitPointer = new ExitPointer();
 
@@ -222,8 +233,17 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
         gameUI.setDashCount(player.getDashCount());
-        dice.update(delta, player);
-        heart.update(delta, player);
+        for(int i = 0; i<= amountOfDice;i++)
+        {
+            Dice dice = dices.get(i);
+            dice.update(delta, player);
+
+        }
+        for(int i= 0; i <= amountOfHearts; i++)
+        {
+            Heart heart1 = hearts.get(i);
+            heart1.update(delta, player);
+        }
         player.getFireBall().update(delta, player, labyrinth, enemies);
         for (int i = 0; i < amountOfEnemies; i++) {
             Enemy enemy = enemies.get(i);
@@ -235,39 +255,42 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         handleInput();
         cameraMNGR.update(player.getPosition());
 //        animationMNGR.updateTileAnimations();
-
-        if (dice.isMinigameActive() && !diceMinigame.isActive()) {
-            diceMinigame.start();
-            if (!dice.isGotcolelcted()) {
-                gameUI.updateScore(diceMinigame.getDiceResult());
-            }
-            diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
-
-        }
-        if (!diceMinigame.isActive() && dice.isMinigameActive()) {
-            System.out.println("Reached post-minigame logic!");
-
-            int diceResult = diceMinigame.getDiceResult();
-
-            if (diceResult > 0) {
-                rollsNeededToOpenDoor -= diceResult;
-                if (rollsNeededToOpenDoor < 0) {
-                    rollsNeededToOpenDoor = 0;
+        for (int i = 0; i <= amountOfDice ; i++){
+            Dice dice = dices.get(i);
+            if (dice.isMinigameActive() && !diceMinigame.isActive()) {
+                diceMinigame.start();
+                if (!dice.isGotcolelcted()) {
+                    gameUI.updateScore(diceMinigame.getDiceResult());
                 }
+                diceMinigame.setActiveDuration(3.0f); // Set the minigame to stay active for 3 seconds
 
-                gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
-
-                if (rollsNeededToOpenDoor <= 0) {
-                    System.out.println("Door unlocked!");
-                }
             }
-            dice.deactivateMinigame();
+            if (!diceMinigame.isActive() && dice.isMinigameActive()) {
+                System.out.println("Reached post-minigame logic!");
+
+                int diceResult = diceMinigame.getDiceResult();
+
+                if (diceResult > 0) {
+                    rollsNeededToOpenDoor -= diceResult;
+                    if (rollsNeededToOpenDoor < 0) {
+                        rollsNeededToOpenDoor = 0;
+                    }
+
+                    gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
+
+                    if (rollsNeededToOpenDoor <= 0) {
+                        System.out.println("Door unlocked!");
+                    }
+                }
+                dice.deactivateMinigame();
+            }
+
+            diceMinigame.update(delta);
+            if (!diceMinigame.isActive() && dice.isMinigameActive()) {
+                dice.deactivateMinigame();
+            }
         }
 
-        diceMinigame.update(delta);
-        if (!diceMinigame.isActive() && dice.isMinigameActive()) {
-            dice.deactivateMinigame();
-        }
 
 
         // Render game elements
@@ -285,8 +308,17 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
                 enemy.render(batch);
             }
         }
-        dice.render(batch);
-        heart.render(batch);
+        for(int i= 0 ;i<= amountOfDice;i++)
+        {
+            Dice dice = dices.get(i);
+            dice.render(batch);
+
+        }
+        for(int i = 0;i<= amountOfHearts;i++)
+        {
+            Heart heart = hearts.get(i);
+            heart.render(batch);
+        }
         hitParticle1.render(batch);
         if (diceMinigame.isActive()) {
             System.out.println("Dice Minigame is active");
@@ -376,8 +408,10 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             System.out.println("Level requirements met! Find the exit!");
             gameUI.showLevelCompleteMessage();
         }
-
-        dice.deactivateMinigame();
+        for(int i = 0; i<=amountOfDice;i++)
+        {
+            dices.get(i).deactivateMinigame();
+        }
     }
 
     @Override
@@ -443,17 +477,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     public void resume() {
     }
 
-    public void handleDiceResult(int diceResult) {
-        rollsNeededToOpenDoor -= diceResult;
-        if (rollsNeededToOpenDoor < 0) rollsNeededToOpenDoor = 0;
-        gameUI.setDoorUnlockProgress(rollsNeededToOpenDoor);
 
-        if (rollsNeededToOpenDoor <= 0) {
-            System.out.println("Door unlocked!");
-        }
-
-        dice.deactivateMinigame();
-    }
 
     @Override
     public void dispose() {

@@ -59,6 +59,7 @@ public class Dice extends Collectable {
     public Dice(float x, float y) {
         super(x, y);
         this.animationMNGR = new AnimationMNGR();
+        animationMNGR.loadDiceAnimation();
         // Load the dice collection sound effect
         diceCollectedSound = Gdx.audio.newSound(Gdx.files.internal("assets//music//94031__loafdv__dice-roll.mp3"));
     }
