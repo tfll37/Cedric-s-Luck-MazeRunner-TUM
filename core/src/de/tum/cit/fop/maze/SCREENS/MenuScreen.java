@@ -140,9 +140,6 @@ public class MenuScreen implements Screen {
 
         startButtonStyle.font.getData().setScale(0.7f);
     }
-    private void disposeButtons() {
-        stage.clear();
-    }
 
     @Override
     public void render(float delta) {

@@ -52,7 +52,7 @@ public class MazeRunnerGame extends Game {
         viewport = new FitViewport(800, 600, camera);
         camera.update();
 
-        skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
+        skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json"));
 
 
         backgroundMusic = Gdx.audio.newMusic(
@@ -60,7 +60,6 @@ public class MazeRunnerGame extends Game {
         );
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.3f);
-        backgroundMusic.play();
 
         loadCharacterAnimation();
 
@@ -71,7 +70,9 @@ public class MazeRunnerGame extends Game {
 
 
     public void goToWelcomeScreen() {
-        // Dispose old game screen if it exists
+        if (backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();
+        }
         if (currentGameScreen != null) {
             currentGameScreen.dispose();
             currentGameScreen = null;
@@ -82,6 +83,9 @@ public class MazeRunnerGame extends Game {
 
 
     public void goToMenu() {
+        if (backgroundMusic.isPlaying()) {
+            backgroundMusic.stop();
+        }
 
         if (currentGameScreen != null) {
             currentGameScreen.dispose();
@@ -93,16 +97,15 @@ public class MazeRunnerGame extends Game {
     }
 
     public void goToGame(LevelMNGR.LevelInfo level) {
+        if (!backgroundMusic.isPlaying()) {
+            backgroundMusic.play();
+        }
 
         currentGameScreen = new GameScreen(this, level);
         setScreen(currentGameScreen);
     }
 
     private void loadCharacterAnimation() {
-        Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
-        int frameWidth = 16;
-        int frameHeight = 32;
-
 
         Array<TextureRegion> walkFrames = new Array<>();
         Array<TextureRegion> hitFrames = new Array<>();
@@ -134,14 +137,6 @@ public class MazeRunnerGame extends Game {
 
     public Skin getSkin() {
         return skin;
-    }
-
-    public Animation<TextureRegion> getCharacterDownAnimation() {
-        return characterDownAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterDownHitAnimation() {
-        return characterDownHitAnimation;
     }
 
     public SpriteBatch getSpriteBatch() {
