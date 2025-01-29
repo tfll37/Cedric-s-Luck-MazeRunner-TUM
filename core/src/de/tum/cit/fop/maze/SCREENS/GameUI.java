@@ -12,12 +12,10 @@ public class GameUI {
     private Stage stage;
     private Table mainTable;
 
-    // UI Labels
     private Label healthLabel;
     private Label scoreLabel;
     private int currentScore = 0;
 
-    //UI Bars
     private ProgressBar healthBar;
     private Label doorUnlockLabel;
     private Label dashCountLabel;
@@ -43,29 +41,22 @@ public class GameUI {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
 
-        // Create top bar for game stats
         Table topBar = new Table();
         topBar.top().pad(10);
 
-        // Health section
         Table healthSection = new Table();
         healthLabel = new Label("Health: 100", skin);
         healthBar = new ProgressBar(0, 100, 1, false, skin);
         healthBar.setValue(100);
 
-        // Make the health bar smaller
         healthSection.add(healthLabel).left().padRight(5);
         healthSection.add(healthBar).width(80).height(20); // Smaller width & height
 
-        // Score label
-//        scoreLabel = new Label("Score: 0", skin);
         scoreLabel = new Label("Score: 0 / 0", skin);
         messageLabel = new Label("", skin);
         messageLabel.setVisible(false);
 
 
-        // Add healthSection to the left and the scoreLabel to the right
-        // Use empty cell (expandX) to push the score to the right
         topBar.add(healthSection).left().padLeft(10).padRight(10);
         topBar.add().expandX();                 // This empty cell expands and pushes next cell to the right
         topBar.add(scoreLabel).right().pad(10); // Score label aligned right with some padding
@@ -112,7 +103,6 @@ public class GameUI {
         healthLabel.setText("Health: " + health);
         healthBar.setValue(health);
 
-        // Visual feedback for low health
         if (health <= 20) {
             healthLabel.setColor(Color.RED);
         } else if (health <= 50) {
@@ -122,11 +112,6 @@ public class GameUI {
         }
     }
 
-//    public void updateScore(int score) {
-//        this.currentScore +=score;
-//        scoreLabel.setText("Score: " + this.currentScore);
-//
-//    }
 
     public void setScoreRequirement(int required) {
         this.requiredScore = required;

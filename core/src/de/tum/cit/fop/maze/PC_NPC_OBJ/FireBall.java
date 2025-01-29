@@ -7,10 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
 
-/**
- * Represents a fireball that can be shot by the player.
- * The fireball moves in a specified direction and can damage enemies.
- */
+
 public class FireBall {
     private AnimationMNGR animationMNGR;
     private float time = 0f;
@@ -21,35 +18,19 @@ public class FireBall {
     private final float width = 16f;
     private final float height = 16f;
 
-    /**
-     * Creates a new FireBall at the specified position.
-     *
-     * @param x the x-coordinate of the fireball's initial position
-     * @param y the y-coordinate of the fireball's initial position
-     */
+
     public FireBall(float x, float y) {
         this.animationMNGR = new AnimationMNGR();
         this.x = x;
         this.y = y;
     }
 
-    /**
-     * Retrieves the bounding rectangle of the fireball.
-     *
-     * @return the bounding rectangle
-     */
+
     public Rectangle getBounds() {
         return new Rectangle((int)x, (int)y, (int)width, (int)height);
     }
 
-    /**
-     * Updates the fireball's state, including movement and collision detection.
-     *
-     * @param delta     the time in seconds since the last update
-     * @param player    the player object
-     * @param labyrinth the labyrinth object
-     * @param enemies   the array of enemies
-     */
+
     public void update(float delta, Player player, Labyrinth labyrinth, Array<Enemy> enemies) {
         if (!appear) return;
 
@@ -76,13 +57,11 @@ public class FireBall {
                 break;
         }
 
-        // Check collision with labyrinth walls
         if (labyrinth.isBlocked(x, y)) {
             appear = false;
             return;
         }
 
-        // Check collision with enemies
         for (int i = 0; i < enemies.size; i++) {
             Enemy enemy = enemies.get(i);
             if (enemy.getLifeStatus() && getBounds().overlaps(enemy.getBounds())) {
@@ -93,11 +72,7 @@ public class FireBall {
         }
     }
 
-    /**
-     * Renders the fireball on the screen.
-     *
-     * @param batch the SpriteBatch used for drawing
-     */
+
     public void render(SpriteBatch batch) {
         if (!appear) return;
 
@@ -112,10 +87,10 @@ public class FireBall {
         batch.draw(
                 currentFrame,
                 x, y,
-                width / 2, height / 2,  // originX, originY (center)
-                width, height,          // drawn width & height
-                1, 1,                   // scaleX, scaleY
-                rotation                // rotation
+                width / 2, height / 2,
+                width, height,
+                1, 1,
+                rotation
         );
     }
 }

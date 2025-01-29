@@ -15,10 +15,7 @@ import java.util.List;
 
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
 
-/**
- * Represents an enemy character in the maze game.
- * The enemy can move, follow a path, and interact with the player.
- */
+
 public class Enemy {
     private Texture texture;
     private Vector2 position;
@@ -42,12 +39,7 @@ public class Enemy {
     private boolean displayHitParticle = false;
     private boolean alive = true;
 
-    /**
-     * Creates a new enemy at the specified position.
-     *
-     * @param x the x-coordinate of the enemy's initial position
-     * @param y the y-coordinate of the enemy's initial position
-     */
+
     public Enemy(float x, float y) {
         this.position = new Vector2(x, y);
         this.startPosition = new Vector2(x, y);
@@ -64,18 +56,7 @@ public class Enemy {
         this.animationMNGR.loadAnimations();
     }
 
-    /**
-     * Updates the enemy's state, including movement and interaction with the player.
-     *
-     * @param delta            the time in seconds since the last update
-     * @param labyrinthWidth   the width of the labyrinth
-     * @param labyrinthHeight  the height of the labyrinth
-     * @param tileWidth        the width of a single tile
-     * @param tileHeight       the height of a single tile
-     * @param labyrinth        the labyrinth object
-     * @param player           the player object
-     * @param maze             the maze represented as a 2D array of integers
-     */
+
     public void update(
             float delta,
             float labyrinthWidth,
@@ -100,7 +81,6 @@ public class Enemy {
                 displayHitParticle = false;
             }
 
-            // Only update path when we're not moving or path is empty
             if ((!isMoving || path.isEmpty()) && !currentPlayerTile.equals(lastKnownPlayerTile)) {
                 Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
                 List<Vector2> newPath = Pathfinding.findPath(maze, enemyTile, currentPlayerTile);
@@ -112,7 +92,6 @@ public class Enemy {
             }
             }
 
-            // Handle movement with smooth interpolation
             if (isMoving) {
                 timeAccumulation += delta;
                 float alpha = Math.min(timeAccumulation / totalMoveTime, 1.0f);
@@ -124,7 +103,6 @@ public class Enemy {
                     isMoving = false;
                     position.set(targetPosition);
 
-                    // Immediately check if we should start next movement
                     if (!path.isEmpty()) {
                         Vector2 nextTile = path.remove(0);
                         startPosition.set(position);
@@ -138,7 +116,6 @@ public class Enemy {
                 return;
             }
 
-            // Start new movement if we have a path
             if (!path.isEmpty() && !isMoving) {
                 Vector2 nextTile = path.remove(0);
                 startPosition.set(position);
@@ -149,7 +126,6 @@ public class Enemy {
                 return;
             }
 
-            // Update path periodically if we don't have one
             if (path.isEmpty() && timeSinceLastUpdate >= 1.0f) {
                 Vector2 enemyTile = new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
                 Vector2 playerTile = new Vector2((int) (player.getPosition().x / tileWidth), (int) (player.getPosition().y / tileHeight));
@@ -174,21 +150,13 @@ public class Enemy {
     }
 
 
-    /**
-     * Renders the enemy on the screen.
-     *
-     * @param batch the SpriteBatch used for drawing
-     */
+
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame = getCurrentAnimationFrame();
         batch.draw(currentFrame, position.x, position.y, 16, 16);
     }
 
-    /**
-     * Retrieves the current animation frame based on the enemy's movement direction.
-     *
-     * @return the current animation frame
-     */
+
     private TextureRegion getCurrentAnimationFrame() {
         if (targetPosition.x > startPosition.x) {
             return animationMNGR.getBaldGuyRightAnimation().getKeyFrame(timeAccumulation, true); // Moving Right
@@ -201,38 +169,22 @@ public class Enemy {
         }
     }
 
-    /**
-     * Retrieves the bounding rectangle of the enemy.
-     *
-     * @return the bounding rectangle
-     */
+
     public Rectangle getBounds() {
         return new Rectangle(position.x, position.y, 16, 16);
     }
 
-    /**
-     * Inflicts damage on the player.
-     *
-     * @param player the player object
-     */
+
     private void damage(Player player) {
         player.takeDamage(damage);
     }
 
-    /**
-     * Reduces the enemy's health by the specified damage amount.
-     *
-     * @param damage the amount of damage to inflict
-     */
+
     public void takeDamage(float damage) {
         this.health -= damage;
     }
 
-    /**
-     * Checks whether the enemy is still alive.
-     *
-     * @return true if the enemy is alive; false otherwise
-     */
+
     public boolean getLifeStatus() {
         if (this.health <= 0) {
             this.alive = false;
@@ -240,11 +192,7 @@ public class Enemy {
         return this.alive;
     }
 
-    /**
-     * Checks whether the hit particle effect should be displayed.
-     *
-     * @return true if the hit particle effect should be displayed; false otherwise
-     */
+
     public boolean isDisplayHitParticle() {
         if (!this.alive) {
             displayHitParticle = false;

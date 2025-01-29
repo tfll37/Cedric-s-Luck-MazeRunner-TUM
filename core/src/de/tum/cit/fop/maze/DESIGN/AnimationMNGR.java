@@ -176,13 +176,12 @@ public class AnimationMNGR implements Disposable {
         }
         diceAnimation = new Animation<>(0.2f, diceFrames);
 
-        // 6 final faces at row 1
         diceFaces = new TextureRegion[6];
         for (int col = 0; col < 6; col++) {
             diceFaces[col] = new TextureRegion(
                     diceSheet,
-                    col * frameWidth,    // X
-                    1 * frameHeight,     // Y
+                    col * frameWidth,
+                    1 * frameHeight,
                     frameWidth,
                     frameHeight
             );
@@ -399,13 +398,11 @@ public class AnimationMNGR implements Disposable {
         Array<TiledMapTile> frames = animatedTiles.get(baseTileId);
         if (frames == null || frames.size < 2) return;
 
-        // Find all tiles of this type and update them
         for (int x = 0; x < tileLayer.getWidth(); x++) {
             for (int y = 0; y < tileLayer.getHeight(); y++) {
                 TiledMapTileLayer.Cell cell = tileLayer.getCell(x, y);
                     int currentTileId = cell.getTile().getId();
                     if (currentTileId == baseTileId || isVariationOfBaseTile(currentTileId, baseTileId)) {
-                        // Find current frame index and calculate next
                         int currentIndex = getCurrentFrameIndex(currentTileId, frames);
                         int nextIndex = (currentIndex + 1) % frames.size;
                         cell.setTile(frames.get(nextIndex));

@@ -35,15 +35,13 @@ public class VictoryScreen {
         Table table = new Table();
         table.setFillParent(true);
 
-        // Victory title
+
         Label victoryLabel = new Label("Level Complete!", game.getSkin(), "title");
         victoryLabel.setAlignment(Align.center);
 
-        // Score display (if you want to show final score)
         Label scoreLabel = new Label("Level: " + currentLevel.name(), game.getSkin());
         scoreLabel.setAlignment(Align.center);
 
-        // Create buttons
         TextButton nextLevelButton = new TextButton("Next Level", game.getSkin());
         TextButton menuButton = new TextButton("Return to Menu", game.getSkin());
 
@@ -53,7 +51,6 @@ public class VictoryScreen {
                 int nextLevelIndex = currentLevel.Level() + 1;
                 LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
                 if (nextLevel != null) {
-                    // Remove the victory screen's input processor before transitioning
                     Gdx.input.setInputProcessor(null);
                     game.goToGame(nextLevel);
                 } else {
@@ -69,7 +66,6 @@ public class VictoryScreen {
             }
         });
 
-        // Add elements to table with spacing
         table.add(victoryLabel).padBottom(50).row();
         table.add(scoreLabel).padBottom(30).row();
         table.add(nextLevelButton).width(200).pad(10).row();
@@ -91,13 +87,11 @@ public class VictoryScreen {
     public void render() {
         if (!visible) return;
 
-        // Create celebratory background effect
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.graphics.getGL20().glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
-        // Draw a semi-transparent golden overlay for victory feel
         batch.setColor(1, 0.8f, 0, 0.3f);
         batch.draw(game.getBackgroundTexture(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.setColor(1, 1, 1, 1); // Reset color

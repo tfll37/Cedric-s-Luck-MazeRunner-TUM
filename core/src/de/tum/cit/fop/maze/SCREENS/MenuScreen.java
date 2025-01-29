@@ -23,10 +23,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.MAZELOGIC.LevelMNGR;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 
-/**
- * The MenuScreen class is responsible for displaying the main menu of the game.
- * It includes an animated background using frames from the menuvid folder and plays background music.
- */
 public class MenuScreen implements Screen {
     private final Stage stage;
     private final MazeRunnerGame game;
@@ -48,8 +44,8 @@ public class MenuScreen implements Screen {
         stage = new Stage(viewport, game.getSpriteBatch());
 
         Array<Texture> frames = new Array<>();
-        for (int i = 12; i <= 181; i += 2) {
-            String framePath = String.format("menuvid/ezgif-frame-%03d.jpg", i);
+        for (int i = 1; i <= 181; i += 2) {
+            String framePath = String.format("C:\\Users\\djole\\fophn2425projectfop-byteme\\assets\\menuvid\\ezgif-frame-%03d.jpg", i);
             frames.add(new Texture(Gdx.files.internal(framePath)));
         }
         animation = new Animation<>(0.1f, frames, Animation.PlayMode.LOOP);
@@ -85,16 +81,13 @@ public class MenuScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 buttonClickSound.play();
 
-                // Clear existing buttons
                 table.clear();
 
-                // Add title
                 table.add(new Label("Select Level", game.getSkin(), "title"))
                         .padTop(50)
                         .padBottom(50)
                         .row();
 
-                // Add level buttons
                 for (LevelMNGR.LevelInfo level : LevelMNGR.getAvailableLevels()) {
                     TextButton levelButton = new TextButton(
                             level.name() + " (" + level.difficulty() + ")",
@@ -110,7 +103,6 @@ public class MenuScreen implements Screen {
                     table.add(levelButton).width(300).padBottom(20).row();
                 }
 
-                // Add back button
                 TextButton backButton = new TextButton("Back", game.getSkin());
                 backButton.addListener(new ChangeListener() {
                     @Override
@@ -125,7 +117,6 @@ public class MenuScreen implements Screen {
         table.add(startGameButton).width(600).height(100).padBottom(60).row();
         startGameButton.getLabel().setAlignment(Align.center);
 
-        // Add Quit Button
         TextButton.TextButtonStyle quitButtonStyle = new TextButton.TextButtonStyle();
         quitButtonStyle.up = normalDrawable;
         quitButtonStyle.over = hoverDrawable;
@@ -143,8 +134,7 @@ public class MenuScreen implements Screen {
         table.add(quitButton).width(600).height(100).padBottom(60).row();
         quitButton.getLabel().setAlignment(Align.center);
 
-        // Load and setup background music
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets//music//Wallpaper Engine - Batman Arkham Knight - Batman Overlooking Gotham from Wayne Tower_1.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("C:\\Users\\djole\\fophn2425projectfop-byteme\\assets\\music\\TEMPLAR'S RESPITE _ Meditative Chant & Crackling Fire Sounds _ ASMR_3 (1).mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.5f);
 

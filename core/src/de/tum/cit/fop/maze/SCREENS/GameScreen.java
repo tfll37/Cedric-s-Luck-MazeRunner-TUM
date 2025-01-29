@@ -171,12 +171,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     @Override
     public void render(float delta) {
         // Clear the screen
-
         ScreenUtils.clear(0, 0, 0, 1);
-
-
-
-
 
         // If player is dead and gameOver wasn't yet triggered, set gameOver
         if (player.isDead() && !gameOver) {
@@ -220,19 +215,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
         if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
-//            if (currentLevelScore >= requiredScore) {
-//                // Load next level
-//                int nextLevelIndex = level.Level() + 1;
-//                LevelMNGR.LevelInfo nextLevel = LevelMNGR.getLevel(nextLevelIndex);
-//                if (nextLevel != null) {
-//                    game.goToGame(nextLevel);
-//                } else {
-//                    game.goToMenu(); // If no more levels
-//                }
-//            } else {
-//                // Display message that more score is needed
-//                gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
-//            }
+
             if (playerTile.x == exitTile.x && playerTile.y == exitTile.y) {
                 if (currentLevelScore >= requiredScore) {
                     // Show victory screen instead of immediately loading next level

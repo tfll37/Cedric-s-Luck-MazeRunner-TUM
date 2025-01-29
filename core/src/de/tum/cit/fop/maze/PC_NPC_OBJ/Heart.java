@@ -1,5 +1,7 @@
 package de.tum.cit.fop.maze.PC_NPC_OBJ;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +14,11 @@ public class Heart extends Collectable {
     private AnimationMNGR animationMNGR;
     private float time = 0f;
     private TextureRegion currentFrame;
+    private static Sound pickupSound;
+
+    static {
+        pickupSound = Gdx.audio.newSound(Gdx.files.internal("assets/266741__n_audioman__pickup_coin7.wav"));
+    }
 
     /**
      * Creates a new Heart at the specified position.
@@ -48,6 +55,9 @@ public class Heart extends Collectable {
         if (!collected && player.getTilePosition(16, 16).x == this.getTilePosition(16, 16).x && player.getTilePosition(16, 16).y == this.getTilePosition(16, 16).y) {
             collected = true;
             player.heal(50);
+            if (pickupSound != null) {
+                pickupSound.play(0.5f); // Reduce volume to 50%
+            }
         }
     }
 

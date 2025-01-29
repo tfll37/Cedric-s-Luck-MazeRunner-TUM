@@ -46,6 +46,18 @@ A maze-based dungeon crawler that combines classic roguelike elements with innov
     - Special areas (spawn points, exits)
   - Comprehensive animation system for all game entities
 
+## 👾 Game Controls
+
+**🏃Movement System**
+-Basic Movement: Use WASD keys to navigate through the maze.
+-Sprint: Hold Left Shift to move faster, consuming stamina.
+-Dash: Press X to quickly evade or close gaps (uses dash charges).
+-Collision Detection: The game implements a layered tile-based collision system to restrict movement where necessary.
+
+**⚔️ Combat System**
+-Melee Attack: Press Spacebar to deal close-range damage.
+-Fireball Attack: Press Enter to launch a projectile (3-second cooldown).
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -147,6 +159,47 @@ The game is built using LibGDX and features:
   - Stamina system (100 points)
   - Dash charge system
   - Score tracking
+
+## 📐 Design and Screens
+Design Overview
+The design of Diddy Party Escape is built on a pixel-art aesthetic using the Dawnlike tileset by DawnBringer. The game follows a top-down dungeon-crawler style, incorporating grid-based movement while allowing dynamic actions such as dashing, shooting fireballs, and interacting with various in-game elements like dice and hearts.
+The UI elements are minimalistic and effective, with a focus on clear feedback for actions like health status, score tracking, and game progression. The animations are handled by AnimationMNGR, ensuring smooth transitions for player movements, enemy interactions, and dice mechanics.
+
+1. **Welcome Screen**
+  -Implements a line-by-line narrative progression system, where text unfolds dynamically based on player input.
+  -Rendered on a dedicated Stage with viewport scaling, ensuring sharp text readability across resolutions
+
+2. **Menu Screen**
+  -Features a 181-frame animated sequence background, stitched dynamically using LibGDX’s Animation API.
+  -Interactive elements (buttons) using custom skin assets with adaptive UI scaling and hover/click reactivity.
+   
+3. **Pause Menu Screen**
+  -Implements a semi-transparent black overlay with alpha blending, ensuring background visibility while maintaining focus on the pause menu.
+  -Operates as an independent class, preserving input states without interfering with game rendering.
+
+4. **Game Screen**
+  -The primary execution layer, responsible for player interactions, AI, physics, and environment rendering.
+  -Implements a modular rendering pipeline, ensuring that UI elements, animations, and map tiles update asynchronously.
+    -Camera system features:
+      -Smooth tracking with velocity-based easing.
+      -Zoom interpolation (0.2x to 1.0x) for a dynamic perspective shift.
+      -Screen shake logic tied to damage values, delivering impactful feedback.
+
+5. **Victory Screen**
+  -Fires completion events upon reaching objectives, triggering the level transition system.
+    -Automated level progression:
+        -Checks for next available level and dynamically loads it or returns to the menu.
+        -Updates the UI with new score requirements and level details.
+        -Resets player stats and positions for a fresh new level start.
+
+6. **Game UI**
+  -Real-time health tracking with color-coded scaling (White → Orange → Red) based on damage thresholds.
+  -Door unlock progress indicator dynamically updates based on dice roll results, creating a real-time puzzle-solving feedback loop.
+
+
+
+
+
 
 ## 📁 Project Structure
 
@@ -320,8 +373,8 @@ Major update implementing collectible system and minigame mechanics. Added new i
 
 ## Authors
 - Mark Konstantinov
-- Andrei ... 
-- Djordje ...
+- Andrei Iulian Maftei
+- Djordje Vidakovic
 
 
 

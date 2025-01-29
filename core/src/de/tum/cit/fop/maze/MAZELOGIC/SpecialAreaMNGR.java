@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.Random;
 
 public class SpecialAreaMNGR {
-    // Bitmask directions
     private static final int NORTH = 1;
     private static final int EAST = 2;
     private static final int SOUTH = 4;

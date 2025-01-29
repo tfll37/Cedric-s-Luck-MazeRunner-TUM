@@ -14,10 +14,6 @@ import de.tum.cit.fop.maze.MAZELOGIC.*;
 
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
 
-/**
- * Represents the player character in the maze game.
- * The player can move, interact with the environment, and attack enemies.
- */
 public class Player extends Actor {
     private final Vector2 position;
     private final Vector2 startPosition;
@@ -68,13 +64,6 @@ public class Player extends Actor {
     private static final Color DAMAGE_FLASH_COLOR = new Color(1, 0, 0, 0.5f);
     private Color currentTint = new Color(1, 1, 1, 1);
 
-
-    /**
-     * Creates a new player at the specified position.
-     *
-     * @param x the x-coordinate of the player's initial position
-     * @param y the y-coordinate of the player's initial position
-     */
     public Player(float x, float y, CameraMNGR cameraMNGR) {
         this.cameraMNGR = cameraMNGR;
         this.position = new Vector2(x, y);
@@ -106,17 +95,6 @@ public class Player extends Actor {
 
     }
 
-    /**
-     * Updates the player's state, including movement, interaction with traps and power-ups, and attacking enemies.
-     *
-     * @param delta           the time in seconds since the last update
-     * @param labyrinthWidth  the width of the labyrinth
-     * @param labyrinthHeight the height of the labyrinth
-     * @param tileWidth       the width of a single tile
-     * @param tileHeight      the height of a single tile
-     * @param labyrinth       the labyrinth object
-     * @param enemies         the array of enemies
-     */
     public void update(float delta, float labyrinthWidth, float labyrinthHeight,
                        float tileWidth, float tileHeight, Labyrinth labyrinth, Array<Enemy> enemies) {
         time += delta;
@@ -204,7 +182,6 @@ public class Player extends Actor {
     }
 
     private void updateDash(float delta) {
-        // Update dash cooldown
         if (dashCooldown > 0) {
             dashCooldown -= delta;
             if (dashCooldown <= 0 && dashCharges < maxDashCharges) {
@@ -215,7 +192,6 @@ public class Player extends Actor {
             }
         }
 
-        // Update dash invulnerability
         if (dashInvulnerabilityTimer > 0) {
             dashInvulnerabilityTimer -= delta;
             isDashing = dashInvulnerabilityTimer > 0;
@@ -245,11 +221,6 @@ public class Player extends Actor {
     }
 
 
-    /**
-     * Handles the player's input and returns the corresponding movement request.
-     *
-     * @return the movement request based on the player's input
-     */
     private MovementREQ handleInput() {
         var LEFT = Gdx.input.isKeyPressed(Input.Keys.A);
         var RIGHT = Gdx.input.isKeyPressed(Input.Keys.D);
@@ -333,19 +304,9 @@ public class Player extends Actor {
         return null;
     }
 
-    /**
-     * Renders the player on the screen.
-     *
-     * @param batch the SpriteBatch used for drawing
-     */
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame;
         float animationSpeed = time * ((isRunning && canSprint) ? 1.5f : 1.0f);
-
-
-    // Get current frame based on direction and state
-
-        
 
         if (hitting) {
             if (lookingDirection == 0) {
@@ -370,7 +331,6 @@ public class Player extends Actor {
     Color prevColor = batch.getColor().cpy();
     batch.setColor(currentTint);
 
-    // Calculate offset to center the 32x32 sprite on a 16x16 tile
     float offsetX = -8f; // (32 - 16) / 2 = 8
     float offsetY = -8f; // (32 - 16) / 2 = 8
 
@@ -388,49 +348,23 @@ public class Player extends Actor {
         return MAX_STAMINA;
     }
 
-    /**
-     * Retrieves the player's bounding rectangle.
-     *
-     * @return the bounding rectangle
-     */
+
     public Rectangle getBounds() {
         return bounds;
     }
 
-    /**
-     * Retrieves the player's position.
-     *
-     * @return the player's position as a Vector2
-     */
     public Vector2 getPosition() {
         return position;
     }
 
-    /**
-     * Retrieves the player's tile position.
-     *
-     * @param tileWidth  the width of a single tile
-     * @param tileHeight the height of a single tile
-     * @return the tile position as a Vector2
-     */
     public Vector2 getTilePosition(float tileWidth, float tileHeight) {
         return new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
     }
 
-    /**
-     * Retrieves the player's health.
-     *
-     * @return the player's health
-     */
     public float getHealth() {
         return health;
     }
 
-    /**
-     * Reduces the player's health by the specified damage amount.
-     *
-     * @param damage the amount of damage to inflict
-     */
     public void takeDamage(float damage) {
         if (!isDashing) {  // Only take damage if not dashing
             this.health -= damage;
@@ -449,13 +383,11 @@ public class Player extends Actor {
         }
     }
 
-    // Add method to handle temporary dashes from power-ups
     public void addTemporaryDashes(int amount) {
         temporaryDashes += amount;
         System.out.println("Added " + amount + " temporary dashes. Total temporary dashes: " + temporaryDashes);
     }
 
-    // Update getter methods for UI display
     public int getBaseDashCharges() {
         return dashCharges;
     }
@@ -468,94 +400,54 @@ public class Player extends Actor {
         return dashCharges + temporaryDashes;
     }
 
-    /**
-     * Increases the player's health by the specified amount.
-     *
-     * @param health the amount of health to add
-     */
+
     public void increaseHealth(float health) {
         this.health += health;
     }
 
-    /**
-     * Modifies the player's speed by the specified factor.
-     *
-     * @param factor the speed modification factor
-     */
+
     public void modifySpeed(float factor) {
         this.speedModifier = factor;
         this.totalMoveTime = baseMoveTime / speedModifier;
     }
 
-    /**
-     * Sets the player's speed modifier.
-     *
-     * @param modifier the speed modifier
-     */
+
     public void setSpeedModifier(float modifier) {
         this.speedModifier = modifier;
         this.totalMoveTime = baseMoveTime / speedModifier;
     }
 
-    /**
-     * Retrieves the player's speed modifier.
-     *
-     * @return the speed modifier
-     */
+
     public float getSpeedModifier() {
         return speedModifier;
     }
 
-    /**
-     * Inflicts damage on the specified enemy.
-     *
-     * @param enemy the enemy to damage
-     */
+
     public void damage(Enemy enemy) {
         enemy.takeDamage(damage);
     }
 
-    /**
-     * Checks whether the player is dead.
-     *
-     * @return true if the player is dead; false otherwise
-     */
+
     public boolean isDead() {
         return health <= 0;
     }
 
-    /**
-     * Heals the player by the specified amount.
-     *
-     * @param amount the amount of health to restore
-     */
+
     public void heal(float amount) {
         this.health = Math.min(200, this.health + amount);
     }
 
-    /**
-     * Checks whether the player can shoot a fireball.
-     *
-     * @return true if the player can shoot a fireball; false otherwise
-     */
+
     public boolean shootsFireBall() {
         return shootsFireball;
     }
 
-    /**
-     * Retrieves the player's current orientation.
-     *
-     * @return the orientation as an integer (0 = up, 1 = right, 2 = down, 3 = left)
-     */
+
     public int getOrientation() {
         return lookingDirection;
     }
 
-    /**
-     * Sets the player's position.
-     *
-     * @param position the new position as a Vector2
-     */
+
     public void setPosition(Vector2 position) {
         this.position.set(position);
         this.startPosition.set(position);
@@ -563,11 +455,7 @@ public class Player extends Actor {
         this.bounds.setPosition(position.x, position.y);
     }
 
-    /**
-     * Checks whether the player is hitting.
-     *
-     * @return true if the player is hitting; false otherwise
-     */
+
     public boolean hits() {
         return this.hitting;
     }
@@ -577,16 +465,11 @@ public class Player extends Actor {
         this.dashCount += 5;
     }
 
-    /**
-     * Retrieves the player's fireball.
-     *
-     * @return the fireball object
-     */
+
     public FireBall getFireBall() {
         return fireBall;
     }
 
-    // Add these getter methods for UI display
     public int getDashCharges() {
         return dashCharges;
     }
@@ -599,7 +482,6 @@ public class Player extends Actor {
         return maxDashCharges;
     }
 
-    // Add method to handle power-ups affecting dash
     public void addDashCharge() {
         if (dashCharges < maxDashCharges) {
             dashCharges++;

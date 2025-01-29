@@ -61,13 +61,13 @@ public class WelcomeScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1); // Set background to black
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
 
-        // Handle input to advance the story or transition to the menu
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isTouched()) {
             if (waitForNextClick) {
                 waitForNextClick = false;
@@ -80,11 +80,11 @@ public class WelcomeScreen implements Screen {
                     currentLineIndex++;
                     storyLabel.setText(storyLines.get(currentLineIndex));
                     if (currentLineIndex == 1) {
-                        waitForNextClick = true; // Require another click from the second text
+                        waitForNextClick = true;
                     }
                 }
             } else {
-                game.goToMenu(); // Transition to MenuScreen
+                game.goToMenu();
             }
         }
     }

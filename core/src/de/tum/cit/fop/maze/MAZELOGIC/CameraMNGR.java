@@ -20,7 +20,6 @@ public class CameraMNGR {
     private final float tileSize;
     private float targetZoom;
 
-    // Screen shake parameters
     private float shakeTime;
     private float shakeDuration;
     private float shakeIntensity;
@@ -56,33 +55,26 @@ public class CameraMNGR {
     }
 
     public void update(Vector2 playerPosition) {
-        // Handle zoom interpolation
         if (camera.zoom != targetZoom) {
             camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, CAMERA_LERP_SPEED);
         }
 
-        // Calculate effective viewport dimensions
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
 
-        // Calculate boundaries
         float minX = effectiveViewportWidth / 2f;
         float maxX = worldWidth - (effectiveViewportWidth / 2f);
         float minY = effectiveViewportHeight / 2f;
         float maxY = worldHeight - (effectiveViewportHeight / 2f);
 
-        // Update target position
         float targetX = MathUtils.clamp(playerPosition.x, minX, maxX);
         float targetY = MathUtils.clamp(playerPosition.y, minY, maxY);
 
-        // Smooth camera movement
         camera.position.x = MathUtils.lerp(camera.position.x, targetX, CAMERA_LERP_SPEED);
         camera.position.y = MathUtils.lerp(camera.position.y, targetY, CAMERA_LERP_SPEED);
 
-        // Store original position for shake effect
         originalPosition.set(camera.position);
 
-        // Handle screen shake
         updateScreenShake(Gdx.graphics.getDeltaTime());
         camera.update();
     }
@@ -118,16 +110,13 @@ public class CameraMNGR {
         shakeTime += deltaTime;
 
         if (shakeTime < shakeDuration) {
-            // Calculate shake offset with smooth falloff
             float currentIntensity = shakeIntensity * (1 - (shakeTime / shakeDuration));
             float offsetX = MathUtils.random(-1f, 1f) * currentIntensity;
             float offsetY = MathUtils.random(-1f, 1f) * currentIntensity;
 
-            // Apply shake offset from original position
             camera.position.x = originalPosition.x + offsetX;
             camera.position.y = originalPosition.y + offsetY;
         } else {
-            // Reset shake
             isShaking = false;
             camera.position.x = originalPosition.x;
             camera.position.y = originalPosition.y;

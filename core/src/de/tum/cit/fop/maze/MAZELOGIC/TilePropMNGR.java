@@ -53,7 +53,6 @@ public class TilePropMNGR {
         return false;
     }
 
-    // Only check properties of the current layer's tile
     Object property = cell.getTile().getProperties().get("TileDescrip");
     return property != null && property.equals("wall");
     }

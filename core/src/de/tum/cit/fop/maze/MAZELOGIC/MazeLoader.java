@@ -230,17 +230,13 @@ public class MazeLoader {
         return tileEffectMNGR;
     }
 
-    /**
-     * Checks if there's a tile override at the specified coordinates
-     */
+
     public boolean hasOverride(int x, int y) {
         int transformedY = mapHeight - 1 - y;
         return tileOverrides.containsKey(new GridPoint2(x, transformedY));
     }
 
-    /**
-     * Gets all tile overrides
-     */
+
     public Map<GridPoint2, Integer> getAllOverrides() {
         return new HashMap<>(tileOverrides);
     }
