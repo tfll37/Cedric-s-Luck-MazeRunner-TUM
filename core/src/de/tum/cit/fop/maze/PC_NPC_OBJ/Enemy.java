@@ -16,6 +16,9 @@ import java.util.List;
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
 
 
+/**
+ * The type Enemy.
+ */
 public class Enemy {
     private Texture texture;
     private Vector2 position;
@@ -41,6 +44,12 @@ public class Enemy {
     private boolean counted = false;
 
 
+    /**
+     * Instantiates a new Enemy.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public Enemy(float x, float y) {
         this.position = new Vector2(x, y);
         this.startPosition = new Vector2(x, y);
@@ -58,6 +67,18 @@ public class Enemy {
     }
 
 
+    /**
+     * Update.
+     *
+     * @param delta           the delta
+     * @param labyrinthWidth  the labyrinth width
+     * @param labyrinthHeight the labyrinth height
+     * @param tileWidth       the tile width
+     * @param tileHeight      the tile height
+     * @param labyrinth       the labyrinth
+     * @param player          the player
+     * @param maze            the maze
+     */
     public void update(
             float delta,
             float labyrinthWidth,
@@ -138,6 +159,11 @@ public class Enemy {
         }
     }
 
+    /**
+     * Modify speed.
+     *
+     * @param factor the factor
+     */
     public void modifySpeed(float factor) {
         this.speedModifier = factor;
         this.totalMoveTime = baseMoveTime / speedModifier;
@@ -151,7 +177,11 @@ public class Enemy {
     }
 
 
-
+    /**
+     * Render.
+     *
+     * @param batch the batch
+     */
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame = getCurrentAnimationFrame();
         batch.draw(currentFrame, position.x, position.y, 16, 16);
@@ -171,13 +201,27 @@ public class Enemy {
     }
 
 
+    /**
+     * Gets bounds.
+     *
+     * @return the bounds
+     */
     public Rectangle getBounds() {
         return new Rectangle(position.x, position.y, 16, 16);
     }
 
+    /**
+     * Count.
+     */
     public void count(){
         counted = true;
     }
+
+    /**
+     * Is counted boolean.
+     *
+     * @return the boolean
+     */
     public boolean isCounted()
     {
         return counted;
@@ -188,11 +232,21 @@ public class Enemy {
     }
 
 
+    /**
+     * Take damage.
+     *
+     * @param damage the damage
+     */
     public void takeDamage(float damage) {
         this.health -= damage;
     }
 
 
+    /**
+     * Gets life status.
+     *
+     * @return the life status
+     */
     public boolean getLifeStatus() {
         if (this.health <= 0) {
             this.alive = false;
@@ -201,6 +255,11 @@ public class Enemy {
     }
 
 
+    /**
+     * Is display hit particle boolean.
+     *
+     * @return the boolean
+     */
     public boolean isDisplayHitParticle() {
         if (!this.alive) {
             displayHitParticle = false;

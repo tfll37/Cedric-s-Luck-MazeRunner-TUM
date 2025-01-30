@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * The type Level mngr.
+ */
 public class LevelMNGR {
 
+    /**
+     * The type Level info.
+     */
     public record LevelInfo(
             String name,
             String description,
@@ -82,16 +88,33 @@ public class LevelMNGR {
         ));
     }
 
+    /**
+     * Gets available levels.
+     *
+     * @return the available levels
+     */
     public static List<LevelInfo> getAvailableLevels() {
         return availableLevels;
     }
 
+    /**
+     * Generate score requirement int.
+     *
+     * @param level the level
+     * @return the int
+     */
     public static int generateScoreRequirement(LevelInfo level) {
         Random random = new Random();
         int baseScore = level.requiredScore();
         return (int) (baseScore * (0.8 + (random.nextDouble() * 0.4)));
     }
 
+    /**
+     * Gets level.
+     *
+     * @param index the index
+     * @return the level
+     */
     public static LevelInfo getLevel(int index) {
         if (index >= 0 && index < availableLevels.size()) {
             return availableLevels.get(index);
@@ -99,6 +122,12 @@ public class LevelMNGR {
         return null;
     }
 
+    /**
+     * Gets tmx path for size.
+     *
+     * @param size the size
+     * @return the tmx path for size
+     */
     public static String getTmxPathForSize(int size) {
         return switch (size) {
             case 16 -> "assets/Tiled/Gamemap16.tmx";

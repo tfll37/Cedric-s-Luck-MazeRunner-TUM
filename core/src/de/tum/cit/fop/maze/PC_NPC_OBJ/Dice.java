@@ -8,6 +8,9 @@ import com.badlogic.gdx.math.Vector2;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 
 
+/**
+ * The type Dice.
+ */
 public class Dice extends Collectable {
 
     private AnimationMNGR animationMNGR;
@@ -22,6 +25,12 @@ public class Dice extends Collectable {
 
     private boolean gotcolelcted = true;
 
+    /**
+     * Instantiates a new Dice.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public Dice(float x, float y) {
         super(x, y);
         this.animationMNGR = new AnimationMNGR();
@@ -71,24 +80,47 @@ public class Dice extends Collectable {
         batch.draw(currentFrame, centeredX, centeredY, 8, 8);
     }
 
+    /**
+     * Is minigame active boolean.
+     *
+     * @return the boolean
+     */
     public boolean isMinigameActive() {
         return minigameActive;
     }
 
 
+    /**
+     * Deactivate minigame.
+     */
     public void deactivateMinigame() {
         minigameActive = false;
     }
 
 
+    /**
+     * Gets tile position.
+     *
+     * @param tileWidth  the tile width
+     * @param tileHeight the tile height
+     * @return the tile position
+     */
     public Vector2 getTilePosition(float tileWidth, float tileHeight) {
         return new Vector2((int) (x / tileWidth), (int) (y / tileHeight));
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         diceCollectedSound.dispose();
     }
 
+    /**
+     * Is gotcolelcted boolean.
+     *
+     * @return the boolean
+     */
     public boolean isGotcolelcted() {
         return gotcolelcted;
     }

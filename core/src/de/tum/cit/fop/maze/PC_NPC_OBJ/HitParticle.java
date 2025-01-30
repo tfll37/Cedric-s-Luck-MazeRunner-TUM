@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 
 
+/**
+ * The type Hit particle.
+ */
 public class HitParticle {
     private AnimationMNGR animationMNGR;
     private float time = 0f;
@@ -13,6 +16,12 @@ public class HitParticle {
     private boolean appear = false;
 
 
+    /**
+     * Instantiates a new Hit particle.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public HitParticle(float x, float y) {
         this.animationMNGR = new AnimationMNGR();
         this.x = x;
@@ -20,6 +29,13 @@ public class HitParticle {
     }
 
 
+    /**
+     * Update.
+     *
+     * @param delta  the delta
+     * @param player the player
+     * @param appear the appear
+     */
     public void update(float delta, Player player, boolean appear) {
         time += delta;
         this.currentFrame = animationMNGR.getHitAnimation1().getKeyFrame(time, true);
@@ -29,6 +45,11 @@ public class HitParticle {
     }
 
 
+    /**
+     * Render.
+     *
+     * @param batch the batch
+     */
     public void render(SpriteBatch batch) {
         if (!appear) return;
         batch.draw(currentFrame, x, y, 16, 16);

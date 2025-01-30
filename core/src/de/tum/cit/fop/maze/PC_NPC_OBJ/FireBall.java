@@ -8,17 +8,38 @@ import de.tum.cit.fop.maze.DESIGN.AnimationMNGR;
 import de.tum.cit.fop.maze.MAZELOGIC.Labyrinth;
 
 
+/**
+ * The type Fire ball.
+ */
 public class FireBall {
     private AnimationMNGR animationMNGR;
     private float time = 0f;
     private TextureRegion currentFrame;
-    public float x, y;
+    /**
+     * The X.
+     */
+    public float x, /**
+     * The Y.
+     */
+    y;
+    /**
+     * The Appear.
+     */
     public boolean appear = false;
+    /**
+     * The Direction.
+     */
     public int direction = 0;
     private final float width = 16f;
     private final float height = 16f;
 
 
+    /**
+     * Instantiates a new Fire ball.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public FireBall(float x, float y) {
         this.animationMNGR = new AnimationMNGR();
         this.x = x;
@@ -26,11 +47,24 @@ public class FireBall {
     }
 
 
+    /**
+     * Gets bounds.
+     *
+     * @return the bounds
+     */
     public Rectangle getBounds() {
         return new Rectangle((int)x, (int)y, (int)width, (int)height);
     }
 
 
+    /**
+     * Update.
+     *
+     * @param delta     the delta
+     * @param player    the player
+     * @param labyrinth the labyrinth
+     * @param enemies   the enemies
+     */
     public void update(float delta, Player player, Labyrinth labyrinth, Array<Enemy> enemies) {
         if (!appear) return;
 
@@ -73,6 +107,11 @@ public class FireBall {
     }
 
 
+    /**
+     * Render.
+     *
+     * @param batch the batch
+     */
     public void render(SpriteBatch batch) {
         if (!appear) return;
 

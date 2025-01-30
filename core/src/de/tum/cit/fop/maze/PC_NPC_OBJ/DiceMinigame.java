@@ -9,6 +9,9 @@ import de.tum.cit.fop.maze.SCREENS.DiceMinigameListener;
 import de.tum.cit.fop.maze.SCREENS.GameScreen;
 
 
+/**
+ * The type Dice minigame.
+ */
 public class DiceMinigame {
 
 
@@ -41,6 +44,11 @@ public class DiceMinigame {
 
     private DiceMinigameListener listener;
 
+    /**
+     * Instantiates a new Dice minigame.
+     *
+     * @param animationMNGR the animation mngr
+     */
     public DiceMinigame(AnimationMNGR animationMNGR) {
         this.animationMNGR = animationMNGR;
         this.active = false;
@@ -51,15 +59,28 @@ public class DiceMinigame {
         diceRollingSound = Gdx.audio.newSound(Gdx.files.internal("assets//music//94031__loafdv__dice-roll.mp3"));
     }
 
+    /**
+     * Sets listener.
+     *
+     * @param listener the listener
+     */
     public void setListener(DiceMinigameListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Sets active duration.
+     *
+     * @param duration the duration
+     */
     public void setActiveDuration(float duration) {
         this.activeDuration = duration;
     }
 
 
+    /**
+     * Start.
+     */
     public void start() {
         active = true;
         time = 0f;
@@ -71,6 +92,9 @@ public class DiceMinigame {
     }
 
 
+    /**
+     * Stop.
+     */
     public void stop() {
         active = false;
         diceRollingSound.stop();
@@ -88,11 +112,21 @@ public class DiceMinigame {
     }
 
 
+    /**
+     * Is active boolean.
+     *
+     * @return the boolean
+     */
     public boolean isActive() {
         return active;
     }
 
 
+    /**
+     * Update.
+     *
+     * @param delta the delta
+     */
     public void update(float delta) {
         if (active) {
             time += delta;
@@ -111,6 +145,13 @@ public class DiceMinigame {
     }
 
 
+    /**
+     * Render.
+     *
+     * @param batch   the batch
+     * @param cameraX the camera x
+     * @param cameraY the camera y
+     */
     public void render(SpriteBatch batch, float cameraX, float cameraY) {
         float offsetX = cameraX - 32;
         float offsetY = cameraY + 32;
@@ -130,11 +171,19 @@ public class DiceMinigame {
     }
 
 
+    /**
+     * Gets dice result.
+     *
+     * @return the dice result
+     */
     public int getDiceResult() {
         return diceResult;
     }
 
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         diceRollingSound.dispose();
     }

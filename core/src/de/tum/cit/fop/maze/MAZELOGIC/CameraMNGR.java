@@ -11,6 +11,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.*;
 
+/**
+ * The type Camera mngr.
+ */
 public class CameraMNGR {
 
     private final OrthographicCamera camera;
@@ -26,6 +29,13 @@ public class CameraMNGR {
     private final Vector3 originalPosition;
     private boolean isShaking;
 
+    /**
+     * Instantiates a new Camera mngr.
+     *
+     * @param camera   the camera
+     * @param viewport the viewport
+     * @param tiledMap the tiled map
+     */
     public CameraMNGR(OrthographicCamera camera, FitViewport viewport, TiledMap tiledMap) {
         this.camera = camera;
         this.viewport = viewport;
@@ -54,6 +64,11 @@ public class CameraMNGR {
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
+    /**
+     * Update.
+     *
+     * @param playerPosition the player position
+     */
     public void update(Vector2 playerPosition) {
         if (camera.zoom != targetZoom) {
             camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, CAMERA_LERP_SPEED);
@@ -79,23 +94,43 @@ public class CameraMNGR {
         camera.update();
     }
 
+    /**
+     * Handle scroll.
+     *
+     * @param amount the amount
+     */
     public void handleScroll(float amount) {
         float zoomDelta = -amount * gameCONFIG.ZOOM_SPEED;
         targetZoom = MathUtils.clamp(targetZoom + zoomDelta, gameCONFIG.MIN_ZOOM, gameCONFIG.MAX_ZOOM);
     }
 
+    /**
+     * Start shake.
+     */
     public void startShake() {
         startShake(SHAKE_DEFAULT_DURATION, SHAKE_DEFAULT_INTENSITY);
     }
 
+    /**
+     * Start light shake.
+     */
     public void startLightShake() {
         startShake(LIGHT_SHAKE_DURATION, LIGHT_SHAKE_INTENSITY);
     }
 
+    /**
+     * Start heavy shake.
+     */
     public void startHeavyShake() {
         startShake(HEAVY_SHAKE_DURATION, HEAVY_SHAKE_INTENSITY);
     }
 
+    /**
+     * Start shake.
+     *
+     * @param duration  the duration
+     * @param intensity the intensity
+     */
     public void startShake(float duration, float intensity) {
         this.shakeTime = 0;
         this.shakeDuration = duration;
@@ -124,19 +159,40 @@ public class CameraMNGR {
     }
 
 
+    /**
+     * Resize.
+     *
+     * @param width  the width
+     * @param height the height
+     */
     public void resize(int width, int height) {
         viewport.update(width, height);
 
     }
 
+    /**
+     * Is shaking boolean.
+     *
+     * @return the boolean
+     */
     public boolean isShaking() {
         return isShaking;
     }
 
+    /**
+     * Gets world width.
+     *
+     * @return the world width
+     */
     public float getWorldWidth() {
         return worldWidth;
     }
 
+    /**
+     * Gets world height.
+     *
+     * @return the world height
+     */
     public float getWorldHeight() {
         return worldHeight;
     }

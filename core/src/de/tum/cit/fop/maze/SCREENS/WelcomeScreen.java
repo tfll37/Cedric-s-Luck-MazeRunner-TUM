@@ -17,6 +17,9 @@ import de.tum.cit.fop.maze.MazeRunnerGame;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Welcome screen.
+ */
 public class WelcomeScreen implements Screen {
     // Variables
     private final Stage stage;
@@ -28,6 +31,11 @@ public class WelcomeScreen implements Screen {
     private int clickCount;
     private boolean waitForNextClick;
 
+    /**
+     * Instantiates a new Welcome screen.
+     *
+     * @param game the game
+     */
     public WelcomeScreen(MazeRunnerGame game) {
         this.game = game;
 

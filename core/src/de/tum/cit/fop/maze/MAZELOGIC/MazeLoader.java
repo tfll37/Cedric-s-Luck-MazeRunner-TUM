@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * The type Maze loader.
+ */
 public class MazeLoader {
     private final Map<GridPoint2, Integer> tileOverrides;
     private final Properties properties;
@@ -19,6 +22,13 @@ public class MazeLoader {
     private final int mapHeight;
     private final TileEffectMNGR tileEffectMNGR;
 
+    /**
+     * Instantiates a new Maze loader.
+     *
+     * @param propertiesPath the properties path
+     * @param tiledMap       the tiled map
+     * @param tileEffectMNGR the tile effect mngr
+     */
     public MazeLoader(String propertiesPath, TiledMap tiledMap, TileEffectMNGR tileEffectMNGR) {
         this.tileOverrides = new HashMap<>();
         this.properties = loadProperties(propertiesPath);
@@ -82,6 +92,9 @@ public class MazeLoader {
 
     /**
      * Converts tile type to TMX tile ID
+     *
+     * @param tileType the tile type
+     * @return the tile id
      */
     public int getTileId(int tileType) {
         switch (tileType) {
@@ -106,19 +119,61 @@ public class MazeLoader {
     }
 
     private static final class WallTiles {
+        /**
+         * The Top left.
+         */
         static final int TOP_LEFT = 241;
+        /**
+         * The Top right.
+         */
         static final int TOP_RIGHT = 243;
+        /**
+         * The Bottom left.
+         */
         static final int BOTTOM_LEFT = 281;
+        /**
+         * The Bottom right.
+         */
         static final int BOTTOM_RIGHT = 283;
+        /**
+         * The Horizontal.
+         */
         static final int HORIZONTAL = 242;
+        /**
+         * The Vertical.
+         */
         static final int VERTICAL = 261;
+        /**
+         * The Default.
+         */
         static final int DEFAULT = 244;
+        /**
+         * The Cross.
+         */
         static final int CROSS = 265;
+        /**
+         * The Top end.
+         */
         static final int TOP_END = 38;
+        /**
+         * The Bottom end.
+         */
         static final int BOTTOM_END = 262;
+        /**
+         * The Top horiz t.
+         */
         static final int TOP_HORIZ_T = 245;
+        /**
+         * The Bottom horiz t.
+         */
         static final int BOTTOM_HORIZ_T = 285;
+        /**
+         * The Left vert t.
+         */
         static final int LEFT_VERT_T = 264;
+        /**
+         * The Right vert t.
+         */
         static final int RIGHT_VERT_T = 266;
 
     }
@@ -128,6 +183,11 @@ public class MazeLoader {
     private static final int SOUTH = 4;  // 0100
     private static final int WEST = 8;  // 1000
 
+    /**
+     * Orient wall tiles.
+     *
+     * @param targetLayer the target layer
+     */
     public void orientWallTiles(TiledMapTileLayer targetLayer) {
         if (targetLayer == null) {
             throw new IllegalStateException("Layer must not be null");
@@ -207,21 +267,43 @@ public class MazeLoader {
         }
     }
 
+    /**
+     * Gets trap mngr.
+     *
+     * @return the trap mngr
+     */
     public TileEffectMNGR getTrapMNGR() {
         return tileEffectMNGR;
     }
 
 
+    /**
+     * Has override boolean.
+     *
+     * @param x the x
+     * @param y the y
+     * @return the boolean
+     */
     public boolean hasOverride(int x, int y) {
         int transformedY = mapHeight - 1 - y;
         return tileOverrides.containsKey(new GridPoint2(x, transformedY));
     }
 
 
+    /**
+     * Gets all overrides.
+     *
+     * @return the all overrides
+     */
     public Map<GridPoint2, Integer> getAllOverrides() {
         return new HashMap<>(tileOverrides);
     }
 
+    /**
+     * Sets tiled map.
+     *
+     * @param tiledMap the tiled map
+     */
     public void setTiledMap(TiledMap tiledMap) {
         this.tiledMap = tiledMap;
     }

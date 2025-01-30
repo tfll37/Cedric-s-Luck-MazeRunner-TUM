@@ -23,6 +23,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import de.tum.cit.fop.maze.MAZELOGIC.LevelMNGR;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 
+/**
+ * The type Menu screen.
+ */
 public class MenuScreen implements Screen {
     private final Stage stage;
     private final MazeRunnerGame game;
@@ -33,6 +36,11 @@ public class MenuScreen implements Screen {
     private Music backgroundMusic;
     private Sound buttonClickSound;
 
+    /**
+     * Instantiates a new Menu screen.
+     *
+     * @param game the game
+     */
     public MenuScreen(MazeRunnerGame game) {
         this.game = game;
         this.spriteBatch = game.getSpriteBatch();

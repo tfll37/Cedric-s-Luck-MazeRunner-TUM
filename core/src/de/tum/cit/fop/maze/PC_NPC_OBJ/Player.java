@@ -14,6 +14,9 @@ import de.tum.cit.fop.maze.MAZELOGIC.*;
 
 import static de.tum.cit.fop.maze.MAZELOGIC.gameCONFIG.WALK_MOVE_TIME;
 
+/**
+ * The type Player.
+ */
 public class Player extends Actor {
     private final Vector2 position;
     private final Vector2 startPosition;
@@ -64,6 +67,13 @@ public class Player extends Actor {
     private static final Color DAMAGE_FLASH_COLOR = new Color(1, 0, 0, 0.5f);
     private Color currentTint = new Color(1, 1, 1, 1);
 
+    /**
+     * Instantiates a new Player.
+     *
+     * @param x          the x
+     * @param y          the y
+     * @param cameraMNGR the camera mngr
+     */
     public Player(float x, float y, CameraMNGR cameraMNGR) {
         this.cameraMNGR = cameraMNGR;
         this.position = new Vector2(x, y);
@@ -95,6 +105,17 @@ public class Player extends Actor {
 
     }
 
+    /**
+     * Update.
+     *
+     * @param delta           the delta
+     * @param labyrinthWidth  the labyrinth width
+     * @param labyrinthHeight the labyrinth height
+     * @param tileWidth       the tile width
+     * @param tileHeight      the tile height
+     * @param labyrinth       the labyrinth
+     * @param enemies         the enemies
+     */
     public void update(float delta, float labyrinthWidth, float labyrinthHeight,
                        float tileWidth, float tileHeight, Labyrinth labyrinth, Array<Enemy> enemies) {
         time += delta;
@@ -305,6 +326,11 @@ public class Player extends Actor {
         return null;
     }
 
+    /**
+     * Render.
+     *
+     * @param batch the batch
+     */
     public void render(SpriteBatch batch) {
         TextureRegion currentFrame;
         float animationSpeed = time * ((isRunning && canSprint) ? 1.5f : 1.0f);
@@ -340,32 +366,69 @@ public class Player extends Actor {
 
     }
 
-    // Getter for stamina (useful for UI)
+    /**
+     * Gets current stamina.
+     *
+     * @return the current stamina
+     */
+// Getter for stamina (useful for UI)
     public float getCurrentStamina() {
         return currentStamina;
     }
 
+    /**
+     * Gets max stamina.
+     *
+     * @return the max stamina
+     */
     public float getMaxStamina() {
         return MAX_STAMINA;
     }
 
 
+    /**
+     * Gets bounds.
+     *
+     * @return the bounds
+     */
     public Rectangle getBounds() {
         return bounds;
     }
 
+    /**
+     * Gets position.
+     *
+     * @return the position
+     */
     public Vector2 getPosition() {
         return position;
     }
 
+    /**
+     * Gets tile position.
+     *
+     * @param tileWidth  the tile width
+     * @param tileHeight the tile height
+     * @return the tile position
+     */
     public Vector2 getTilePosition(float tileWidth, float tileHeight) {
         return new Vector2((int) (position.x / tileWidth), (int) (position.y / tileHeight));
     }
 
+    /**
+     * Gets health.
+     *
+     * @return the health
+     */
     public float getHealth() {
         return health;
     }
 
+    /**
+     * Take damage.
+     *
+     * @param damage the damage
+     */
     public void takeDamage(float damage) {
         if (!isDashing) {  // Only take damage if not dashing
             this.health -= damage;
@@ -384,71 +447,141 @@ public class Player extends Actor {
         }
     }
 
+    /**
+     * Add temporary dashes.
+     *
+     * @param amount the amount
+     */
     public void addTemporaryDashes(int amount) {
         temporaryDashes += amount;
         System.out.println("Added " + amount + " temporary dashes. Total temporary dashes: " + temporaryDashes);
     }
 
+    /**
+     * Gets base dash charges.
+     *
+     * @return the base dash charges
+     */
     public int getBaseDashCharges() {
         return dashCharges;
     }
 
+    /**
+     * Gets temporary dashes.
+     *
+     * @return the temporary dashes
+     */
     public int getTemporaryDashes() {
         return temporaryDashes;
     }
 
+    /**
+     * Gets total dash charges.
+     *
+     * @return the total dash charges
+     */
     public int getTotalDashCharges() {
         return dashCharges + temporaryDashes;
     }
 
 
+    /**
+     * Increase health.
+     *
+     * @param health the health
+     */
     public void increaseHealth(float health) {
         this.health += health;
     }
 
 
+    /**
+     * Modify speed.
+     *
+     * @param factor the factor
+     */
     public void modifySpeed(float factor) {
         this.speedModifier = factor;
         this.totalMoveTime = baseMoveTime / speedModifier;
     }
 
 
+    /**
+     * Sets speed modifier.
+     *
+     * @param modifier the modifier
+     */
     public void setSpeedModifier(float modifier) {
         this.speedModifier = modifier;
         this.totalMoveTime = baseMoveTime / speedModifier;
     }
 
 
+    /**
+     * Gets speed modifier.
+     *
+     * @return the speed modifier
+     */
     public float getSpeedModifier() {
         return speedModifier;
     }
 
 
+    /**
+     * Damage.
+     *
+     * @param enemy the enemy
+     */
     public void damage(Enemy enemy) {
         enemy.takeDamage(damage);
     }
 
 
+    /**
+     * Is dead boolean.
+     *
+     * @return the boolean
+     */
     public boolean isDead() {
         return health <= 0;
     }
 
 
+    /**
+     * Heal.
+     *
+     * @param amount the amount
+     */
     public void heal(float amount) {
         this.health = Math.min(200, this.health + amount);
     }
 
 
+    /**
+     * Shoots fire ball boolean.
+     *
+     * @return the boolean
+     */
     public boolean shootsFireBall() {
         return shootsFireball;
     }
 
 
+    /**
+     * Gets orientation.
+     *
+     * @return the orientation
+     */
     public int getOrientation() {
         return lookingDirection;
     }
 
 
+    /**
+     * Sets position.
+     *
+     * @param position the position
+     */
     public void setPosition(Vector2 position) {
         this.position.set(position);
         this.startPosition.set(position);
@@ -457,46 +590,90 @@ public class Player extends Actor {
     }
 
 
+    /**
+     * Hits boolean.
+     *
+     * @return the boolean
+     */
     public boolean hits() {
         return this.hitting;
     }
 
 
+    /**
+     * Give dashes.
+     */
     public void giveDashes() {
         this.dashCount += 5;
     }
 
 
+    /**
+     * Gets fire ball.
+     *
+     * @return the fire ball
+     */
     public FireBall getFireBall() {
         return fireBall;
     }
 
+    /**
+     * Gets dash charges.
+     *
+     * @return the dash charges
+     */
     public int getDashCharges() {
         return dashCharges;
     }
 
+    /**
+     * Gets dash cooldown.
+     *
+     * @return the dash cooldown
+     */
     public float getDashCooldown() {
         return dashCooldown;
     }
 
+    /**
+     * Gets max dash charges.
+     *
+     * @return the max dash charges
+     */
     public int getMaxDashCharges() {
         return maxDashCharges;
     }
 
+    /**
+     * Add dash charge.
+     */
     public void addDashCharge() {
         if (dashCharges < maxDashCharges) {
             dashCharges++;
         }
     }
 
+    /**
+     * Reset dash cooldown.
+     */
     public void resetDashCooldown() {
         dashCooldown = 0f;
     }
 
+    /**
+     * Is dashing boolean.
+     *
+     * @return the boolean
+     */
     public boolean isDashing() {
         return isDashing;
     }
 
+    /**
+     * Gets dash count.
+     *
+     * @return the dash count
+     */
     public int getDashCount() {
         return dashCount;
     }

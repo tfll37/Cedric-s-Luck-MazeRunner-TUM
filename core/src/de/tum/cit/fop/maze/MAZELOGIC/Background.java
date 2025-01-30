@@ -9,6 +9,9 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * The type Background.
+ */
 public class Background {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
@@ -16,11 +19,22 @@ public class Background {
     private MazeLoader mazeLoader;
     private TileEffectMNGR tileEffectMNGR;
 
+    /**
+     * Instantiates a new Background.
+     *
+     * @param spriteBatch the sprite batch
+     */
     public Background(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
         this.tileEffectMNGR = new TileEffectMNGR();
     }
 
+    /**
+     * Load tiled map.
+     *
+     * @param tmxPath        the tmx path
+     * @param propertiesPath the properties path
+     */
     public void loadTiledMap(String tmxPath, String propertiesPath) {
         tiledMap = new TmxMapLoader().load(tmxPath);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, gameCONFIG.UNIT_SCALE, spriteBatch);
@@ -178,16 +192,31 @@ public class Background {
     }
 
 
+    /**
+     * Gets base layer.
+     *
+     * @return the base layer
+     */
     public TiledMapTileLayer getBaseLayer() {
         return (TiledMapTileLayer) tiledMap.getLayers().get(0);
     }
 
 
+    /**
+     * Gets second layer.
+     *
+     * @return the second layer
+     */
     public TiledMapTileLayer getSecondLayer() {
         return (TiledMapTileLayer) tiledMap.getLayers().get(1);
     }
 
 
+    /**
+     * Center tiled map.
+     *
+     * @param camera the camera
+     */
     public void centerTiledMap(OrthographicCamera camera) {
         if (tiledMap != null) {
             MapProperties props = tiledMap.getProperties();
@@ -204,6 +233,11 @@ public class Background {
         }
     }
 
+    /**
+     * Render tiled map.
+     *
+     * @param camera the camera
+     */
     public void renderTiledMap(OrthographicCamera camera) {
         if (tiledMapRenderer != null) {
             tiledMapRenderer.setView(camera);
@@ -211,10 +245,18 @@ public class Background {
         }
     }
 
+    /**
+     * Gets tiled map.
+     *
+     * @return the tiled map
+     */
     public TiledMap getTiledMap() {
         return tiledMap;
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         if (tiledMap != null) {
             tiledMap.dispose();

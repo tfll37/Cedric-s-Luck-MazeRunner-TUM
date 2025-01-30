@@ -11,12 +11,23 @@ import com.badlogic.gdx.utils.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * The type Labyrinth.
+ */
 public class Labyrinth extends TiledMap {
     private final Array<TextureRegion> objects;
     private final Background background;
     private final MazeLoader mazeLoader;
     private final TileEffectMNGR tileEffectMNGR;
 
+    /**
+     * Instantiates a new Labyrinth.
+     *
+     * @param spriteBatch    the sprite batch
+     * @param tmxFile        the tmx file
+     * @param propertiesFile the properties file
+     * @param tileEffectMNGR the tile effect mngr
+     */
     public Labyrinth(SpriteBatch spriteBatch, String tmxFile, String propertiesFile, TileEffectMNGR tileEffectMNGR) {
         SpecialAreaMNGR.reset();
         this.objects = new Array<>();
@@ -27,10 +38,22 @@ public class Labyrinth extends TiledMap {
 
     }
 
+    /**
+     * Render.
+     *
+     * @param camera the camera
+     */
     public void render(OrthographicCamera camera) {
         background.renderTiledMap(camera);
     }
 
+    /**
+     * Gets tile.
+     *
+     * @param x the x
+     * @param y the y
+     * @return the tile
+     */
     public TiledMapTileLayer.Cell getTile(float x, float y) {
         TiledMapTileLayer layer = (TiledMapTileLayer) background.getTiledMap().getLayers().get(0);
         int tileX = (int) (x / layer.getTileWidth());
@@ -38,6 +61,13 @@ public class Labyrinth extends TiledMap {
         return layer.getCell(tileX, tileY);
     }
 
+    /**
+     * Is blocked boolean.
+     *
+     * @param x the x
+     * @param y the y
+     * @return the boolean
+     */
     public boolean isBlocked(float x, float y) {
         TiledMapTileLayer layer = (TiledMapTileLayer) background.getTiledMap().getLayers().get(0);
         int tileX = (int) (x / layer.getTileWidth());
@@ -45,6 +75,11 @@ public class Labyrinth extends TiledMap {
         return !TilePropMNGR.isTileWalkable(layer, tileX, tileY);
     }
 
+    /**
+     * Gets valid spawn point.
+     *
+     * @return the valid spawn point
+     */
     public Vector2 getValidSpawnPoint() {
         TiledMapTileLayer layer = (TiledMapTileLayer) background.getTiledMap().getLayers().get(0);
         ArrayList<Vector2> openTiles = new ArrayList<>();
@@ -67,18 +102,38 @@ public class Labyrinth extends TiledMap {
         return new Vector2(0, 0);
     }
 
+    /**
+     * Gets spawn point.
+     *
+     * @return the spawn point
+     */
     public Vector2 getSpawnPoint() {
         return SpecialAreaMNGR.getInstance(background.getTiledMap(), mazeLoader).getSpawnPoint();
     }
 
+    /**
+     * Gets exit point.
+     *
+     * @return the exit point
+     */
     public Vector2 getExitPoint() {
         return SpecialAreaMNGR.getInstance(background.getTiledMap(), mazeLoader).getExitPoint();
     }
 
+    /**
+     * Gets maze loader.
+     *
+     * @return the maze loader
+     */
     public MazeLoader getMazeLoader() {
         return mazeLoader;
     }
 
+    /**
+     * Gets trap mngr.
+     *
+     * @return the trap mngr
+     */
     public TileEffectMNGR getTrapMNGR() {
         return tileEffectMNGR;
     }
@@ -87,6 +142,11 @@ public class Labyrinth extends TiledMap {
         background.dispose();
     }
 
+    /**
+     * Gets background.
+     *
+     * @return the background
+     */
     public Background getBackground() {
         return background;
     }

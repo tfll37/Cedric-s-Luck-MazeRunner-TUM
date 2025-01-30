@@ -22,7 +22,7 @@ import java.util.*;
  * Vector2 start = new Vector2(0, 0);
  * Vector2 goal = new Vector2(5, 5);
  * List<Vector2> path = Pathfinding.findPath(maze, start, goal);
- * }</pre>
+ * }*</pre>
  * </p>
  *
  * @see Vector2
@@ -35,11 +35,10 @@ public class Pathfinding {
      * The method uses the A* algorithm to compute the shortest path based on Manhattan distance heuristic.
      * </p>
      *
-     * @param maze    a 2D grid representing the maze, where {@code 0} indicates a walkable tile and any other value indicates an obstacle
-     * @param start   the starting position within the maze
-     * @param goal    the target position within the maze
-     * @return a {@link List} of {@link Vector2} representing the path from {@code start} to {@code goal}.
-     *         Returns an empty list if no path is found.
+     * @param maze  a 2D grid representing the maze, where {@code 0} indicates a walkable tile and any other value indicates an obstacle
+     * @param start the starting position within the maze
+     * @param goal  the target position within the maze
+     * @return a {@link List} of {@link Vector2} representing the path from {@code start} to {@code goal}.         Returns an empty list if no path is found.
      * @throws IllegalArgumentException if {@code maze}, {@code start}, or {@code goal} is {@code null}
      */
     public static List<Vector2> findPath(Array<Array<Integer>> maze, Vector2 start, Vector2 goal) {

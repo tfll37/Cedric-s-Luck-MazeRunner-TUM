@@ -11,12 +11,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 
+/**
+ * The type Pause menu screen.
+ */
 public class PauseMenuScreen {
     private final Stage stage;
     private final MazeRunnerGame game;
     private final GameScreen gameScreen;
     private boolean visible;
 
+    /**
+     * Instantiates a new Pause menu screen.
+     *
+     * @param game       the game
+     * @param gameScreen the game screen
+     */
     public PauseMenuScreen(MazeRunnerGame game, GameScreen gameScreen) {
         this.game = game;
         this.gameScreen = gameScreen;
@@ -57,11 +66,17 @@ public class PauseMenuScreen {
         stage.addActor(table);
     }
 
+    /**
+     * Show.
+     */
     public void show() {
         visible = true;
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Hide.
+     */
     public void hide() {
         visible = false;
         // Reset input processor back to game screen
@@ -69,6 +84,9 @@ public class PauseMenuScreen {
         Gdx.input.setInputProcessor(gameScreen);
     }
 
+    /**
+     * Render.
+     */
     public void render() {
         if (!visible) return;
 
@@ -90,18 +108,37 @@ public class PauseMenuScreen {
         stage.draw();
     }
 
+    /**
+     * Is visible boolean.
+     *
+     * @return the boolean
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * Resize.
+     *
+     * @param width  the width
+     * @param height the height
+     */
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
 
+    /**
+     * Gets stage.
+     *
+     * @return the stage
+     */
     public Stage getStage() {
         return stage;
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         stage.dispose();
     }

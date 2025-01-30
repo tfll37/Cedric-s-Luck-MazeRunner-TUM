@@ -14,6 +14,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import de.tum.cit.fop.maze.MAZELOGIC.LevelMNGR;
 import de.tum.cit.fop.maze.MazeRunnerGame;
 
+/**
+ * The type Victory screen.
+ */
 public class VictoryScreen {
     private final Stage stage;
     private final MazeRunnerGame game;
@@ -21,6 +24,13 @@ public class VictoryScreen {
     private boolean visible;
     private final LevelMNGR.LevelInfo currentLevel;
 
+    /**
+     * Instantiates a new Victory screen.
+     *
+     * @param game       the game
+     * @param gameScreen the game screen
+     * @param level      the level
+     */
     public VictoryScreen(MazeRunnerGame game, GameScreen gameScreen, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.gameScreen = gameScreen;
@@ -76,16 +86,25 @@ public class VictoryScreen {
         stage.addActor(table);
     }
 
+    /**
+     * Show.
+     */
     public void show() {
         visible = true;
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Hide.
+     */
     public void hide() {
         visible = false;
         Gdx.input.setInputProcessor(gameScreen);
     }
 
+    /**
+     * Render.
+     */
     public void render() {
         if (!visible) return;
 
@@ -105,18 +124,37 @@ public class VictoryScreen {
         stage.draw();
     }
 
+    /**
+     * Is visible boolean.
+     *
+     * @return the boolean
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * Resize.
+     *
+     * @param width  the width
+     * @param height the height
+     */
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
     }
 
+    /**
+     * Gets stage.
+     *
+     * @return the stage
+     */
     public Stage getStage() {
         return stage;
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         stage.dispose();
     }
