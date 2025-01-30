@@ -1,4 +1,4 @@
-# Party Escape 🎲
+# Cedrics Luck Escape 🎲
 
 [![Java](https://img.shields.io/badge/Java-17-red.svg)](https://www.oracle.com/java/)
 [![LibGDX](https://img.shields.io/badge/LibGDX-1.11.0-blue.svg)](https://libgdx.com/)
