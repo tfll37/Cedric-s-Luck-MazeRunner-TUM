@@ -308,7 +308,6 @@ public class AnimationMNGR implements Disposable {
      * @param delta The time elapsed since the last frame
      */
     public void update(float delta) {
-        // Update animations
         spriteBatch.begin();
 
         spriteBatch.end();

@@ -55,7 +55,6 @@ public class DiceMinigame {
         this.time = 0f;
         this.activeDuration = 2.0f;
 
-        // Load the dice rolling sound effect
         diceRollingSound = Gdx.audio.newSound(Gdx.files.internal("assets//music//94031__loafdv__dice-roll.mp3"));
     }
 
@@ -139,7 +138,7 @@ public class DiceMinigame {
             resultTimer += delta;
             if (resultTimer > resultDisplayTime) {
                 showingResult = false;
-                diceResult = -1; // Reset the result after display
+                diceResult = -1;
             }
         }
     }

@@ -50,7 +50,6 @@ public class CameraMNGR {
         this.worldHeight = mapHeight * tileSize;
 
 
-        // Set default zoom from config
         this.targetZoom = DEFAULT_ZOOM;
         camera.zoom = DEFAULT_ZOOM;
 

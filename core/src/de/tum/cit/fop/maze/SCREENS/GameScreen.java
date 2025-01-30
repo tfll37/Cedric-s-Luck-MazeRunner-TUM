@@ -19,6 +19,11 @@ import de.tum.cit.fop.maze.PC_NPC_OBJ.*;
 public class GameScreen implements Screen, InputProcessor, DiceMinigameListener {
     private boolean isPaused = false;
 
+    /**
+     * Gets level.
+     *
+     * @return the level
+     */
     public LevelMNGR.LevelInfo getLevel() {
         return level;
     }
@@ -41,7 +46,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     private Array<Heart> hearts = new Array<>();
     private ExitPointer exitPointer;
     private boolean gameOver = false;
-    // Set how many enemies you want in this level:
     private int amountOfEnemies = 1;
     private int amountOfDice = 1;
     private int amountOfHearts = 1;
@@ -56,6 +60,12 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     private InputMultiplexer inputMultiplexer;
 
+    /**
+     * Instantiates a new Game screen.
+     *
+     * @param game  the game
+     * @param level the level
+     */
     public GameScreen(MazeRunnerGame game, LevelMNGR.LevelInfo level) {
         this.game = game;
         this.camera = game.getCamera();
@@ -130,8 +140,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
 
         hitParticle1 = new HitParticle(player.getBounds().x, player.getBounds().y);
-        //diceMinigame = new DiceMinigame(animationMNGR);
-        //diceMinigame.setListener(this);
+
 
         gameUI = new GameUI(game.getSpriteBatch(), this.game.getSkin());
         exitPointer = new ExitPointer();
@@ -174,26 +183,20 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public void render(float delta) {
-        // Clear the screen
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // If player is dead and gameOver wasn't yet triggered, set gameOver
         if (player.isDead() && !gameOver) {
             gameOver = true;
         }
 
-        // If gameOver is triggered but user hasn't dismissed the "You Lost" prompt
-        // Show "YOU LOST" text (large) and wait for input
         if (gameOver && !isLostDismissed) {
             SpriteBatch batch = game.getSpriteBatch();
             batch.begin();
 
-            // Enlarge font only for the "YOU LOST" message
             game.getSkin().getFont("font").getData().setScale(3.0f);
             game.getSkin().getFont("font").draw(batch, "YOU LOST",
                     camera.position.x - 100, camera.position.y);
 
-            // Reset the font scale back to normal
             game.getSkin().getFont("font").getData().setScale(1.0f);
             batch.end();
 
@@ -201,11 +204,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
             return;
         }
 
-        // Update camera following the player, handle tile animations
         cameraMNGR.update(player.getPosition());
         animationMNGR.updateTileAnimations();
 
-        // Player State Update
         float tileWidth = labyrinth.getBackground().getTiledMap().getProperties().get("tilewidth", Integer.class);
         float tileHeight = labyrinth.getBackground().getTiledMap().getProperties().get("tileheight", Integer.class);
         float labyrinthWidth = labyrinth.getBackground().getTiledMap().getProperties().get("width", Integer.class);
@@ -227,11 +228,9 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
             if (playerTile.x == exitTile.x && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor == 0) {
                 if (currentLevelScore >= requiredScore) {
-                    // Show victory screen instead of immediately loading next level
                     setIsPaused(true);
                     victoryScreen.show();
                 } else {
-                    // Display message that more score is needed
                     gameUI.showScoreRequirementMessage(requiredScore - currentLevelScore);
                 }
             }
@@ -266,7 +265,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
         handleInput();
         cameraMNGR.update(player.getPosition());
-//        animationMNGR.updateTileAnimations();
         for (int i = 0; i <= amountOfDice; i++) {
             Dice dice = dices.get(i);
             DiceMinigame diceMinigame = minigames.get(i);
@@ -306,12 +304,10 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
 
 
-        // Render game elements
         labyrinth.render(camera);
         SpriteBatch batch = game.getSpriteBatch();
         batch.begin();
 
-        // Make sure our UI font is back to smaller scale
         game.getSkin().getFont("font").getData().setScale(1.0f);
 
         player.render(batch);
@@ -341,7 +337,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
                 System.out.println("Dice Minigame is active");
             }
         }
-        // In your GameScreen render or update method
         player.getFireBall().render(batch);
 
         Vector2 playerPos = player.getPosition();
@@ -431,18 +426,33 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
     }
 
+    /**
+     * Add input processor.
+     *
+     * @param processor the processor
+     */
     public void addInputProcessor(InputProcessor processor) {
         if (inputMultiplexer != null && !inputMultiplexer.getProcessors().contains(processor, true)) {
             inputMultiplexer.addProcessor(0, processor);
         }
     }
 
+    /**
+     * Remove input processor.
+     *
+     * @param processor the processor
+     */
     public void removeInputProcessor(InputProcessor processor) {
         if (inputMultiplexer != null) {
             inputMultiplexer.removeProcessor(processor);
         }
     }
 
+    /**
+     * Gets input multiplexer.
+     *
+     * @return the input multiplexer
+     */
     public InputMultiplexer getInputMultiplexer() {
         return inputMultiplexer;
     }
@@ -505,7 +515,6 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
 
     @Override
     public void show() {
-        // Reset input processor to handle both the game screen and scroll input
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);  // 'this' handles the scroll input
         if (pauseMenu != null && pauseMenu.getStage() != null) {
@@ -525,6 +534,11 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
     public void resume() {
     }
 
+    /**
+     * Sets is paused.
+     *
+     * @param value the value
+     */
     public void setIsPaused(boolean value) {
         isPaused = value;
     }

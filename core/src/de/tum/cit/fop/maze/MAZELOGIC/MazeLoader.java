@@ -53,7 +53,7 @@ public class MazeLoader {
         return props;
     }
 
-   private void parseProperties() {
+    private void parseProperties() {
         for (String key : properties.stringPropertyNames()) {
 
             try {
@@ -66,22 +66,20 @@ public class MazeLoader {
 
                     tileOverrides.put(new GridPoint2(x, transformedY), tileType);
 
-                if (tileType == TileEffectMNGR.TRAP_MARKER) {
-                    // Register trap marker position and let TileEffectMNGR handle random type assignment
-                    tileOverrides.put(new GridPoint2(x, transformedY), TileEffectMNGR.TRAP_MARKER);
+                    if (tileType == TileEffectMNGR.TRAP_MARKER) {
+                        // Register trap marker position and let TileEffectMNGR handle random type assignment
+                        tileOverrides.put(new GridPoint2(x, transformedY), TileEffectMNGR.TRAP_MARKER);
 
-                    tileEffectMNGR.registerTrapLocation(x, transformedY);
+                        tileEffectMNGR.registerTrapLocation(x, transformedY);
 
-                    System.out.println("Registered trap marker at " + x + "," + y);
-                }
-                else if (tileType == TileEffectMNGR.POWERUP_MARKER) {
-                    // Register powerup marker position and let TileEffectMNGR handle random type assignment
-                    tileOverrides.put(new GridPoint2(x, transformedY), TileEffectMNGR.POWERUP_MARKER);
-                    tileEffectMNGR.registerPowerUp(x, transformedY);
-                    System.out.println("Registered powerup marker at " + x + "," + y);
-                }
-                else {
-                    tileOverrides.put(new GridPoint2(x, transformedY), tileType);
+                        System.out.println("Registered trap marker at " + x + "," + y);
+                    } else if (tileType == TileEffectMNGR.POWERUP_MARKER) {
+                        // Register powerup marker position and let TileEffectMNGR handle random type assignment
+                        tileOverrides.put(new GridPoint2(x, transformedY), TileEffectMNGR.POWERUP_MARKER);
+                        tileEffectMNGR.registerPowerUp(x, transformedY);
+                        System.out.println("Registered powerup marker at " + x + "," + y);
+                    } else {
+                        tileOverrides.put(new GridPoint2(x, transformedY), tileType);
                     }
                 }
             } catch (NumberFormatException e) {

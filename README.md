@@ -1,4 +1,4 @@
-# Diddy Party Escape 🎲
+# Party Escape 🎲
 
 [![Java](https://img.shields.io/badge/Java-17-red.svg)](https://www.oracle.com/java/)
 [![LibGDX](https://img.shields.io/badge/LibGDX-1.11.0-blue.svg)](https://libgdx.com/)
@@ -99,7 +99,7 @@ cd TBD
   - Levels are categorized by difficulty and size
 
 2. **Core Objectives**
-  - Each level has a score requirement to unlock the exit
+  - Each level has a dice requirement to unlock the exit
   - Collect dice and roll them to accumulate points
   - Find and reach the exit point marked by the pointer
   - Manage resources while avoiding or defeating enemies
@@ -108,7 +108,6 @@ cd TBD
   - Complete levels to unlock harder challenges
   - Each level features:
     - Unique maze layouts
-    - Different score requirements
     - Varying enemy patterns
     - Special trap configurations
 
@@ -158,7 +157,7 @@ The game is built using LibGDX and features:
   - Health system (max 200 points)
   - Stamina system (100 points)
   - Dash charge system
-  - Score tracking
+  - Score tracking + 5 for each heart + 10 for each enemy killed
 
 ## 📐 Design and Screens
 Design Overview
@@ -970,7 +969,15 @@ Visual Effects:
 
 # Technical Deep Dive: SCREENS Package
 
+
+
 # Technical Deep Dive: DESIGN Package
+
+Design package includes the AnimationMNGR class, that is used to load the textures of all the elements that are part of the game
+
+Features - the loading is broken into different parts - player, hit and dice animations, that are separated in order to maintain an efficient running during the game. 
+
+It creates sprite sheets for all the elements in the game
 
 
 
