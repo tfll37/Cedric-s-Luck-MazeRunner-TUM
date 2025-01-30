@@ -33,7 +33,7 @@ public class LevelMNGR {
 
         availableLevels.add(new LevelInfo(
                 "The Threshold",
-                "",
+                "First enemies",
                 16,
                 "maps/level-1-2.properties",
                 "Easy",
@@ -89,7 +89,6 @@ public class LevelMNGR {
     public static int generateScoreRequirement(LevelInfo level) {
         Random random = new Random();
         int baseScore = level.requiredScore();
-        // Generate score between 80% and 120% of base score
         return (int) (baseScore * (0.8 + (random.nextDouble() * 0.4)));
     }
 

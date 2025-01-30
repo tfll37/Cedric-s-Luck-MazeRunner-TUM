@@ -62,7 +62,7 @@ public class MenuScreen implements Screen {
         table.setFillParent(true);
         stage.addActor(table);
 
-        table.add(new Label("Diddy Party Escape", game.getSkin(), "title"))
+        table.add(new Label("Cedric's Luck", game.getSkin(), "title"))
                 .padTop(9)
                 .padBottom(200)
                 .row();

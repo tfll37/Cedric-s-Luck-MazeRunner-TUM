@@ -433,7 +433,8 @@ Movement Flow:
 │ (Position)   │ - Final Coordinates
 └──────────────┘
 ```
-```
+
+```java
 Movement State Machine:
 ┌─────────────┐
 │   IDLE      │──────┐
@@ -457,6 +458,7 @@ Validation                   │
 │ State Check │
 └─────────────┘
 ```
+
 ### Movement Interpolation System
 #### Overview
 ```java
@@ -472,13 +474,6 @@ Validation                   │
 ```
 Why Interpolation?
 Problem Without Interpolation
-```java
-CopyGrid Movement:
-Before  After
-        ┌─┐     ┌─┐
-        │P│ --> │P│
-        └─┘     └─┘
-```
 Instant jump between tiles causes:
 1. Visual jarring
 2. Loss of motion feel
@@ -728,6 +723,250 @@ Effect Storage:
 
 
 # Technical Deep Dive: PC_NPC_OBJ Package
+# Technical Deep Dive: PC_NPC_OBJ Package
+
+## Inheritance Structure
+```
+┌──────────────┐
+│  IGameOBJ    │
+└──────┬───────┘
+       │
+┌──────┴───────┐
+│ Collectable  │
+├──────────────┴───┐
+│      Heart       │
+│      Dice        │
+└──────────────────┘
+```
+# Technical Deep Dive: Dice System Architecture
+
+## Core Components
+
+### Collectible Base Class
+The Dice system inherits from the Collectable abstract class, providing:
+```java
+- Position tracking (x, y)
+- Collection state management
+- Abstract update/render methods
+```
+
+### Dice Class Key Features
+```java
+public class Dice extends Collectable {
+    private AnimationMNGR animationMNGR;
+    private float time = 0f;
+    private boolean minigameActive = false;
+    private Sound diceCollectedSound;
+}
+```
+
+### DiceMinigame Class Features
+```java
+public class DiceMinigame {
+    private boolean active;
+    private float time;
+    private float activeDuration = 2.0f;
+    private int diceResult = -1;
+    private boolean showingResult;
+}
+```
+
+## State Management System
+
+### Collection States
+```
+State Flow:
+┌──────────┐    ┌──────────┐    ┌───────────┐
+│Available │───►│Collected │───►│MinigameOn │
+└──────────┘    └──────────┘    └───────────┘
+
+Code Implementation:
+if (!collected && playerOnSameTile) {
+    collected = true;
+    minigameActive = true;
+    diceCollectedSound.play();
+}
+```
+
+### Minigame States
+```
+Roll States:
+┌─────────┐    ┌─────────┐    ┌──────────┐
+│ Start   │───►│Rolling  │───►│ Result   │
+└─────────┘    └─────────┘    └──────────┘
+
+Timing:
+- Roll Duration: 2.0 seconds
+- Result Display: 1.5 seconds
+```
+
+## Animation System
+
+### Rolling Animation
+```java
+// Update animation frame
+currentFrame = animationMNGR.getDiceAnimation()
+                           .getKeyFrame(time, true);
+
+// Render with offset for centering
+batch.draw(currentFrame, 
+    centeredX, centeredY,  // Position 
+    8, 8                   // Size
+);
+```
+
+
+
+### Player Movement & Combat System
+
+```java
+Input Processing Pipeline:
+┌────────────┐    ┌────────────┐    ┌────────────┐
+│   Input    │    │ Movement   │    │ Animation  │
+│ Detection  │───>│ Processing │───>│  Update    │
+└────────────┘    └────────────┘    └────────────┘
+
+Combat States:
+┌──────────────┐
+│    Normal    │
+├──────────────┤
+│    Hitting   │
+├──────────────┤
+│   Dashing    │
+├──────────────┤
+│ Firing Ball  │
+└──────────────┘
+```
+
+Features:
+1. Stamina system with regeneration
+2. Dash mechanic with invulnerability frames
+3. Direction-based animation system
+4. Damage flash effect with tinting
+
+### Enemy AI System
+
+```java
+Pathfinding Pipeline:
+┌────────────┐    ┌────────────┐    ┌────────────┐
+│ Player Pos │    │   A* Path  │    │ Movement   │
+│ Detection  │───>│ Generation │───>│ Execution  │
+└────────────┘    └────────────┘    └────────────┘
+
+State Management:
+┌───────────────┐
+│ Path Planning │
+├───────────────┤
+│   Movement    │
+├───────────────┤
+│Combat Response│
+└───────────────┘
+```
+
+Features:
+1. A* pathfinding implementation
+2. Dynamic target tracking
+3. Smooth animation transitions
+4. Health management system
+
+### FireBall System
+
+```java
+Direction Controls:
+┌───┬───┬───┐
+│   │ ↑ │   │
+├───┼───┼───┤
+│ ← │   │ → │
+├───┼───┼───┤
+│   │ ↓ │   │
+└───┴───┴───┘
+
+Collision Detection:
+┌────────────┐    ┌────────────┐    ┌────────────┐
+│ Movement   │    │ Collision  │    │   Effect   │
+│ Update     │───>│   Check    │───>│ Application│
+└────────────┘    └────────────┘    └────────────┘
+```
+Featuers:
+1. Direction-based animation system
+2. Collision detection with walls and enemies
+3. Damage application system
+
+### Heart Collection System
+
+```java
+Collection Process:
+┌────────────┐    ┌────────────┐    ┌────────────┐
+│ Proximity  │    │ Collection │    │   Health   │
+│   Check    │───>│  Trigger   │───>│   Update   │
+└────────────┘    └────────────┘    └────────────┘
+```
+
+Features:
+1. Sound feedback on collection
+2. Animation system for idle state
+3. Tile-based position checking
+
+## Advanced Features
+
+### Dash Mechanic
+```java
+Dash Implementation:
+┌────────────────────┐
+│ Input Detection    │
+├────────────────────┤
+│ Charge Management  │
+├────────────────────┤
+│ Movement Execution │
+├────────────────────┤
+│ Invulnerability    │
+└────────────────────┘
+
+Dash States:
+- Available (dashCharges > 0)
+- Cooldown (recharging)
+- Active (moving)
+- Recovery (post-dash)
+```
+
+### Stamina System
+```java
+Stamina Pipeline:
+┌────────────┐    ┌────────────┐    ┌────────────┐
+│   Usage    │    │ Depletion  │    │   Regen    │
+│ Detection  │───>│ Calculation│───>│   Timer    │
+└────────────┘    └────────────┘    └────────────┘
+
+Constants:
+MAX_STAMINA = 100f
+DRAIN_RATE = 50f
+REGEN_RATE = 20f
+REGEN_DELAY = 1.5f
+```
+
+### Combat & Damage System
+```java
+Damage Application:
+┌────────────┐    ┌────────────┐    ┌────────────┐
+│   Damage   │    │   Effect   │    │  Visual    │
+│ Calculation│───>│ Application│───>│  Feedback  │
+└────────────┘    └────────────┘    └────────────┘
+
+Visual Effects:
+- Damage flash with color tinting
+- Camera shake based on damage
+- Hit particles
+- Knockback effect
+```
+
+### Animation Optimization
+1. Shared AnimationMNGR instance
+2. Texture region reuse
+
+### Collision Detection
+1. Grid-based checks
+2. Rectangle overlap tests 
+3. Bounds updates
 
 # Technical Deep Dive: SCREENS Package
 
