@@ -219,7 +219,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         Vector2 playerTile = player.getTilePosition(16, 16);
         Vector2 exitTile = new Vector2(exitPoint.x / 16, exitPoint.y / 16);
 
-        if (currentLevelScore >= requiredScore) {
+        if (rollsNeededToOpenDoor == 0) {
             SpecialAreaMNGR.getInstance(labyrinth.getBackground().getTiledMap(), labyrinth.getMazeLoader())
                     .unlockExit();
         }
@@ -227,7 +227,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         if (playerTile.x == exitTile.x && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor == 0) {
 
             if (playerTile.x == exitTile.x && playerTile.y == exitTile.y + 1 && rollsNeededToOpenDoor == 0) {
-                if (currentLevelScore >= requiredScore) {
+                if (rollsNeededToOpenDoor == 0) {
                     setIsPaused(true);
                     victoryScreen.show();
                 } else {
@@ -237,7 +237,7 @@ public class GameScreen implements Screen, InputProcessor, DiceMinigameListener 
         }
         if (!isPaused) {
             player.update(delta, labyrinthWidth, labyrinthHeight, tileWidth, tileHeight, labyrinth, enemies);
-            gameUI.setDashCount(player.getDashCount());
+            gameUI.setDashCount(Math.max(0, player.getDashCount()));
             for (int i = 0; i <= amountOfDice; i++) {
                 Dice dice = dices.get(i);
                 dice.update(delta, player);
