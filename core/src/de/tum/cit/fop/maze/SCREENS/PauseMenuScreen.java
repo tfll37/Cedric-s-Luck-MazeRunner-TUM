@@ -41,7 +41,7 @@ public class PauseMenuScreen {
 
         // Create buttons
         TextButton resumeButton = new TextButton("Resume", game.getSkin());
-        TextButton menuButton = new TextButton("Return to Menu", game.getSkin());
+        TextButton menuButton = new TextButton("Menu", game.getSkin());
 
         // Add listeners
         resumeButton.addListener(new ChangeListener() {

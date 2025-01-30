@@ -1,4 +1,4 @@
-# Cedrics Luck Escape 🎲
+# Cedric's Luck 🎲
 
 [![Java](https://img.shields.io/badge/Java-17-red.svg)](https://www.oracle.com/java/)
 [![LibGDX](https://img.shields.io/badge/LibGDX-1.11.0-blue.svg)](https://libgdx.com/)
@@ -58,7 +58,15 @@ A maze-based dungeon crawler that combines classic roguelike elements with innov
 -Melee Attack: Press Spacebar to deal close-range damage.
 -Fireball Attack: Press Enter to launch a projectile (3-second cooldown).
 
+**GUI**
+ - The GUI displays important information about the status of the game. 
+
+On the left the remaining health is displayed, on the right we have the necessary Dice rolls to open the door.
+There is also the score, and dash count. 
+
 ## 🚀 Getting Started
+
+
 
 ### Prerequisites
 
@@ -72,7 +80,7 @@ A maze-based dungeon crawler that combines classic roguelike elements with innov
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/diddy-party-escape.git
+git clone the repository 
 ```
 
 2. Navigate to project directory:
@@ -103,6 +111,7 @@ cd TBD
   - Collect dice and roll them to accumulate points
   - Find and reach the exit point marked by the pointer
   - Manage resources while avoiding or defeating enemies
+  - If the door is still not open, GET MORE DICES, BE LUCKY!
 
 3. **Progression System**
   - Complete levels to unlock harder challenges
@@ -161,7 +170,7 @@ The game is built using LibGDX and features:
 
 ## 📐 Design and Screens
 Design Overview
-The design of Diddy Party Escape is built on a pixel-art aesthetic using the Dawnlike tileset by DawnBringer. The game follows a top-down dungeon-crawler style, incorporating grid-based movement while allowing dynamic actions such as dashing, shooting fireballs, and interacting with various in-game elements like dice and hearts.
+The design of "Cedric's Luck" is built on a pixel-art aesthetic using the Dawnlike tileset by DawnBringer. The game follows a top-down dungeon-crawler style, incorporating grid-based movement while allowing dynamic actions such as dashing, shooting fireballs, and interacting with various in-game elements like dice and hearts.
 The UI elements are minimalistic and effective, with a focus on clear feedback for actions like health status, score tracking, and game progression. The animations are handled by AnimationMNGR, ensuring smooth transitions for player movements, enemy interactions, and dice mechanics.
 
 1. **Welcome Screen**
@@ -203,7 +212,7 @@ The UI elements are minimalistic and effective, with a focus on clear feedback f
 ## 📁 Project Structure
 
 ```
-diddy-party-escape/
+cedric's-luck/
 ├── core/
 │   ├── src/
 │   │   ├── screens/           # Game screens (Menu, Game, Welcome)
@@ -396,8 +405,8 @@ File Processing Flow:
 │ Assignment    │
 └───────────────┘
 ```
-![Processing scheme ](docs/file_processing_scheme.png)
-[Processing scheme ](docs/file_processing_scheme.png)
+![Processing scheme ](file_processing_scheme.png)
+[Processing scheme ](file_processing_scheme.png)
 
 [DependencyGraphSnapshot0.svg](..%2F..%2FDesktop%2FJArchitect2024.1%2FDependencyGraphSnapshot0.svg)
 
@@ -968,6 +977,60 @@ Visual Effects:
 3. Bounds updates
 
 # Technical Deep Dive: SCREENS Package
+GameScreen.java combines all game mechanics.
+### GameScreen Architecture
+```
+Core Components:
+┌─────────────────┐
+│  GameScreen     │
+├─────────────────┤
+│  Level Manager  │
+├─────────────────┤
+│  Maze Loader    │
+└─────────────────┘
+```
+### GameUI Class
+The GameUI class manages all in-game user interface elements during gameplay. It handles:
+
+Health bar display
+Score counter
+Door unlock progress
+Dash count display
+Message notifications to the player
+Status updates during gameplay
+
+The class uses LibGDX's Scene2D framework for UI rendering and management.
+
+### MenuScreen Class
+The MenuScreen class creates and manages the main menu interface. Its main responsibilities include:
+
+Displaying the game title
+Providing start game and quit options
+Level selection menu
+Background animation handling
+Background music and sound effects
+Button interactions
+
+This screen serves as the entry point for players to start the game or select specific levels to play.
+
+### PauseMenuScreen Class
+The PauseMenuScreen handles the game's pause functionality. It provides:
+
+A pause overlay that darkens the game screen
+Resume button to continue gameplay
+Return to menu button to exit the current level
+Input handling during pause state
+
+This screen appears when the player pauses the game and temporarily stops gameplay while active.
+
+### VictoryScreen Class
+The VictoryScreen appears when a player successfully completes a level. It features:
+
+Level completion message
+Display of current level name
+Next level button (if available)
+Return to menu option
+Celebratory golden overlay effect
 
 
 
@@ -978,6 +1041,16 @@ Design package includes the AnimationMNGR class, that is used to load the textur
 Features - the loading is broken into different parts - player, hit and dice animations, that are separated in order to maintain an efficient running during the game. 
 
 It creates sprite sheets for all the elements in the game
+
+
+
+# UML Diagrams
+![Complete UML Diagram](Complete%20UML%20Diagram.png)
+[Complete UML Diagram](Complete%20UML%20Diagram.png)
+
+![Radial UML Diagram](Radial%20UML%20Diagram.png)
+[Radial UML Diagram](Radial%20UML%20Diagram.png)
+
 
 
 

@@ -38,7 +38,7 @@ public class LevelMNGR {
         ));
 
         availableLevels.add(new LevelInfo(
-                "The Threshold",
+                "Threshold",
                 "First enemies",
                 16,
                 "maps/level-1-2.properties",
@@ -52,23 +52,23 @@ public class LevelMNGR {
                 "Larger maze with more complexity",
                 32,
                 "maps/level-2-1.properties",
-                "Medium",
+                "Med",
                 2,
                 10
         ));
 
         availableLevels.add(new LevelInfo(
-                "Diddy's Den",
+                " Despair",
                 "It's too slimy here. I wonder why?",
                 32,
                 "maps/level-2-2.properties",
-                "Medium",
+                "Med",
                 3,
                 10
         ));
 
         availableLevels.add(new LevelInfo(
-                "HELL",
+                "Hell",
                 "It is hot in here",
                 64,
                 "maps/level-3-1.properties",

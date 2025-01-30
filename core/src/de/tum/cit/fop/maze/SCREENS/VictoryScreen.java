@@ -52,7 +52,7 @@ public class VictoryScreen {
         scoreLabel.setAlignment(Align.center);
 
         TextButton nextLevelButton = new TextButton("Next Level", game.getSkin());
-        TextButton menuButton = new TextButton("Return to Menu", game.getSkin());
+        TextButton menuButton = new TextButton("Menu", game.getSkin());
 
         nextLevelButton.addListener(new ChangeListener() {
             @Override
